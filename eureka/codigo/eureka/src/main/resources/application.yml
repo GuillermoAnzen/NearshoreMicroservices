@@ -1,0 +1,21 @@
+server:
+  port: 8761
+info:
+  component: eureka
+eureka:
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+  instance:
+    hostname: localhost
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+      
+ 
+#10 minutos en timeout de respuesta y 5 minutos para tratar de conectars
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 600000
+ribbon:
+  ConnectTimeout: 300000
+  ReadTimeout: 600000
+  
+        

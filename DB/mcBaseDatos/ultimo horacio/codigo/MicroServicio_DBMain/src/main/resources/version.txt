@@ -1,0 +1,18 @@
+Spring boot 1.5.2_RELEASE
+Java 1.8
+version app 0.0.2
+
+Cambios hechos:
+-Se cambio a version 1.5.2_RELEASE de Spring Boot, ultima version estable
+-Se agrego llamadas al garbage para reducir el consumo en memoria
+-Se modifico para regresar HashMap vacio en consultas sin resultado
+	ejemplo:
+	{
+	  "success": true,
+	  "mensaje": "OK",
+	  "data": [],
+	  "codigo": 1000,
+	  "exception": ""
+	}
+-Pool de conexiones implementado fue el de la configuracion de Tomcat (TomcatEmbebido que tiene)
+

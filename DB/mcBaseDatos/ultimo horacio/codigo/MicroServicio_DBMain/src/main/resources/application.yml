@@ -1,0 +1,32 @@
+variables:
+  eureka:
+    host: hostEureka
+    port: 8761
+
+info:
+  component: microservicio TDC dbMain
+server:
+  port: 1007
+spring:
+  config:
+    name: mcTDCdbMain
+  application:
+    name: mcTDCdbMain
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
+logging:
+  level:
+    mx.com.banamex.microservicio.tdc.base: DEBUG
+    #ROOT: DEBUG
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${variables.eureka.host}:${variables.eureka.port}/eureka/
+    registerWithEureka: true
+  instance:
+    preferIpAddress: true

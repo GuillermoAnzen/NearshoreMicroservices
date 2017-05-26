@@ -1,0 +1,9 @@
+.metadata/
+RemoteSystemsTempFiles/
+*/**/.rar
+*/**/.jar
+*/**/.war
+*/**/.metadata/
+**/RemoteSystemsTempFiles/
+*/**/.idea/
+APPS/nearshore-appsms/.idea/
