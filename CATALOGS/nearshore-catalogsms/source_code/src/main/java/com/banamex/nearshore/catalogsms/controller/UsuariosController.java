@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.banamex.nearshore.catalogsms.domain.Pagination;
 import com.banamex.nearshore.catalogsms.domain.Usuario;
 import com.banamex.nearshore.catalogsms.exception.NearshoreDatabaseMicroserviceException;
 import com.banamex.nearshore.databasems.Data;
@@ -31,14 +32,26 @@ public class UsuariosController {
 	 * GET USUARIOS
 	 * Endpoint para obtiene una lista de Usuario que tienen acceso al sistema.
 	 */
-	@RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
-	public Object retrieveAllDomains() {
+	@RequestMapping(value = "/", method = RequestMethod.POST, produces = "application/json")
+	public Object retrieveAllUsers(@RequestBody Pagination pagination) {
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
+		List<Data> queryParams = new ArrayList<>();
+		Data queryParam01 = new Data();
+		Data queryParam02 = new Data();
+		
+		queryParam01.setIndex(1);
+		queryParam01.setType("INT");
+		queryParam01.setValue(pagination.getIndex().toString());
+		queryParams.add(queryParam01);
+		
+		queryParam02.setIndex(2);
+		queryParam02.setType("INT");
+		queryParam02.setValue(pagination.getRows().toString());
+		queryParams.add(queryParam02);
 		
 		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
-		requestParams.put("sql", "SELECT u.Id_usuarios, u.Email, u.Primer_Nombre, u.Segundo_Nombre,"
-				+ "u.Apellido_Paterno, u.ApellidoMaterno, u.Clave,u.Activo,u.Dominios,u.Proveedores,"
-				+ "p.Id_Perfil,p.Descripcion FROM "+Constants.USUARIO+" u join "+Constants.CAT_PERFIL+" p on u.Id_Perfil=p.Id_Perfil");
+		requestParams.put("sql", "call nearshore.paginationUsersAccessToApplication(?, ?)");
+		requestParams.put("data", queryParams);
 		
 		Object resultBase = null;
 		try {
@@ -86,8 +99,8 @@ public class UsuariosController {
 	 * POST USUARIOS
 	 * Endpoint para insertar un usuario que tienen acceso al sistema.
 	 */
-	@RequestMapping(value = "/", method = RequestMethod.POST, produces = "application/json")
-	public Object newDomain(@RequestBody Usuario usuario) {
+	@RequestMapping(value = "/newUser", method = RequestMethod.POST, produces = "application/json")
+	public Object newUser(@RequestBody Usuario usuario) {
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
 		
 		List<Data> queryParams = new ArrayList<>();

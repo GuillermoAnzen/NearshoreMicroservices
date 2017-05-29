@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.banamex.nearshore.catalogsms.domain.Proveedor;
-import com.banamex.nearshore.catalogsms.domain.TestPagination;
+import com.banamex.nearshore.catalogsms.domain.Pagination;
 import com.banamex.nearshore.catalogsms.exception.NearshoreDatabaseMicroserviceException;
 import com.banamex.nearshore.databasems.Data;
 import com.banamex.nearshore.databasems.DatabaseMicroserviceClientService;
@@ -32,7 +32,7 @@ public class ProveedoresController {
 	 * 
 	 */
 	@RequestMapping(value = "/pagination", method = RequestMethod.POST, produces = "application/json")
-	public Object retrieveTestPagination(@RequestBody TestPagination pagination){
+	public Object retrieveTestPagination(@RequestBody Pagination pagination){
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
 		List<Data> queryParams = new ArrayList<>();
 		Data queryParam01 = new Data();
