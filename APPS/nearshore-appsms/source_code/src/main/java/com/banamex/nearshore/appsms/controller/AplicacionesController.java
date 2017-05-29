@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.banamex.nearshore.appsms.bean.Pagination;
 import com.banamex.nearshore.appsms.exception.NearshoreDatabaseMicroserviceException;
 import com.banamex.nearshore.databasems.Data;
 import com.banamex.nearshore.databasems.DatabaseMicroserviceClientService;
@@ -31,19 +32,31 @@ public class AplicacionesController {
 	/*
 	 * Devuelve las aplicaciones por de un dominio en particular 
 	*/
-	@RequestMapping(value = "/dominio/{idDominio}", method = RequestMethod.GET, produces = "application/json")
-	public Object getApplicacionsByIdDomain( @PathVariable Integer idDominio ){
+	@RequestMapping(value = "/dominio/{idDominio}", method = RequestMethod.POST, produces = "application/json")
+	public Object getApplicacionsByIdDomain( @RequestBody Pagination pagination, @PathVariable Integer idDominio ){
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
-
 		List<Data> queryParams = new ArrayList<>();
 		Data queryParam01 = new Data();
+		Data queryParam02 = new Data();
+		Data queryParam03 = new Data();
+		
 		queryParam01.setIndex(1);
 		queryParam01.setType("INT");
-		queryParam01.setValue(idDominio.toString());
+		queryParam01.setValue(pagination.getIndex().toString());
 		queryParams.add(queryParam01);
+		
+		queryParam02.setIndex(2);
+		queryParam02.setType("INT");
+		queryParam02.setValue(pagination.getRows().toString());
+		queryParams.add(queryParam02);
+		
+		queryParam03.setIndex(3);
+		queryParam03.setType("INT");
+		queryParam03.setValue(idDominio.toString());
+		queryParams.add(queryParam03);
 
 		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
-		requestParams.put("sql", "SELECT aplic.CSI_ID,aplic.Descripcion_Corta FROM APLICACION aplic INNER JOIN CAT_DOMINIO D WHERE aplic.Id_Dominio = D.Id AND aplic.Id_Dominio = ?");
+		requestParams.put("sql", "call nearshore.paginationAplicationPeriDDomain(?, ?, ?)");
 		requestParams.put("data", queryParams);
 
 		Object resultBase = null;
@@ -59,13 +72,25 @@ public class AplicacionesController {
 	/*
  	*Endpoint que devuelve las aplicaciones por dominio
  	*/
-	@RequestMapping(value = "/dominios", method = RequestMethod.GET, produces = "application/json")
-	public Object retrieveApplicationsByDomains(){
+	@RequestMapping(value = "/dominios", method = RequestMethod.POST, produces = "application/json")
+	public Object retrieveApplicationsByDomains(@RequestBody Pagination pagination){
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
 		List<Data> queryParams = new ArrayList<>();
+		Data queryParam01 = new Data();
+		Data queryParam02 = new Data();
+		
+		queryParam01.setIndex(1);
+		queryParam01.setType("INT");
+		queryParam01.setValue(pagination.getIndex().toString());
+		queryParams.add(queryParam01);
+		
+		queryParam02.setIndex(2);
+		queryParam02.setType("INT");
+		queryParam02.setValue(pagination.getRows().toString());
+		queryParams.add(queryParam02);
 		
 		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
-		requestParams.put("sql", "SELECT aplic.CSI_ID,aplic.Descripcion_Corta,D.Descripcion as dominio FROM APLICACION aplic INNER JOIN CAT_DOMINIO D WHERE aplic.Id_Dominio = D.Id;");
+		requestParams.put("sql", "call nearshore.paginationAplicationPerDomain(?, ?)");
 		requestParams.put("data", queryParams);
 
 		Object resultBase = null;
