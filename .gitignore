@@ -1,9 +1,12 @@
 .metadata/
 RemoteSystemsTempFiles/
-*/**/.rar
-*/**/.jar
-*/**/.war
+*.rar
+*/**/*.rar
+*/**/*.jar
+*/**/*.war
 */**/.metadata/
 **/RemoteSystemsTempFiles/
 */**/.idea/
 APPS/nearshore-appsms/.idea/
+APPS/.recommenders/
+CATALOGS/.recommenders/
