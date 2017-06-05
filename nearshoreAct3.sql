@@ -2,7 +2,7 @@ CREATE DATABASE  IF NOT EXISTS `nearshore` /*!40100 DEFAULT CHARACTER SET utf8 *
 USE `nearshore`;
 -- MySQL dump 10.13  Distrib 5.7.12, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: nearshore
+-- Host: 127.0.0.1    Database: nearshore2
 -- ------------------------------------------------------
 -- Server version	5.7.17-log
 
@@ -52,7 +52,7 @@ CREATE TABLE `APLICACION` (
   CONSTRAINT `fk_CAT_PROVEEDOR_APICACION_Id_L2` FOREIGN KEY (`Id_L2`) REFERENCES `CAT_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `fk_CAT_PROVEEDOR_APICACION_Id_L3` FOREIGN KEY (`Id_L3`) REFERENCES `CAT_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `fk_CAT_PROVEEDOR_APICACION_Id_Plat3` FOREIGN KEY (`Id_Plat3`) REFERENCES `CAT_PLATAFORMA` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -61,7 +61,7 @@ CREATE TABLE `APLICACION` (
 
 LOCK TABLES `APLICACION` WRITE;
 /*!40000 ALTER TABLE `APLICACION` DISABLE KEYS */;
-INSERT INTO `APLICACION` VALUES (1,1,'1','Nearshore','Aplicación del catálogo de proveedores',1,2,4,1,2,1,'Sin comentarios.'),(2,5,'23','Microservicios Nearshoe','Microservicios de la aplicación de proveedores Banamex.',1,1,2,1,2,3,'Dsarrollado.'),(3,5,'22','Microservicios V2 Nearshore','Segunda versión de microservicios para aplicación de proveedores.',1,2,2,1,2,3,'En desarrollo.'),(4,5,'2','SW BANAMEX ELECTRONIC DEPOSIT OF CHECKS','Software used for cash deposit and endowments administration (SEF) and for remote check deposit (DEB) into customers\' accounts. The access will allow the user to do inquiries regarding DEB/SEF customers\' information.',1,2,4,1,2,1,'Desarrollado.');
+INSERT INTO `APLICACION` (`Csi_Id`, `Id_Dominio`, `Ptb_Id`, `Descripcion_Corta`, `Descripcion_Larga`, `Id_L1`, `Id_L2`, `Id_L3`, `Id_Plat1`, `Id_Plat2`, `Id_Plat3`, `Comentarios`) VALUES (1,1,'1','Nearshore','Aplicación del catálogo de proveedores',1,2,4,1,2,1,'Sin comentarios.'),(2,5,'23','Microservicios Nearshoe','Microservicios de la aplicación de proveedores Banamex.',1,1,2,1,2,3,'Dsarrollado.'),(3,5,'22','Microservicios V2 Nearshore','Segunda versión de microservicios para aplicación de proveedores.',1,2,2,1,2,3,'En desarrollo.'),(4,1,'12','Backbase','FrontEnd with Backbase framework.',1,2,3,4,5,3,'No hay comentarios'),(5,1,'12','Backbase','FrontEnd with Backbase framework.',1,2,3,4,5,3,'No hay comentarios');
 /*!40000 ALTER TABLE `APLICACION` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -73,33 +73,14 @@ DROP TABLE IF EXISTS `APLICACION_PROVEEDOR`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `APLICACION_PROVEEDOR` (
-  `Id_Aplicacion_Proveedor` int(11) NOT NULL AUTO_INCREMENT,
   `Id_Proveedor` int(11) NOT NULL,
   `Csi_Id` int(11) NOT NULL,
-  `L1_Primario` int(11) DEFAULT NULL,
-  `L1_Backup` int(11) DEFAULT NULL,
-  `L2_Primario` int(11) DEFAULT NULL,
-  `L2_Backup` int(11) DEFAULT NULL,
-  `L3_Primario` int(11) DEFAULT NULL,
-  `L3_Backup` int(11) DEFAULT NULL,
-  PRIMARY KEY (`Id_Aplicacion_Proveedor`,`Id_Proveedor`,`Csi_Id`),
+  PRIMARY KEY (`Id_Proveedor`,`Csi_Id`),
   KEY `fk_APLICACION_APLICACION_PROVEEDOR_idx` (`Csi_Id`),
-  KEY `fk_RECURSO_PROVEEDOR_APLICACION_PROVEEDOR_idx` (`L1_Primario`),
-  KEY `fk_RECURSO_PROVEEDOR_APLICACION_PROVEEDOR_1_idx` (`L1_Backup`),
-  KEY `fk_RECURSO_PROVEEDOR_APLICACION_PROVEEDOR_2_idx` (`L2_Primario`),
-  KEY `fk_RECURSO_PROVEEDOR_APLICACION_PROVEEDOR_3_idx` (`L2_Backup`),
-  KEY `fk_RECURSO_PROVEEDOR_APLICACION_PROVEEDOR_4_idx` (`L3_Primario`),
-  KEY `fk_RECURSO_PROVEEDOR_APLICACION_PROVEEDOR_5_idx` (`L3_Backup`),
   KEY `fk_CAT_PROVEEDOR_APLICACION_PROVEEDOR` (`Id_Proveedor`),
   CONSTRAINT `fk_APLICACION_APLICACION_PROVEEDOR` FOREIGN KEY (`Csi_Id`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  CONSTRAINT `fk_CAT_PROVEEDOR_APLICACION_PROVEEDOR` FOREIGN KEY (`Id_Proveedor`) REFERENCES `CAT_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_RECURSO_PROVEEDOR_APLICACION_PROVEEDOR` FOREIGN KEY (`L1_Primario`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_RECURSO_PROVEEDOR_APLICACION_PROVEEDOR_1` FOREIGN KEY (`L1_Backup`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_RECURSO_PROVEEDOR_APLICACION_PROVEEDOR_2` FOREIGN KEY (`L2_Primario`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_RECURSO_PROVEEDOR_APLICACION_PROVEEDOR_3` FOREIGN KEY (`L2_Backup`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_RECURSO_PROVEEDOR_APLICACION_PROVEEDOR_4` FOREIGN KEY (`L3_Primario`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_RECURSO_PROVEEDOR_APLICACION_PROVEEDOR_5` FOREIGN KEY (`L3_Backup`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+  CONSTRAINT `fk_CAT_PROVEEDOR_APLICACION_PROVEEDOR` FOREIGN KEY (`Id_Proveedor`) REFERENCES `CAT_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -108,7 +89,7 @@ CREATE TABLE `APLICACION_PROVEEDOR` (
 
 LOCK TABLES `APLICACION_PROVEEDOR` WRITE;
 /*!40000 ALTER TABLE `APLICACION_PROVEEDOR` DISABLE KEYS */;
-INSERT INTO `APLICACION_PROVEEDOR` VALUES (1,1,1,1,4,1,3,2,1),(2,4,2,4,2,4,3,4,4);
+INSERT INTO `APLICACION_PROVEEDOR` (`Id_Proveedor`, `Csi_Id`) VALUES (1,1),(2,4);
 /*!40000 ALTER TABLE `APLICACION_PROVEEDOR` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -135,7 +116,7 @@ CREATE TABLE `CAT_CIUDAD` (
 
 LOCK TABLES `CAT_CIUDAD` WRITE;
 /*!40000 ALTER TABLE `CAT_CIUDAD` DISABLE KEYS */;
-INSERT INTO `CAT_CIUDAD` VALUES (5,1,'CDMX'),(6,1,'Monterrey'),(7,1,'Guadalajara'),(8,4,'Japón');
+INSERT INTO `CAT_CIUDAD` (`Id`, `Id_Pais`, `Descripcion`) VALUES (5,1,'CDMX'),(6,1,'Monterrey'),(7,1,'Guadalajara'),(8,4,'Japón');
 /*!40000 ALTER TABLE `CAT_CIUDAD` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -159,7 +140,7 @@ CREATE TABLE `CAT_DOMINIO` (
 
 LOCK TABLES `CAT_DOMINIO` WRITE;
 /*!40000 ALTER TABLE `CAT_DOMINIO` DISABLE KEYS */;
-INSERT INTO `CAT_DOMINIO` VALUES (1,'FrontEnd'),(2,'Digital'),(3,'Canales Digitales'),(4,'Canales Tradicionales'),(5,'Middleware'),(6,'Seguros');
+INSERT INTO `CAT_DOMINIO` (`Id`, `Descripcion`) VALUES (1,'FrontEnd'),(2,'Digital'),(3,'Canales Digitales'),(4,'Canales Tradicionales'),(5,'Middleware'),(6,'Seguros');
 /*!40000 ALTER TABLE `CAT_DOMINIO` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -183,7 +164,7 @@ CREATE TABLE `CAT_PAIS` (
 
 LOCK TABLES `CAT_PAIS` WRITE;
 /*!40000 ALTER TABLE `CAT_PAIS` DISABLE KEYS */;
-INSERT INTO `CAT_PAIS` VALUES (1,'México'),(2,'Estados Unidos'),(3,'Colombia'),(4,'Japón');
+INSERT INTO `CAT_PAIS` (`Id`, `Descripcion`) VALUES (1,'México'),(2,'Estados Unidos'),(3,'Colombia'),(4,'Japón');
 /*!40000 ALTER TABLE `CAT_PAIS` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -207,7 +188,7 @@ CREATE TABLE `CAT_PERFIL` (
 
 LOCK TABLES `CAT_PERFIL` WRITE;
 /*!40000 ALTER TABLE `CAT_PERFIL` DISABLE KEYS */;
-INSERT INTO `CAT_PERFIL` VALUES (1,'Super Administrador'),(2,'Administrador'),(3,'Backup'),(4,'Lectura');
+INSERT INTO `CAT_PERFIL` (`Id_Perfil`, `Descripcion`) VALUES (1,'Super Administrador'),(2,'Administrador'),(3,'Backup'),(4,'Lectura');
 /*!40000 ALTER TABLE `CAT_PERFIL` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -232,7 +213,7 @@ CREATE TABLE `CAT_PLATAFORMA` (
 
 LOCK TABLES `CAT_PLATAFORMA` WRITE;
 /*!40000 ALTER TABLE `CAT_PLATAFORMA` DISABLE KEYS */;
-INSERT INTO `CAT_PLATAFORMA` VALUES (1,'Plataforma 1','No hay comentarios.'),(2,'Plataforma 2','Sin comentarios.'),(3,'Plataforma 3','Sin comentarios.'),(4,'Java','S/C'),(5,'AngularJS','S/C'),(6,'MySQL','S/C');
+INSERT INTO `CAT_PLATAFORMA` (`Id`, `Descripcion`, `Comentarios`) VALUES (1,'Plataforma 1','No hay comentarios.'),(2,'Plataforma 2','Sin comentarios.'),(3,'Plataforma 3','Sin comentarios.'),(4,'Java','S/C'),(5,'AngularJS','S/C'),(6,'MySQL','S/C');
 /*!40000 ALTER TABLE `CAT_PLATAFORMA` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -256,7 +237,7 @@ CREATE TABLE `CAT_PROVEEDOR` (
 
 LOCK TABLES `CAT_PROVEEDOR` WRITE;
 /*!40000 ALTER TABLE `CAT_PROVEEDOR` DISABLE KEYS */;
-INSERT INTO `CAT_PROVEEDOR` VALUES (1,'Anzen'),(2,'IBM'),(3,'Nasoft'),(4,'Wipro'),(5,'Softeeck'),(6,'TCS'),(7,'Tech Test');
+INSERT INTO `CAT_PROVEEDOR` (`Id`, `Descripcion`) VALUES (1,'Anzen'),(2,'IBM'),(3,'Nasoft'),(4,'Wipro'),(5,'Softeeck'),(6,'TCS'),(7,'Tech Test');
 /*!40000 ALTER TABLE `CAT_PROVEEDOR` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -280,7 +261,7 @@ CREATE TABLE `CAT_PUESTO_PROVEEDOR` (
 
 LOCK TABLES `CAT_PUESTO_PROVEEDOR` WRITE;
 /*!40000 ALTER TABLE `CAT_PUESTO_PROVEEDOR` DISABLE KEYS */;
-INSERT INTO `CAT_PUESTO_PROVEEDOR` VALUES (1,'Analista'),(2,'Contacto principal con Banamex'),(3,'Delivery Manager'),(4,'Project Manager'),(5,'Project Lead'),(6,'Proceso OnBoarding'),(7,'Programador'),(8,'Account Manager'),(9,'Desarrollador Java'),(10,'Desarrollador'),(11,'Technical Lead'),(12,'Desarrollador FrontEnd'),(13,'Tester'),(14,'Aplication Service Delivery Manager'),(15,'SCRUM Master');
+INSERT INTO `CAT_PUESTO_PROVEEDOR` (`Id`, `Descripcion`) VALUES (1,'Analista'),(2,'Contacto principal con Banamex'),(3,'Delivery Manager'),(4,'Project Manager'),(5,'Project Lead'),(6,'Proceso OnBoarding'),(7,'Programador'),(8,'Account Manager'),(9,'Desarrollador Java'),(10,'Desarrollador'),(11,'Technical Lead'),(12,'Desarrollador FrontEnd'),(13,'Tester'),(14,'Aplication Service Delivery Manager'),(15,'SCRUM Master');
 /*!40000 ALTER TABLE `CAT_PUESTO_PROVEEDOR` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -304,8 +285,351 @@ CREATE TABLE `CAT_PUESTOCITI` (
 
 LOCK TABLES `CAT_PUESTOCITI` WRITE;
 /*!40000 ALTER TABLE `CAT_PUESTOCITI` DISABLE KEYS */;
-INSERT INTO `CAT_PUESTOCITI` VALUES (1,'Analista'),(2,'Lider'),(3,'Gerente'),(4,'Desarrollador'),(5,'Director');
+INSERT INTO `CAT_PUESTOCITI` (`Id`, `Descripcion`) VALUES (1,'Analista'),(2,'Lider'),(3,'Gerente'),(4,'Desarrollador'),(5,'Director');
 /*!40000 ALTER TABLE `CAT_PUESTOCITI` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Temporary view structure for view `detailsl1application`
+--
+
+DROP TABLE IF EXISTS `detailsl1application`;
+/*!50001 DROP VIEW IF EXISTS `detailsl1application`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `detailsl1application` AS SELECT 
+ 1 AS `idApp`,
+ 1 AS `dominio`,
+ 1 AS `L1`,
+ 1 AS `analista_bnmx`,
+ 1 AS `ext_analista_bnmx`,
+ 1 AS `celular_analista_bnmx`,
+ 1 AS `email_analista_bnmx`,
+ 1 AS `lider_bnmx`,
+ 1 AS `ext_lider_bnmx`,
+ 1 AS `celular_lider_bnmx`,
+ 1 AS `email_lider_bnmx`,
+ 1 AS `gerente_bnmx`,
+ 1 AS `ext_gerente_bnmx`,
+ 1 AS `celular_gerente_bnmx`,
+ 1 AS `email_gerente_bnmx`,
+ 1 AS `proveedor`,
+ 1 AS `responsable_prov`,
+ 1 AS `ext_responsable_banamex_prov`,
+ 1 AS `lada_cel_responsable_prov`,
+ 1 AS `cel_responsable_prov`,
+ 1 AS `email_responsable_bnmx_prov`,
+ 1 AS `lada_otro_responsable_prov`,
+ 1 AS `tel_otro_responsable_prov`,
+ 1 AS `email_responsable_prov`,
+ 1 AS `backup_prov`,
+ 1 AS `ext_backup_banamex_prov`,
+ 1 AS `lada_cel_backup_prov`,
+ 1 AS `cel_backup_prov`,
+ 1 AS `email_backup_bnmx_prov`,
+ 1 AS `lada_otro_backup_prov`,
+ 1 AS `tel_otro_backup_prov`,
+ 1 AS `email_backup_prov`,
+ 1 AS `lider_prov`,
+ 1 AS `ext_lider_banamex_prov`,
+ 1 AS `lada_cel_lider_prov`,
+ 1 AS `cel_lider_prov`,
+ 1 AS `email_lider_bnmx_prov`,
+ 1 AS `lada_otro_lider_prov`,
+ 1 AS `tel_otro_lider_prov`,
+ 1 AS `email_lider_prov`,
+ 1 AS `p_manager_prov`,
+ 1 AS `ext_p_manager_banamex_prov`,
+ 1 AS `lada_cel_p_manager_prov`,
+ 1 AS `cel_p_manager_prov`,
+ 1 AS `email_p_manager_bnmx_prov`,
+ 1 AS `lada_otro_p_manager_prov`,
+ 1 AS `tel_otro_p_manager_prov`,
+ 1 AS `email_p_manager_prov`,
+ 1 AS `d_manager_prov`,
+ 1 AS `ext_d_manager_banamex_prov`,
+ 1 AS `lada_cel_d_manager_prov`,
+ 1 AS `cel_d_manager_prov`,
+ 1 AS `email_d_manager_bnmx_prov`,
+ 1 AS `lada_otro_d_manager_prov`,
+ 1 AS `tel_otro_d_manager_prov`,
+ 1 AS `email_d_manager_prov`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `detailsl2application`
+--
+
+DROP TABLE IF EXISTS `detailsl2application`;
+/*!50001 DROP VIEW IF EXISTS `detailsl2application`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `detailsl2application` AS SELECT 
+ 1 AS `idApp`,
+ 1 AS `dominio`,
+ 1 AS `L2`,
+ 1 AS `analista_bnmx`,
+ 1 AS `ext_analista_bnmx`,
+ 1 AS `celular_analista_bnmx`,
+ 1 AS `email_analista_bnmx`,
+ 1 AS `lider_bnmx`,
+ 1 AS `ext_lider_bnmx`,
+ 1 AS `celular_lider_bnmx`,
+ 1 AS `email_lider_bnmx`,
+ 1 AS `gerente_bnmx`,
+ 1 AS `ext_gerente_bnmx`,
+ 1 AS `celular_gerente_bnmx`,
+ 1 AS `email_gerente_bnmx`,
+ 1 AS `proveedor`,
+ 1 AS `responsable_prov`,
+ 1 AS `ext_responsable_banamex_prov`,
+ 1 AS `lada_cel_responsable_prov`,
+ 1 AS `cel_responsable_prov`,
+ 1 AS `email_responsable_bnmx_prov`,
+ 1 AS `lada_otro_responsable_prov`,
+ 1 AS `tel_otro_responsable_prov`,
+ 1 AS `email_responsable_prov`,
+ 1 AS `backup_prov`,
+ 1 AS `ext_backup_banamex_prov`,
+ 1 AS `lada_cel_backup_prov`,
+ 1 AS `cel_backup_prov`,
+ 1 AS `email_backup_bnmx_prov`,
+ 1 AS `lada_otro_backup_prov`,
+ 1 AS `tel_otro_backup_prov`,
+ 1 AS `email_backup_prov`,
+ 1 AS `lider_prov`,
+ 1 AS `ext_lider_banamex_prov`,
+ 1 AS `lada_cel_lider_prov`,
+ 1 AS `cel_lider_prov`,
+ 1 AS `email_lider_bnmx_prov`,
+ 1 AS `lada_otro_lider_prov`,
+ 1 AS `tel_otro_lider_prov`,
+ 1 AS `email_lider_prov`,
+ 1 AS `p_manager_prov`,
+ 1 AS `ext_p_manager_banamex_prov`,
+ 1 AS `lada_cel_p_manager_prov`,
+ 1 AS `cel_p_manager_prov`,
+ 1 AS `email_p_manager_bnmx_prov`,
+ 1 AS `lada_otro_p_manager_prov`,
+ 1 AS `tel_otro_p_manager_prov`,
+ 1 AS `email_p_manager_prov`,
+ 1 AS `d_manager_prov`,
+ 1 AS `ext_d_manager_banamex_prov`,
+ 1 AS `lada_cel_d_manager_prov`,
+ 1 AS `cel_d_manager_prov`,
+ 1 AS `email_d_manager_bnmx_prov`,
+ 1 AS `lada_otro_d_manager_prov`,
+ 1 AS `tel_otro_d_manager_prov`,
+ 1 AS `email_d_manager_prov`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `detailsl3application`
+--
+
+DROP TABLE IF EXISTS `detailsl3application`;
+/*!50001 DROP VIEW IF EXISTS `detailsl3application`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `detailsl3application` AS SELECT 
+ 1 AS `idApp`,
+ 1 AS `dominio`,
+ 1 AS `L3`,
+ 1 AS `analista_bnmx`,
+ 1 AS `ext_analista_bnmx`,
+ 1 AS `celular_analista_bnmx`,
+ 1 AS `email_analista_bnmx`,
+ 1 AS `lider_bnmx`,
+ 1 AS `ext_lider_bnmx`,
+ 1 AS `celular_lider_bnmx`,
+ 1 AS `email_lider_bnmx`,
+ 1 AS `gerente_bnmx`,
+ 1 AS `ext_gerente_bnmx`,
+ 1 AS `celular_gerente_bnmx`,
+ 1 AS `email_gerente_bnmx`,
+ 1 AS `proveedor`,
+ 1 AS `responsable_prov`,
+ 1 AS `ext_responsable_banamex_prov`,
+ 1 AS `lada_cel_responsable_prov`,
+ 1 AS `cel_responsable_prov`,
+ 1 AS `email_responsable_bnmx_prov`,
+ 1 AS `lada_otro_responsable_prov`,
+ 1 AS `tel_otro_responsable_prov`,
+ 1 AS `email_responsable_prov`,
+ 1 AS `backup_prov`,
+ 1 AS `ext_backup_banamex_prov`,
+ 1 AS `lada_cel_backup_prov`,
+ 1 AS `cel_backup_prov`,
+ 1 AS `email_backup_bnmx_prov`,
+ 1 AS `lada_otro_backup_prov`,
+ 1 AS `tel_otro_backup_prov`,
+ 1 AS `email_backup_prov`,
+ 1 AS `lider_prov`,
+ 1 AS `ext_lider_banamex_prov`,
+ 1 AS `lada_cel_lider_prov`,
+ 1 AS `cel_lider_prov`,
+ 1 AS `email_lider_bnmx_prov`,
+ 1 AS `lada_otro_lider_prov`,
+ 1 AS `tel_otro_lider_prov`,
+ 1 AS `email_lider_prov`,
+ 1 AS `p_manager_prov`,
+ 1 AS `ext_p_manager_banamex_prov`,
+ 1 AS `lada_cel_p_manager_prov`,
+ 1 AS `cel_p_manager_prov`,
+ 1 AS `email_p_manager_bnmx_prov`,
+ 1 AS `lada_otro_p_manager_prov`,
+ 1 AS `tel_otro_p_manager_prov`,
+ 1 AS `email_p_manager_prov`,
+ 1 AS `d_manager_prov`,
+ 1 AS `ext_d_manager_banamex_prov`,
+ 1 AS `lada_cel_d_manager_prov`,
+ 1 AS `cel_d_manager_prov`,
+ 1 AS `email_d_manager_bnmx_prov`,
+ 1 AS `lada_otro_d_manager_prov`,
+ 1 AS `tel_otro_d_manager_prov`,
+ 1 AS `email_d_manager_prov`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Table structure for table `L1APLICACION`
+--
+
+DROP TABLE IF EXISTS `L1APLICACION`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `L1APLICACION` (
+  `idAplicacionCiti` int(11) NOT NULL,
+  `idAnalistaRCiti` varchar(7) NOT NULL,
+  `idLiderRCiti` varchar(7) NOT NULL,
+  `idGerenteRCiti` varchar(7) NOT NULL,
+  `idResponsableRProveedor` int(11) NOT NULL,
+  `idBackupRProveedor` int(11) NOT NULL,
+  `idLiderRProveedor` int(11) NOT NULL,
+  `idProjectManagerRProveedor` int(11) NOT NULL,
+  `idDeliveryManagerRProveedor` int(11) NOT NULL,
+  PRIMARY KEY (`idAplicacionCiti`,`idAnalistaRCiti`,`idLiderRCiti`,`idGerenteRCiti`,`idResponsableRProveedor`,`idBackupRProveedor`,`idLiderRProveedor`,`idProjectManagerRProveedor`,`idDeliveryManagerRProveedor`),
+  KEY `fk_L1Aplicacion_recurso_proveedor1_idx` (`idResponsableRProveedor`),
+  KEY `fk_L1Aplicacion_recurso_citi1_idx` (`idAnalistaRCiti`),
+  KEY `fk_L1Aplicacion_recurso_citi2_idx` (`idLiderRCiti`),
+  KEY `fk_L1Aplicacion_recurso_citi3_idx` (`idGerenteRCiti`),
+  KEY `fk_L1Aplicacion_recurso_proveedor2_idx` (`idBackupRProveedor`),
+  KEY `fk_L1Aplicacion_recurso_proveedor3_idx` (`idLiderRProveedor`),
+  KEY `fk_L1Aplicacion_recurso_proveedor4_idx` (`idProjectManagerRProveedor`),
+  KEY `fk_L1Aplicacion_recurso_proveedor5_idx` (`idDeliveryManagerRProveedor`),
+  CONSTRAINT `fk_L1Aplicacion_aplicacion` FOREIGN KEY (`idAplicacionCiti`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L1Aplicacion_recurso_citi1` FOREIGN KEY (`idAnalistaRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L1Aplicacion_recurso_citi2` FOREIGN KEY (`idLiderRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L1Aplicacion_recurso_citi3` FOREIGN KEY (`idGerenteRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L1Aplicacion_recurso_proveedor1` FOREIGN KEY (`idResponsableRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L1Aplicacion_recurso_proveedor2` FOREIGN KEY (`idBackupRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L1Aplicacion_recurso_proveedor3` FOREIGN KEY (`idLiderRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L1Aplicacion_recurso_proveedor4` FOREIGN KEY (`idProjectManagerRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L1Aplicacion_recurso_proveedor5` FOREIGN KEY (`idDeliveryManagerRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `L1APLICACION`
+--
+
+LOCK TABLES `L1APLICACION` WRITE;
+/*!40000 ALTER TABLE `L1APLICACION` DISABLE KEYS */;
+INSERT INTO `L1APLICACION` (`idAplicacionCiti`, `idAnalistaRCiti`, `idLiderRCiti`, `idGerenteRCiti`, `idResponsableRProveedor`, `idBackupRProveedor`, `idLiderRProveedor`, `idProjectManagerRProveedor`, `idDeliveryManagerRProveedor`) VALUES (1,'GC37337','JP12345','RS23323',1,2,3,4,5),(2,'GC37337','RS23323','JP12345',3,2,1,4,1);
+/*!40000 ALTER TABLE `L1APLICACION` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `L2APLICACION`
+--
+
+DROP TABLE IF EXISTS `L2APLICACION`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `L2APLICACION` (
+  `idAplicacionCiti` int(11) NOT NULL,
+  `idAnalistaRCiti` varchar(7) NOT NULL,
+  `idLiderRCiti` varchar(7) NOT NULL,
+  `idGerenteRCiti` varchar(7) NOT NULL,
+  `idResponsableRProveedor` int(11) NOT NULL,
+  `idBackupRProveedor` int(11) NOT NULL,
+  `idLiderRProveedor` int(11) NOT NULL,
+  `idProjectManagerRProveedor` int(11) NOT NULL,
+  `idDeliveryManagerRProveedor` int(11) NOT NULL,
+  PRIMARY KEY (`idAplicacionCiti`,`idAnalistaRCiti`,`idLiderRCiti`,`idGerenteRCiti`,`idResponsableRProveedor`,`idBackupRProveedor`,`idLiderRProveedor`,`idProjectManagerRProveedor`,`idDeliveryManagerRProveedor`),
+  KEY `fk_L2Aplicacion_recurso_citi1_idx` (`idAnalistaRCiti`),
+  KEY `fk_L2Aplicacion_recurso_citi2_idx` (`idLiderRCiti`),
+  KEY `fk_L2Aplicacion_recurso_citi3_idx` (`idGerenteRCiti`),
+  KEY `fk_L2Aplicacion_recurso_proveedor1_idx` (`idResponsableRProveedor`),
+  KEY `fk_L2Aplicacion_recurso_proveedor2_idx` (`idBackupRProveedor`),
+  KEY `fk_L2Aplicacion_recurso_proveedor3_idx` (`idLiderRProveedor`),
+  KEY `fk_L2Aplicacion_recurso_proveedor4_idx` (`idProjectManagerRProveedor`),
+  KEY `fk_L2Aplicacion_recurso_proveedor5_idx` (`idDeliveryManagerRProveedor`),
+  CONSTRAINT `fk_L2Aplicacion_aplicacion1` FOREIGN KEY (`idAplicacionCiti`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L2Aplicacion_recurso_citi1` FOREIGN KEY (`idAnalistaRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L2Aplicacion_recurso_citi2` FOREIGN KEY (`idLiderRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L2Aplicacion_recurso_citi3` FOREIGN KEY (`idGerenteRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L2Aplicacion_recurso_proveedor1` FOREIGN KEY (`idResponsableRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L2Aplicacion_recurso_proveedor2` FOREIGN KEY (`idBackupRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L2Aplicacion_recurso_proveedor3` FOREIGN KEY (`idLiderRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L2Aplicacion_recurso_proveedor4` FOREIGN KEY (`idProjectManagerRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L2Aplicacion_recurso_proveedor5` FOREIGN KEY (`idDeliveryManagerRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `L2APLICACION`
+--
+
+LOCK TABLES `L2APLICACION` WRITE;
+/*!40000 ALTER TABLE `L2APLICACION` DISABLE KEYS */;
+/*!40000 ALTER TABLE `L2APLICACION` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `L3APLICACION`
+--
+
+DROP TABLE IF EXISTS `L3APLICACION`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `L3APLICACION` (
+  `idAplicacionCiti` int(11) NOT NULL,
+  `idAnalistaRCiti` varchar(7) NOT NULL,
+  `idLiderRCiti` varchar(7) NOT NULL,
+  `idGerenteRCiti` varchar(7) NOT NULL,
+  `idResponsableRProveedor` int(11) NOT NULL,
+  `idBackupRProveedor` int(11) NOT NULL,
+  `idLiderRProveedor` int(11) NOT NULL,
+  `idProjectManagerRProveedor` int(11) NOT NULL,
+  `idDeliveryManagerRProveedor` int(11) NOT NULL,
+  PRIMARY KEY (`idAplicacionCiti`,`idAnalistaRCiti`,`idLiderRCiti`,`idGerenteRCiti`,`idResponsableRProveedor`,`idBackupRProveedor`,`idLiderRProveedor`,`idProjectManagerRProveedor`,`idDeliveryManagerRProveedor`),
+  KEY `fk_L3Aplicacion_recurso_citi1_idx` (`idAnalistaRCiti`),
+  KEY `fk_L3Aplicacion_recurso_citi2_idx` (`idLiderRCiti`),
+  KEY `fk_L3Aplicacion_recurso_citi3_idx` (`idGerenteRCiti`),
+  KEY `fk_L3Aplicacion_recurso_proveedor1_idx` (`idResponsableRProveedor`),
+  KEY `fk_L3Aplicacion_recurso_proveedor2_idx` (`idBackupRProveedor`),
+  KEY `fk_L3Aplicacion_recurso_proveedor3_idx` (`idLiderRProveedor`),
+  KEY `fk_L3Aplicacion_recurso_proveedor4_idx` (`idProjectManagerRProveedor`),
+  KEY `fk_L3Aplicacion_recurso_proveedor5_idx` (`idDeliveryManagerRProveedor`),
+  CONSTRAINT `fk_L3Aplicacion_aplicacion1` FOREIGN KEY (`idAplicacionCiti`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L3Aplicacion_recurso_citi1` FOREIGN KEY (`idAnalistaRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L3Aplicacion_recurso_citi2` FOREIGN KEY (`idLiderRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L3Aplicacion_recurso_citi3` FOREIGN KEY (`idGerenteRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L3Aplicacion_recurso_proveedor1` FOREIGN KEY (`idResponsableRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L3Aplicacion_recurso_proveedor2` FOREIGN KEY (`idBackupRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L3Aplicacion_recurso_proveedor3` FOREIGN KEY (`idLiderRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L3Aplicacion_recurso_proveedor4` FOREIGN KEY (`idProjectManagerRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_L3Aplicacion_recurso_proveedor5` FOREIGN KEY (`idDeliveryManagerRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `L3APLICACION`
+--
+
+LOCK TABLES `L3APLICACION` WRITE;
+/*!40000 ALTER TABLE `L3APLICACION` DISABLE KEYS */;
+/*!40000 ALTER TABLE `L3APLICACION` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -317,19 +641,19 @@ DROP TABLE IF EXISTS `RECURSO_CITI`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `RECURSO_CITI` (
   `Soe_Id` varchar(7) NOT NULL,
-  `Apellido_Paterno` varchar(45) DEFAULT NULL,
+  `Apellido_Paterno` varchar(45) NOT NULL,
   `Apellido_Materno` varchar(45) DEFAULT NULL,
-  `Primer_Nombre` varchar(45) DEFAULT NULL,
+  `Primer_Nombre` varchar(45) NOT NULL,
   `Segundo_Nombre` varchar(45) DEFAULT '',
   `Id_Dominio` int(11) DEFAULT NULL,
   `Id_Puesto` int(11) DEFAULT NULL,
   `Id_Ciudad` int(11) DEFAULT NULL,
-  `Ext` varchar(10) DEFAULT NULL,
-  `Movil` varchar(10) DEFAULT NULL,
-  `Telefono` varchar(10) DEFAULT NULL,
-  `Email` varchar(60) DEFAULT NULL,
+  `Ext` varchar(10) DEFAULT '',
+  `Movil` varchar(10) DEFAULT '',
+  `Telefono` varchar(10) DEFAULT '',
+  `Email` varchar(60) DEFAULT '',
   `Id_ReportaA` varchar(7) DEFAULT NULL,
-  `Comentarios` varchar(2000) DEFAULT NULL,
+  `Comentarios` varchar(2000) DEFAULT '',
   PRIMARY KEY (`Soe_Id`),
   KEY `fk_CatDominio_RecursoCiti_Dominio_idx` (`Id_Dominio`),
   KEY `fk_CatpuestoCiti_IdPuesto_idx` (`Id_Puesto`),
@@ -348,7 +672,7 @@ CREATE TABLE `RECURSO_CITI` (
 
 LOCK TABLES `RECURSO_CITI` WRITE;
 /*!40000 ALTER TABLE `RECURSO_CITI` DISABLE KEYS */;
-INSERT INTO `RECURSO_CITI` VALUES ('GC37337','Flores','Rodriguez','Josefina','',6,5,5,'12345','339876543','1212345678','josefina.flores@citibanamex.com',NULL,'Usa mucho el pacman'),('JP12345','Perez','Perez','Juan','',1,1,5,'23456','5586978566',NULL,'juan.perezperez@citi.com','JP12345','Es Analista.'),('RS23323','Arrollo','Luna','Alberto','',2,2,5,'12234','5520708798',NULL,'rodolfo.sanvicenteatilano@citi.com','RS23323','Se reporta asi mismo.');
+INSERT INTO `RECURSO_CITI` (`Soe_Id`, `Apellido_Paterno`, `Apellido_Materno`, `Primer_Nombre`, `Segundo_Nombre`, `Id_Dominio`, `Id_Puesto`, `Id_Ciudad`, `Ext`, `Movil`, `Telefono`, `Email`, `Id_ReportaA`, `Comentarios`) VALUES ('GC37337','Flores','Rodriguez','Josefina','',6,5,5,'12345','339876543','1212345678','josefina.flores@citibanamex.com',NULL,'Usa mucho el pacman'),('JP12345','Perez','Perez','Juan','',1,1,5,'23456','5586978566',NULL,'juan.perezperez@citi.com','JP12345','Es Analista.'),('RS23323','Arrollo','Luna','Alberto','',2,2,5,'12234','5520708798',NULL,'rodolfo.sanvicenteatilano@citi.com','RS23323','Se reporta asi mismo.');
 /*!40000 ALTER TABLE `RECURSO_CITI` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -363,23 +687,28 @@ CREATE TABLE `RECURSO_PROVEEDOR` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Id_Proveedor` int(11) NOT NULL,
   `Clave_Empleado` int(11) NOT NULL,
-  `Apellido_Paterno` varchar(45) DEFAULT NULL,
-  `Apellido_Materno` varchar(45) DEFAULT NULL,
-  `Primer_Nombre` varchar(45) DEFAULT NULL,
+  `Apellido_Paterno` varchar(45) NOT NULL,
+  `Apellido_Materno` varchar(45) DEFAULT '',
+  `Primer_Nombre` varchar(45) NOT NULL,
   `Segundo_Nombre` varchar(45) DEFAULT '',
-  `Id_Ciudad` int(11) DEFAULT NULL,
-  `Movil_Personal` varchar(10) DEFAULT NULL,
-  `Telefono_Particular` varchar(10) DEFAULT NULL,
-  `Email_Personal` varchar(60) DEFAULT NULL,
+  `LD_celular` varchar(3) DEFAULT '',
+  `Movil_Personal` varchar(8) DEFAULT '',
+  `LD_particular` varchar(3) DEFAULT '',
+  `Telefono_Particular` varchar(8) DEFAULT '',
+  `Email_Personal` varchar(60) DEFAULT '',
   `Id_Puesto` int(11) DEFAULT NULL,
+  `Id_Ciudad` int(11) DEFAULT NULL,
+  `LD_Proveedor` varchar(3) DEFAULT '',
+  `Telefono_Proveedor` varchar(8) DEFAULT '',
+  `Ext_Proveedor` varchar(10) DEFAULT '',
+  `Email_Proveedor` varchar(60) DEFAULT '',
+  `Soe_Id` varchar(7) DEFAULT '',
+  `LD_Citi` varchar(3) DEFAULT '',
+  `Telefono_citi` varchar(10) DEFAULT '',
+  `Ext_Citi` varchar(10) DEFAULT '',
+  `Email_Citi` varchar(60) DEFAULT '',
   `Id_Reporta_A` int(11) DEFAULT NULL,
-  `Telefono_Proveedor` varchar(10) DEFAULT NULL,
-  `Ext_Proveedor` varchar(10) DEFAULT NULL,
-  `Email_Proveedor` varchar(60) DEFAULT NULL,
-  `Soe_Id` varchar(7) DEFAULT NULL,
-  `Ext_Citi` varchar(10) DEFAULT NULL,
-  `Email_Citi` varchar(60) DEFAULT NULL,
-  `Comentarios` varchar(2000) DEFAULT NULL,
+  `Comentarios` varchar(2000) DEFAULT '',
   PRIMARY KEY (`Id`),
   UNIQUE KEY `Clave_Empleado_UNIQUE` (`Clave_Empleado`),
   KEY `fk_CAT_PROVEEDOR_RECURSOS_PROVEEDOR_idx` (`Id_Proveedor`),
@@ -397,7 +726,7 @@ CREATE TABLE `RECURSO_PROVEEDOR` (
 
 LOCK TABLES `RECURSO_PROVEEDOR` WRITE;
 /*!40000 ALTER TABLE `RECURSO_PROVEEDOR` DISABLE KEYS */;
-INSERT INTO `RECURSO_PROVEEDOR` VALUES (1,1,10004057,'Cauich','Lemus','Gerardo','',5,'5512345678',NULL,'gcauich@anzen.com.mx',3,10003328,'22334455','2323','gcauich@anzen.com.mx','GC37337',NULL,'gerardo.cauichlemus@citibanamex.com','Usa mucho el pacman en sus comentarios. :v'),(2,1,10003328,'San Vicente','Atilano','Rodolfo','',5,'5520708798',NULL,'rodolof@gmail.com',1,10003328,'22334455','2323','rsanvicente@anzen.com.mx','RS23233','1111','rodolfo.sanvicenteatilano@citi.com','Sin comentarios.'),(3,1,10004934,'Junco','Lozano','Jose','Luis',5,'5511446688',NULL,'junco@gmail.com',3,10003328,'22334455','2323','jjunco@anzen.com',NULL,NULL,NULL,'sin comentarios.'),(4,1,10004623,'Ramirez','Morales','David ','Jesus',5,'5561327653',NULL,'david@gmail.com',2,10003328,'22334455','2323','dramirez@anzen.com',NULL,NULL,NULL,':v'),(5,1,10004542,'Valles','Garcia','Dionisio','Javier',5,'4929051270','3341606007','dionisio@gmail.com',4,10003328,'22334455','2324','dvalles@anzen.com.mx','DV06619','','dionisio.javier.vallesgarcia@citibanamex.com',NULL),(6,1,30000012,'Castelan','Silva','Jose','Alfredo',5,NULL,NULL,'jose@gmail.com',9,10003328,'22334455','2322','jcastelan@anzen.com.mx',NULL,NULL,NULL,NULL),(7,1,10003364,'Claudio','Ramirez','Octavio','',5,'5561234995','','octavio@hotmail.com',11,10003328,'22334455','1122','oclaudio@anzen.com.mx','OC37210',NULL,'octavio.clauidoramirez@citi.com',NULL),(8,1,10003638,'Coronel ','Cruz','Miguel ','Angel ',5,'5528613618',NULL,'miguelyahoo.com',10,10003328,'22334455','1234','mcoronel@anzen.com.mx','MC67168',NULL,'miguel.angel.coronelcruz@citibanamex.com',NULL),(9,1,30000007,'Cruz ','Hernandez','Jesus','',5,NULL,NULL,'jesusqgmail.com',10,10003328,'22334455',NULL,'jesuscruz@anzen.com.mx','JC35998',NULL,'jesus1.cruzhernandez@citi.com',NULL),(10,1,10004545,'Cruz ','Ramirez','Isai ','',5,NULL,NULL,'isai@hotmail.com',10,10003328,'22334455',NULL,'icruz@anzen.com.mx','IC14344',NULL,'isaia.cruzramirez@citi.com',NULL),(11,1,10003687,'De la Rosa ','Bonilla ','Mayetzi ','',5,'5523346566','5522260575','mayetzi@outlook.com',11,10003328,'22334455',NULL,'mdelarosa@anzen.com.mx','MD97674',NULL,'mayetzi.delarosabonilla@banamex.com',NULL),(12,1,10003484,'Dominguez','Garcia','Victor','Manuel',5,'5518299093',NULL,'victor@gmail.com',11,10003328,'22334455',NULL,'vdominguez@anzen.com.mx','VD96207',NULL,'victor.manuel.dominguezgarcia@citi.com',NULL),(13,1,10003629,'Flores','Zamora','Guillermo','',7,NULL,'3341606000','g.zamora@gmail.com',10,10003328,'22334455',NULL,'guillermoflores@anzen.com.mx','GF58868',NULL,'guillermo.floreszamora@citibanamex.com',NULL),(14,1,10003397,'Franco','Tellez','Michel','Geovanni',5,NULL,NULL,'michel@yahoo.com.mx',13,10003355,'22334455',NULL,'mfranco@anzen.com.mx','MF37396',NULL,'michel.giovanni.francotellez@citibanamex.com',NULL),(15,1,10003919,'Jasso','Zaragoza','Adriana','Victoria',5,NULL,NULL,'adriana@gmail.com',10,10003354,'22334455',NULL,'ajasso@anzen.com.mx',NULL,NULL,NULL,NULL),(16,1,10003453,'Garduño ','Cruz','Erika','Viridiana',5,'5538562953','5522260563','erika@gmail.com',14,10003354,'22334455',NULL,'egarduno@anzen.com.mx','EG37380',NULL,'erika.viridiana.garduñocruz@banamex.com',NULL),(17,4,10003358,'Srinivasan','Perez','Vadivel','',5,'9924234234',NULL,'vadi@gmail.com',10,11111111,'88888888',NULL,'srinivasan.vadivel@wipro.com',NULL,NULL,NULL,NULL),(18,4,12930405,'Algo','Algo','Param','',5,'9923423133',NULL,'param@gmail.com',3,11111111,'88888888',NULL,'param@wipro.com',NULL,NULL,NULL,NULL),(19,4,21232134,'apellido','segundoAp','Kupurash','',5,'9923423423',NULL,'kupu@gmail.com',9,11111111,'88888888',NULL,'kupurash@wipro.com',NULL,NULL,NULL,NULL),(20,4,11111111,'qwerty','qwertyu','Satish','',5,'9923652443',NULL,'satish@gmail.com',4,11111111,'88888888',NULL,'satish@wipro.com',NULL,NULL,NULL,NULL),(21,4,23476873,'asdfg','asdfgh','Atul','',5,'9923651423',NULL,'atul@gmail.com',15,11111111,'88888888',NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `RECURSO_PROVEEDOR` (`Id`, `Id_Proveedor`, `Clave_Empleado`, `Apellido_Paterno`, `Apellido_Materno`, `Primer_Nombre`, `Segundo_Nombre`, `LD_celular`, `Movil_Personal`, `LD_particular`, `Telefono_Particular`, `Email_Personal`, `Id_Puesto`, `Id_Ciudad`, `LD_Proveedor`, `Telefono_Proveedor`, `Ext_Proveedor`, `Email_Proveedor`, `Soe_Id`, `LD_Citi`, `Telefono_citi`, `Ext_Citi`, `Email_Citi`, `Id_Reporta_A`, `Comentarios`) VALUES (1,1,10004057,'Cauich','Lemus','Gerardo','','55','12345678','','','gcauich@anzen.com.mx',3,5,'','22334455','2323','gcauich@anzen.com.mx','GC37337','','','','gerardo.cauichlemus@citibanamex.com',10003328,'Usa mucho el pacman en sus comentarios. :v'),(2,1,10003328,'San Vicente','Atilano','Rodolfo','','55','20708798','','','rodolof@gmail.com',1,5,'','22334455','2323','rsanvicente@anzen.com.mx','RS23233','','','1111','rodolfo.sanvicenteatilano@citi.com',10003328,'Sin comentarios.'),(3,1,10004934,'Junco','Lozano','Jose','Luis','55','11446688','','','junco@gmail.com',3,5,'','22334455','2323','jjunco@anzen.com','','','','','',10003328,'sin comentarios.'),(4,1,10004623,'Ramirez','Morales','David ','Jesus','55','61327653','','','david@gmail.com',2,5,'','22334455','2323','dramirez@anzen.com','','','','','',10003328,':v'),(5,1,10004542,'Valles','Garcia','Dionisio','Javier','49','29051270','33','41606007','dionisio@gmail.com',4,5,'','22334455','2324','dvalles@anzen.com.mx','DV06619','','','','dionisio.javier.vallesgarcia@citibanamex.com',10003328,''),(6,1,30000012,'Castelan','Silva','Jose','Alfredo','','','','','jose@gmail.com',9,5,'','22334455','2322','jcastelan@anzen.com.mx','','','','','',10003328,' '),(7,1,10003364,'Claudio','Ramirez','Octavio','','55','61234995','','','octavio@hotmail.com',11,5,'','22334455','1122','oclaudio@anzen.com.mx','OC37210','','','','octavio.clauidoramirez@citi.com',10003328,' '),(8,1,10003638,'Coronel ','Cruz','Miguel ','Angel ','55','28613618','','','miguelyahoo.com',10,5,'','22334455','1234','mcoronel@anzen.com.mx','MC67168','','','','miguel.angel.coronelcruz@citibanamex.com',10003328,' '),(9,1,30000007,'Cruz ','Hernandez','Jesus','','','','','','jesusqgmail.com',10,5,'','22334455','','jesuscruz@anzen.com.mx','JC35998','',' ','','jesus1.cruzhernandez@citi.com',10003328,' '),(10,1,10004545,'Cruz ','Ramirez','Isai ','','','','','','isai@hotmail.com',10,5,'','22334455','','icruz@anzen.com.mx','IC14344','',' ','','isaia.cruzramirez@citi.com',10003328,' '),(11,1,10003687,'De la Rosa ','Bonilla ','Mayetzi ','','55','23346566','23','22260575','mayetzi@outlook.com',11,5,'','22334455','','mdelarosa@anzen.com.mx','MD97674','',' ','','mayetzi.delarosabonilla@banamex.com',10003328,'  '),(12,1,10003484,'Dominguez','Garcia','Victor','Manuel','55','18299093','','','victor@gmail.com',11,5,'','22334455','','vdominguez@anzen.com.mx','VD96207','',' ','','victor.manuel.dominguezgarcia@citi.com',10003328,' '),(13,1,10003629,'Flores','Zamora','Guillermo','','','','33','41606000','g.zamora@gmail.com',10,7,'','22334455','','guillermoflores@anzen.com.mx','GF58868','',' ','','guillermo.floreszamora@citibanamex.com',10003328,' '),(14,1,10003397,'Franco','Tellez','Michel','Geovanni','','','','','michel@yahoo.com.mx',13,5,'','22334455','','mfranco@anzen.com.mx','MF37396','','',' ','michel.giovanni.francotellez@citibanamex.com',10003355,' '),(15,1,10003919,'Jasso','Zaragoza','Adriana','Victoria','','','','','adriana@gmail.com',10,5,'','22334455','','ajasso@anzen.com.mx','','','',' ','',10003354,' '),(16,1,10003453,'Garduño ','Cruz','Erika','Viridiana','55','38562953','22','22260563','erika@gmail.com',14,5,'','22334455','','egarduno@anzen.com.mx','EG37380','','','','erika.viridiana.garduñocruz@banamex.com',10003354,'  '),(17,4,10003358,'Srinivasan','Perez','Vadivel','','99','24234234','','','vadi@gmail.com',10,5,'','88888888','','srinivasan.vadivel@wipro.com','','','','','',11111111,' '),(18,4,12930405,'Algo','Algo','Param','','99','23423133','','','param@gmail.com',3,5,'','88888888','','param@wipro.com','','','','','',11111111,' '),(19,4,21232134,'apellido','segundoAp','Kupurash','','99','23423423','','','kupu@gmail.com',9,5,'','88888888','','kupurash@wipro.com','','','','','',11111111,' '),(20,4,11111111,'qwerty','qwertyu','Satish','','99','23652443','','','satish@gmail.com',4,5,'','88888888','','satish@wipro.com','','','','','',11111111,' '),(21,4,23476873,'asdfg','asdfgh','Atul','','99','23651423','','','atul@gmail.com',15,5,'','88888888','','','','','','','',11111111,' ');
 /*!40000 ALTER TABLE `RECURSO_PROVEEDOR` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -424,7 +753,7 @@ CREATE TABLE `RECURSOCITI_APLICACION` (
 
 LOCK TABLES `RECURSOCITI_APLICACION` WRITE;
 /*!40000 ALTER TABLE `RECURSOCITI_APLICACION` DISABLE KEYS */;
-INSERT INTO `RECURSOCITI_APLICACION` VALUES ('GC37337',1),('JP12345',1),('RS23323',1),('GC37337',2),('RS23323',3);
+INSERT INTO `RECURSOCITI_APLICACION` (`idRecursoCiti`, `idAplicacion`) VALUES ('GC37337',1),('JP12345',1),('RS23323',1),('GC37337',2),('RS23323',3);
 /*!40000 ALTER TABLE `RECURSOCITI_APLICACION` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -451,7 +780,7 @@ CREATE TABLE `RECURSOPROVEEDOR_APLICACION` (
 
 LOCK TABLES `RECURSOPROVEEDOR_APLICACION` WRITE;
 /*!40000 ALTER TABLE `RECURSOPROVEEDOR_APLICACION` DISABLE KEYS */;
-INSERT INTO `RECURSOPROVEEDOR_APLICACION` VALUES (1,1),(2,1),(3,1),(4,1),(2,2),(3,2),(4,2);
+INSERT INTO `RECURSOPROVEEDOR_APLICACION` (`idRecursoProveedor`, `idAplicacion`) VALUES (1,1),(2,1),(3,1),(4,1),(2,2),(3,2),(4,2);
 /*!40000 ALTER TABLE `RECURSOPROVEEDOR_APLICACION` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -463,20 +792,22 @@ DROP TABLE IF EXISTS `USUARIO`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `USUARIO` (
+  `Id_Usuarios` int(11) NOT NULL AUTO_INCREMENT,
   `Email` varchar(60) NOT NULL,
-  `Primer_Nombre` varchar(45) DEFAULT NULL,
+  `Primer_Nombre` varchar(45) NOT NULL,
   `Segundo_Nombre` varchar(45) DEFAULT '',
-  `Apellido_Paterno` varchar(45) DEFAULT NULL,
-  `ApellidoMaterno` varchar(45) DEFAULT NULL,
-  `Clave` varchar(45) DEFAULT NULL,
+  `Apellido_Paterno` varchar(45) NOT NULL,
+  `ApellidoMaterno` varchar(45) DEFAULT '',
+  `Clave` varchar(45) NOT NULL,
   `Id_Perfil` int(11) DEFAULT NULL,
   `Activo` tinyint(1) DEFAULT NULL,
-  `Dominios` varchar(2000) DEFAULT NULL,
-  `Proveedores` varchar(2000) DEFAULT NULL,
-  PRIMARY KEY (`Email`),
+  `Dominios` varchar(50) DEFAULT '',
+  `Proveedores` varchar(50) DEFAULT '',
+  PRIMARY KEY (`Id_Usuarios`),
+  UNIQUE KEY `Email_UNIQUE` (`Email`),
   KEY `fk_CAT_PERFIL_USUARIO_idx` (`Id_Perfil`),
   CONSTRAINT `fk_CAT_PERFIL_USUARIO` FOREIGN KEY (`Id_Perfil`) REFERENCES `CAT_PERFIL` (`Id_Perfil`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -485,14 +816,18 @@ CREATE TABLE `USUARIO` (
 
 LOCK TABLES `USUARIO` WRITE;
 /*!40000 ALTER TABLE `USUARIO` DISABLE KEYS */;
-INSERT INTO `USUARIO` VALUES ('kdk@ksk.cpom','Hector','','Lozoya','Perez','1234',1,1,'Canales Digitales','Banamex'),('qwerty1@anzen.com','Julio','','Contreras','Carrillo','1234',2,1,'Canales Digitales','Anzen'),('qwerty2@anzen.com','Sergio','','Santana','Martinez','1234',3,1,'Canales Digitales','Anzen'),('qwerty3@wipro.com','Isaac','','Vargas','Gonzales','1234',2,1,'Canales Digitales','Wipro'),('qwerty4@wipro.com','Ammulu','','Addhanki','Addhanki','1234',2,1,'Canales Digitales','Wipro'),('qwerty@gmail.com','Deibid','','Ramirez','Morales','1234',1,1,'Canales Digitales','Anzen');
+INSERT INTO `USUARIO` (`Id_Usuarios`, `Email`, `Primer_Nombre`, `Segundo_Nombre`, `Apellido_Paterno`, `ApellidoMaterno`, `Clave`, `Id_Perfil`, `Activo`, `Dominios`, `Proveedores`) VALUES (1,'kdk@ksk.cpom','Hector','','Lozoya','Perez','1234',1,1,'Canales Digitales','Banamex'),(2,'qwerty@gmail.com','Deibid','','Ramirez','Morales','1234',1,1,'Canales Digitales','Anzen'),(3,'qwerty1@anzen.com','Julio','','Contreras','Carrillo','1234',2,1,'Canales Digitales','Anzen'),(4,'qwerty2@anzen.com','Sergio','','Santana','Martinez','1234',3,1,'Canales Digitales','Anzen'),(5,'qwerty3@wipro.com','Isaac','','Vargas','Gonzales','1234',2,1,'Canales Digitales','Wipro'),(6,'qwerty4@wipro.com','Ammulu','','Addhanki','Addhanki','1234',2,1,'Canales Digitales','Wipro'),(9,'ptovar@anzen.com.mx','Pablo','Pablo','Tovar','Castrejón','1700000012',3,1,'5','1');
 /*!40000 ALTER TABLE `USUARIO` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Dumping routines for database 'nearshore'
+-- Dumping events for database 'nearshore2'
 --
-/*!50003 DROP PROCEDURE IF EXISTS `paginationUsersAccessToApplication` */;
+
+--
+-- Dumping routines for database 'nearshore2'
+--
+/*!50003 DROP PROCEDURE IF EXISTS `paginationAllEmployesDomain` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -501,8 +836,8 @@ UNLOCK TABLES;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationUsersAccessToApplication`(IN StartIndex INT,IN Count INT)
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationAllEmployesDomain`(IN StartIndex INT,IN Count INT)
 BEGIN
 DECLARE LowerBound INT;
 DECLARE UpperBound INT;
@@ -510,35 +845,46 @@ DECLARE rownum INT;
 SET LowerBound = ((StartIndex - 1) * Count) + 1;
 SET UpperBound = ((StartIndex - 1) * Count) + Count;
 
-SELECT (select ceiling(count(*)/Count) from USUARIO u join CAT_PERFIL p on u.Id_Perfil=p.Id_Perfil) as pages,
-        Email, 
-        concat(Primer_Nombre,' ',Segundo_Nombre,' ',Apellido_Paterno,' ',ApellidoMaterno) as nombre,
-        Clave,
-        Activo,
-        Dominios,
-        Proveedores,
-		Id_Perfil,
-        Descripcion
-  from (SELECT *, @rownum := @rownum + 1 AS rank 
-		from (SELECT u.Email, 
-                    u.Primer_Nombre, 
-                    u.Segundo_Nombre,
-					u.Apellido_Paterno, 
-                    u.ApellidoMaterno, 
-                    u.Clave,
-                    u.Activo,
-                    u.Dominios,
-                    u.Proveedores,
-					p.Id_Perfil,
-                    p.Descripcion FROM USUARIO u join CAT_PERFIL p on u.Id_Perfil=p.Id_Perfil
+SELECT  (SELECT ceiling(count(*)/Count) FROM RECURSO_CITI RC INNER JOIN CAT_PUESTOCITI PC INNER JOIN CAT_DOMINIO D WHERE RC.Id_Puesto = PC.Id AND D.Id = RC.Id_Dominio) as pages,
+        Soe_Id,
+		concat( Primer_Nombre,' ', Segundo_Nombre, ' ', Apellido_Paterno, ' ', Apellido_Materno) as nombre,
+		puesto,
+        dominio,
+        Id_Dominio
+  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
+		FROM (SELECT 
+				RC.Soe_Id,
+                RC.Primer_Nombre, 
+                RC.Segundo_Nombre,
+                RC.Apellido_Paterno,
+                RC.Apellido_Materno,
+                PC.Descripcion as puesto,
+                D.Descripcion as dominio,
+                RC.Id_Dominio
+				FROM RECURSO_CITI RC INNER JOIN 
+                CAT_PUESTOCITI PC INNER JOIN 
+                CAT_DOMINIO D 
+                WHERE RC.Id_Puesto = PC.Id AND 
+                D.Id = RC.Id_Dominio
 				) d, (SELECT @rownum  := 0) r ) m
-WHERE rank >= LowerBound and rank <= UpperBound;
+WHERE rank >= LowerBound AND rank <= UpperBound;
 
-END //
+END ;;
 DELIMITER ;
-
-
-DELIMITER //
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `paginationAplicationPerDomain` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationAplicationPerDomain`(IN StartIndex INT,IN Count INT)
 BEGIN
 DECLARE LowerBound INT;
@@ -547,7 +893,8 @@ DECLARE rownum INT;
 SET LowerBound = ((StartIndex - 1) * Count) + 1;
 SET UpperBound = ((StartIndex - 1) * Count) + Count;
 
-SELECT (select ceiling(count(*)/Count) FROM APLICACION aplic INNER JOIN CAT_DOMINIO D WHERE aplic.Id_Dominio = D.Id) as pages,
+SELECT  (select count(*) FROM APLICACION aplic INNER JOIN CAT_DOMINIO D WHERE aplic.Id_Dominio = D.Id) as total,
+		(select ceiling(count(*)/Count) FROM APLICACION aplic INNER JOIN CAT_DOMINIO D WHERE aplic.Id_Dominio = D.Id) as pages,
         CSI_ID,
         Descripcion_Corta,
         dominio
@@ -564,12 +911,22 @@ SELECT (select ceiling(count(*)/Count) FROM APLICACION aplic INNER JOIN CAT_DOMI
 				) d, (SELECT @rownum  := 0) r ) m
 WHERE rank >= LowerBound and rank <= UpperBound;
 
-END //
-
+END ;;
 DELIMITER ;
-
-DELIMITER //
-
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `paginationAplicationPerIdDomain` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationAplicationPerIdDomain`(IN StartIndex INT,IN Count INT, IN _Domain INT)
 BEGIN
 DECLARE LowerBound INT;
@@ -578,7 +935,8 @@ DECLARE rownum INT;
 SET LowerBound = ((StartIndex - 1) * Count) + 1;
 SET UpperBound = ((StartIndex - 1) * Count) + Count;
 
-SELECT (SELECT ceiling(count(*)/Count) FROM APLICACION aplic INNER JOIN CAT_DOMINIO D WHERE aplic.Id_Dominio = D.Id AND aplic.Id_Dominio = _Domain) as pages,
+SELECT  (SELECT count(*) FROM APLICACION aplic INNER JOIN CAT_DOMINIO D WHERE aplic.Id_Dominio = D.Id AND aplic.Id_Dominio = _Domain) as total,
+		(SELECT ceiling(count(*)/Count) FROM APLICACION aplic INNER JOIN CAT_DOMINIO D WHERE aplic.Id_Dominio = D.Id AND aplic.Id_Dominio = _Domain) as pages,
         CSI_ID,
         Descripcion_Corta
   FROM (SELECT *, @rownum := @rownum + 1 AS rank 
@@ -594,13 +952,516 @@ SELECT (SELECT ceiling(count(*)/Count) FROM APLICACION aplic INNER JOIN CAT_DOMI
 				) d, (SELECT @rownum  := 0) r ) m
 WHERE rank >= LowerBound AND rank <= UpperBound;
 
-END
-
+END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `paginationAppsByProviderEmploye` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationAppsByProviderEmploye`(IN StartIndex INT,IN Count INT, IN _idEmployee INT)
+BEGIN
+DECLARE LowerBound INT;
+DECLARE UpperBound INT;
+DECLARE rownum INT;
+SET LowerBound = ((StartIndex - 1) * Count) + 1;
+SET UpperBound = ((StartIndex - 1) * Count) + Count;
+
+SELECT 	(SELECT count(*) FROM 
+                APLICACION A 
+				INNER JOIN APLICACION_PROVEEDOR AP
+				INNER JOIN RECURSOPROVEEDOR_APLICACION RPA
+				INNER JOIN RECURSO_PROVEEDOR RP
+				WHERE AP.Csi_Id = A.Csi_Id
+				AND RPA.idAplicacion = AP.Csi_Id
+				AND RP.Id = RPA.idRecursoProveedor 
+				AND RP.Id = _idEmployee) as total,
+		(SELECT ceiling(count(*)/Count) FROM 
+                APLICACION A 
+				INNER JOIN APLICACION_PROVEEDOR AP
+				INNER JOIN RECURSOPROVEEDOR_APLICACION RPA
+				INNER JOIN RECURSO_PROVEEDOR RP
+				WHERE AP.Csi_Id = A.Csi_Id
+				AND RPA.idAplicacion = AP.Csi_Id
+				AND RP.Id = RPA.idRecursoProveedor 
+				AND RP.Id = _idEmployee) as pages,
+			idAplicacion,
+			Descripcion_Corta
+  from (SELECT *, @rownum := @rownum + 1 AS rank 
+		from (SELECT 
+				A.Csi_Id AS idAplicacion,
+				A.Descripcion_Corta 
+				FROM 
+                APLICACION A 
+				INNER JOIN APLICACION_PROVEEDOR AP
+				INNER JOIN RECURSOPROVEEDOR_APLICACION RPA
+				INNER JOIN RECURSO_PROVEEDOR RP
+				WHERE AP.Csi_Id = A.Csi_Id
+				AND RPA.idAplicacion = AP.Csi_Id
+				AND RP.Id = RPA.idRecursoProveedor 
+				AND RP.Id = _idEmployee
+				) d, (SELECT @rownum  := 0) r ) m
+WHERE rank >= LowerBound and rank <= UpperBound;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `paginationAppsCitiEmploye` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationAppsCitiEmploye`(IN StartIndex INT,IN Count INT, IN _soeId varchar(45))
+BEGIN
+DECLARE LowerBound INT;
+DECLARE UpperBound INT;
+DECLARE rownum INT;
+SET LowerBound = ((StartIndex - 1) * Count) + 1;
+SET UpperBound = ((StartIndex - 1) * Count) + Count;
+
+SELECT 	(SELECT count(*) FROM APLICACION A INNER JOIN RECURSOCITI_APLICACION RCA INNER JOIN RECURSO_CITI RC WHERE A.Csi_Id = RCA.idAplicacion AND RCA.idRecursoCiti = RC.Soe_Id AND RCA.idRecursoCiti = _soeId) as total,
+		(SELECT ceiling(count(*)/Count) FROM APLICACION A INNER JOIN RECURSOCITI_APLICACION RCA INNER JOIN RECURSO_CITI RC WHERE A.Csi_Id = RCA.idAplicacion AND RCA.idRecursoCiti = RC.Soe_Id AND RCA.idRecursoCiti = _soeId) as pages,
+			idAplicacion, 
+			descripcion 
+  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
+		FROM (SELECT 
+				A.Csi_Id AS idAplicacion, 
+				A.Descripcion_Corta AS descripcion 
+				FROM APLICACION A INNER JOIN 
+				RECURSOCITI_APLICACION RCA INNER JOIN 
+				RECURSO_CITI RC 
+				WHERE 
+				A.Csi_Id = RCA.idAplicacion AND 
+				RCA.idRecursoCiti = RC.Soe_Id AND 
+				RCA.idRecursoCiti = _soeId
+				) d, (SELECT @rownum  := 0) r ) m
+WHERE rank >= LowerBound AND rank <= UpperBound;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `paginationCitiEmployes` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationCitiEmployes`(IN StartIndex INT,IN Count INT)
+BEGIN
+DECLARE LowerBound INT;
+DECLARE UpperBound INT;
+DECLARE rownum INT;
+SET LowerBound = ((StartIndex - 1) * Count) + 1;
+SET UpperBound = ((StartIndex - 1) * Count) + Count;
+
+SELECT  (SELECT count(*) FROM RECURSO_CITI) as total,
+		(SELECT ceiling(count(*)/Count) FROM RECURSO_CITI) as pages,
+        SOE_ID, 
+		Apellido_Paterno, 
+		Apellido_Materno, 
+		Primer_Nombre, 
+		Segundo_Nombre,
+		Id_Dominio, 
+		Id_Puesto, 
+		Id_Ciudad, 
+		Ext, 
+		Movil, 
+		Telefono, 
+		Email, 
+		Id_ReportaA, 
+		Comentarios 
+  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
+		FROM (SELECT 
+				SOE_ID, 
+                Apellido_Paterno, 
+                Apellido_Materno, 
+                Primer_Nombre, 
+                Segundo_Nombre,
+				Id_Dominio, 
+                Id_Puesto, 
+                Id_Ciudad, 
+				Ext, 
+                Movil, 
+                Telefono, 
+                Email, 
+                Id_ReportaA, 
+                Comentarios 
+				FROM 
+                RECURSO_CITI
+				) d, (SELECT @rownum  := 0) r ) m
+WHERE rank >= LowerBound AND rank <= UpperBound;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `paginationDetailsProviderId` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationDetailsProviderId`(IN StartIndex INT,IN Count INT, IN _IdProvider INT)
+BEGIN
+DECLARE LowerBound INT;
+DECLARE UpperBound INT;
+DECLARE rownum INT;
+SET LowerBound = ((StartIndex - 1) * Count) + 1;
+SET UpperBound = ((StartIndex - 1) * Count) + Count;
+
+SELECT 	(SELECT count(*) FROM RECURSO_PROVEEDOR RP INNER JOIN CAT_PUESTO_PROVEEDOR CPP INNER JOIN CAT_PROVEEDOR CP WHERE CPP.Id = RP.Id_Puesto AND CP.Id = RP.Id_Proveedor AND RP.Id_Proveedor = _IdProvider) as total,
+		(SELECT ceiling(count(*)/Count) FROM RECURSO_PROVEEDOR RP INNER JOIN CAT_PUESTO_PROVEEDOR CPP INNER JOIN CAT_PROVEEDOR CP WHERE CPP.Id = RP.Id_Puesto AND CP.Id = RP.Id_Proveedor AND RP.Id_Proveedor = _IdProvider) as pages,
+			Id,
+			Clave_Empleado,
+			concat(Primer_Nombre,' ',Segundo_Nombre,' ',Apellido_Paterno,' ',Apellido_Materno) AS nombre ,
+			puesto,
+            proveedor
+  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
+		FROM (SELECT 
+				RP.Id,
+                RP.Clave_Empleado,
+                RP.Primer_Nombre,
+                RP.Segundo_Nombre,
+                RP.Apellido_Paterno,
+                RP.Apellido_Materno,
+                CPP.Descripcion AS puesto,
+                CP.Descripcion AS proveedor
+                FROM 
+                RECURSO_PROVEEDOR RP INNER JOIN 
+                CAT_PUESTO_PROVEEDOR CPP INNER JOIN
+                CAT_PROVEEDOR CP
+                WHERE CPP.Id = RP.Id_Puesto AND 
+                CP.Id = RP.Id_Proveedor AND 
+                RP.Id_Proveedor = _IdProvider
+				) d, (SELECT @rownum  := 0) r ) m
+WHERE rank >= LowerBound AND rank <= UpperBound;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `paginationDetailsProviders` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationDetailsProviders`(IN StartIndex INT,IN Count INT)
+BEGIN
+DECLARE LowerBound INT;
+DECLARE UpperBound INT;
+DECLARE rownum INT;
+SET LowerBound = ((StartIndex - 1) * Count) + 1;
+SET UpperBound = ((StartIndex - 1) * Count) + Count;
+
+SELECT 	(SELECT count(*) FROM 
+                RECURSO_PROVEEDOR RP INNER JOIN 
+                CAT_PUESTO_PROVEEDOR CPP INNER JOIN
+                CAT_PROVEEDOR CP
+                WHERE CPP.Id = RP.Id_Puesto AND 
+                CP.Id = RP.Id_Proveedor) as total,
+			(SELECT ceiling(count(*)/Count) FROM 
+                RECURSO_PROVEEDOR RP INNER JOIN 
+                CAT_PUESTO_PROVEEDOR CPP INNER JOIN
+                CAT_PROVEEDOR CP
+                WHERE CPP.Id = RP.Id_Puesto AND 
+                CP.Id = RP.Id_Proveedor) as pages,
+			Id,
+			Clave_Empleado,
+			concat(Primer_Nombre,' ',Segundo_Nombre,' ',Apellido_Paterno,' ',Apellido_Materno) AS nombre ,
+			puesto,
+            proveedor
+  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
+		FROM (SELECT 
+				RP.Id,
+                RP.Clave_Empleado,
+                RP.Primer_Nombre,
+                RP.Segundo_Nombre,
+                RP.Apellido_Paterno,
+                RP.Apellido_Materno,
+                CPP.Descripcion AS puesto,
+                CP.Descripcion AS proveedor
+                FROM 
+                RECURSO_PROVEEDOR RP INNER JOIN 
+                CAT_PUESTO_PROVEEDOR CPP INNER JOIN
+                CAT_PROVEEDOR CP
+                WHERE CPP.Id = RP.Id_Puesto AND 
+                CP.Id = RP.Id_Proveedor
+				) d, (SELECT @rownum  := 0) r ) m
+WHERE rank >= LowerBound AND rank <= UpperBound;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `paginationDomains` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationDomains`(IN StartIndex INT,IN Count INT)
+BEGIN
+DECLARE LowerBound INT;
+DECLARE UpperBound INT;
+DECLARE rownum INT;
+SET LowerBound = ((StartIndex - 1) * Count) + 1;
+SET UpperBound = ((StartIndex - 1) * Count) + Count;
+
+SELECT 	(SELECT count(*) FROM CAT_DOMINIO) as total,
+		(SELECT ceiling(count(*)/Count) FROM CAT_DOMINIO) as pages,
+			ID, 
+			DESCRIPCION 
+  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
+		FROM (SELECT 
+				ID, 
+                DESCRIPCION 
+                FROM 
+                CAT_DOMINIO
+				) d, (SELECT @rownum  := 0) r ) m
+WHERE rank >= LowerBound AND rank <= UpperBound;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `paginationEmployesDomain` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationEmployesDomain`(IN StartIndex INT,IN Count INT, IN _Domain INT)
+BEGIN
+DECLARE LowerBound INT;
+DECLARE UpperBound INT;
+DECLARE rownum INT;
+SET LowerBound = ((StartIndex - 1) * Count) + 1;
+SET UpperBound = ((StartIndex - 1) * Count) + Count;
+
+SELECT  (SELECT count(*) FROM RECURSO_CITI RC INNER JOIN CAT_PUESTOCITI PC INNER JOIN CAT_DOMINIO D WHERE RC.Id_Puesto = PC.Id AND D.Id = RC.Id_Dominio AND RC.Id_Dominio = _Domain) as total,
+		(SELECT ceiling(count(*)/Count) FROM RECURSO_CITI RC INNER JOIN CAT_PUESTOCITI PC INNER JOIN CAT_DOMINIO D WHERE RC.Id_Puesto = PC.Id AND D.Id = RC.Id_Dominio AND RC.Id_Dominio = _Domain) as pages,
+        Soe_Id,
+		concat( Primer_Nombre,' ', Segundo_Nombre, ' ', Apellido_Paterno, ' ', Apellido_Materno) as nombre,
+		puesto,
+        dominio,
+        Id_Dominio
+  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
+		FROM (SELECT 
+				RC.Soe_Id,
+                RC.Primer_Nombre, 
+                RC.Segundo_Nombre,
+                RC.Apellido_Paterno,
+                RC.Apellido_Materno,
+                PC.Descripcion as puesto,
+                D.Descripcion as dominio,
+                RC.Id_Dominio
+				FROM RECURSO_CITI RC INNER JOIN 
+                CAT_PUESTOCITI PC INNER JOIN 
+                CAT_DOMINIO D 
+                WHERE RC.Id_Puesto = PC.Id AND 
+                D.Id = RC.Id_Dominio AND 
+                RC.Id_Dominio = _Domain
+				) d, (SELECT @rownum  := 0) r ) m
+WHERE rank >= LowerBound AND rank <= UpperBound;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `paginationProviders` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationProviders`(IN StartIndex INT,IN Count INT)
+BEGIN
+DECLARE LowerBound INT;
+DECLARE UpperBound INT;
+DECLARE rownum INT;
+SET LowerBound = ((StartIndex - 1) * Count) + 1;
+SET UpperBound = ((StartIndex - 1) * Count) + Count;
+
+SELECT   	(SELECT count(*) FROM CAT_PROVEEDOR) as total,
+			(SELECT ceiling(count(*) / Count) FROM CAT_PROVEEDOR) as pages,
+			Id,
+			Descripcion 
+  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
+		FROM (SELECT 
+				Id,
+				Descripcion 
+                FROM 
+                CAT_PROVEEDOR
+				) d, (SELECT @rownum  := 0) r ) m
+WHERE rank >= LowerBound AND rank <= UpperBound;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `paginationUsersAccessToApplication` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationUsersAccessToApplication`(IN StartIndex INT,IN Count INT)
+BEGIN
+DECLARE LowerBound INT;
+DECLARE UpperBound INT;
+DECLARE rownum INT;
+SET LowerBound = ((StartIndex - 1) * Count) + 1;
+SET UpperBound = ((StartIndex - 1) * Count) + Count;
+
+SELECT 	(select count(*) from USUARIO u join CAT_PERFIL p on u.Id_Perfil=p.Id_Perfil) as total,
+		(select ceiling(count(*)/Count) from USUARIO u join CAT_PERFIL p on u.Id_Perfil=p.Id_Perfil) as pages,
+        Email, 
+        concat(Primer_Nombre,' ',Segundo_Nombre,' ',Apellido_Paterno,' ',ApellidoMaterno) as nombre,
+        Clave,
+        Activo,
+        Dominios,
+        Proveedores,
+		Id_Perfil,
+        Descripcion,
+        Id_Usuarios
+  from (SELECT *, @rownum := @rownum + 1 AS rank 
+		from (SELECT
+					u.Id_Usuarios,
+					u.Email, 
+                    u.Primer_Nombre, 
+                    u.Segundo_Nombre,
+					u.Apellido_Paterno, 
+                    u.ApellidoMaterno, 
+                    u.Clave,
+                    u.Activo,
+                    u.Dominios,
+                    u.Proveedores,
+					p.Id_Perfil,
+                    p.Descripcion FROM USUARIO u join CAT_PERFIL p on u.Id_Perfil=p.Id_Perfil
+				) d, (SELECT @rownum  := 0) r ) m
+WHERE rank >= LowerBound and rank <= UpperBound;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
+-- Final view structure for view `detailsl1application`
+--
+
+/*!50001 DROP VIEW IF EXISTS `detailsl1application`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `detailsl1application` AS select `a`.`Csi_Id` AS `idApp`,`d`.`Descripcion` AS `dominio`,'L1' AS `L1`,concat(`canalista`.`Primer_Nombre`,' ',`canalista`.`Segundo_Nombre`,' ',`canalista`.`Apellido_Paterno`,' ',`canalista`.`Apellido_Materno`) AS `analista_bnmx`,`canalista`.`Ext` AS `ext_analista_bnmx`,`canalista`.`Movil` AS `celular_analista_bnmx`,`canalista`.`Email` AS `email_analista_bnmx`,concat(`clider`.`Primer_Nombre`,' ',`clider`.`Segundo_Nombre`,' ',`clider`.`Apellido_Paterno`,' ',`clider`.`Apellido_Materno`) AS `lider_bnmx`,`clider`.`Ext` AS `ext_lider_bnmx`,`clider`.`Movil` AS `celular_lider_bnmx`,`clider`.`Email` AS `email_lider_bnmx`,concat(`cgerente`.`Primer_Nombre`,' ',`cgerente`.`Segundo_Nombre`,' ',`cgerente`.`Apellido_Paterno`,' ',`cgerente`.`Apellido_Materno`) AS `gerente_bnmx`,`cgerente`.`Ext` AS `ext_gerente_bnmx`,`cgerente`.`Movil` AS `celular_gerente_bnmx`,`cgerente`.`Email` AS `email_gerente_bnmx`,`cp`.`Descripcion` AS `proveedor`,concat(`presponsable`.`Primer_Nombre`,' ',`presponsable`.`Segundo_Nombre`,' ',`presponsable`.`Apellido_Paterno`,' ',`presponsable`.`Apellido_Materno`) AS `responsable_prov`,`presponsable`.`Ext_Citi` AS `ext_responsable_banamex_prov`,`presponsable`.`LD_celular` AS `lada_cel_responsable_prov`,`presponsable`.`Movil_Personal` AS `cel_responsable_prov`,`presponsable`.`Email_Citi` AS `email_responsable_bnmx_prov`,`presponsable`.`LD_particular` AS `lada_otro_responsable_prov`,`presponsable`.`Telefono_Particular` AS `tel_otro_responsable_prov`,`presponsable`.`Email_Proveedor` AS `email_responsable_prov`,concat(`pbackup`.`Primer_Nombre`,' ',`pbackup`.`Segundo_Nombre`,' ',`pbackup`.`Apellido_Paterno`,' ',`pbackup`.`Apellido_Materno`) AS `backup_prov`,`pbackup`.`Ext_Citi` AS `ext_backup_banamex_prov`,`pbackup`.`LD_celular` AS `lada_cel_backup_prov`,`pbackup`.`Movil_Personal` AS `cel_backup_prov`,`pbackup`.`Email_Citi` AS `email_backup_bnmx_prov`,`pbackup`.`LD_particular` AS `lada_otro_backup_prov`,`pbackup`.`Telefono_Particular` AS `tel_otro_backup_prov`,`pbackup`.`Email_Proveedor` AS `email_backup_prov`,concat(`plider`.`Primer_Nombre`,' ',`plider`.`Segundo_Nombre`,' ',`plider`.`Apellido_Paterno`,' ',`plider`.`Apellido_Materno`) AS `lider_prov`,`plider`.`Ext_Citi` AS `ext_lider_banamex_prov`,`plider`.`LD_celular` AS `lada_cel_lider_prov`,`plider`.`Movil_Personal` AS `cel_lider_prov`,`plider`.`Email_Citi` AS `email_lider_bnmx_prov`,`plider`.`LD_particular` AS `lada_otro_lider_prov`,`plider`.`Telefono_Particular` AS `tel_otro_lider_prov`,`plider`.`Email_Proveedor` AS `email_lider_prov`,concat(`pprojectmanager`.`Primer_Nombre`,' ',`pprojectmanager`.`Segundo_Nombre`,' ',`pprojectmanager`.`Apellido_Paterno`,' ',`pprojectmanager`.`Apellido_Materno`) AS `p_manager_prov`,`pprojectmanager`.`Ext_Citi` AS `ext_p_manager_banamex_prov`,`pprojectmanager`.`LD_celular` AS `lada_cel_p_manager_prov`,`pprojectmanager`.`Movil_Personal` AS `cel_p_manager_prov`,`pprojectmanager`.`Email_Citi` AS `email_p_manager_bnmx_prov`,`pprojectmanager`.`LD_particular` AS `lada_otro_p_manager_prov`,`pprojectmanager`.`Telefono_Particular` AS `tel_otro_p_manager_prov`,`pprojectmanager`.`Email_Proveedor` AS `email_p_manager_prov`,concat(`pdelivery`.`Primer_Nombre`,' ',`pdelivery`.`Segundo_Nombre`,' ',`pdelivery`.`Apellido_Paterno`,' ',`pdelivery`.`Apellido_Materno`) AS `d_manager_prov`,`pdelivery`.`Ext_Citi` AS `ext_d_manager_banamex_prov`,`pdelivery`.`LD_celular` AS `lada_cel_d_manager_prov`,`pdelivery`.`Movil_Personal` AS `cel_d_manager_prov`,`pdelivery`.`Email_Citi` AS `email_d_manager_bnmx_prov`,`pdelivery`.`LD_particular` AS `lada_otro_d_manager_prov`,`pdelivery`.`Telefono_Particular` AS `tel_otro_d_manager_prov`,`pdelivery`.`Email_Proveedor` AS `email_d_manager_prov` from (((((((((((`APLICACION` `a` join `CAT_PROVEEDOR` `cp` on((`a`.`Id_L1` = `cp`.`Id`))) join `L1APLICACION` `l1` on((`a`.`Csi_Id` = `l1`.`idAplicacionCiti`))) join `RECURSO_CITI` `canalista` on((`canalista`.`Soe_Id` = `l1`.`idAnalistaRCiti`))) join `RECURSO_CITI` `clider` on((`clider`.`Soe_Id` = `l1`.`idLiderRCiti`))) join `RECURSO_CITI` `cgerente` on((`cgerente`.`Soe_Id` = `l1`.`idGerenteRCiti`))) join `RECURSO_PROVEEDOR` `presponsable` on((`presponsable`.`Id` = `l1`.`idResponsableRProveedor`))) join `RECURSO_PROVEEDOR` `pbackup` on((`pbackup`.`Id` = `l1`.`idBackupRProveedor`))) join `RECURSO_PROVEEDOR` `plider` on((`plider`.`Id` = `l1`.`idLiderRProveedor`))) join `RECURSO_PROVEEDOR` `pprojectmanager` on((`pprojectmanager`.`Id` = `l1`.`idProjectManagerRProveedor`))) join `RECURSO_PROVEEDOR` `pdelivery` on((`pdelivery`.`Id` = `l1`.`idDeliveryManagerRProveedor`))) join `CAT_DOMINIO` `d` on((`d`.`Id` = `a`.`Id_Dominio`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `detailsl2application`
+--
+
+/*!50001 DROP VIEW IF EXISTS `detailsl2application`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `detailsl2application` AS select `a`.`Csi_Id` AS `idApp`,`d`.`Descripcion` AS `dominio`,'L2' AS `L2`,concat(`canalista`.`Primer_Nombre`,' ',`canalista`.`Segundo_Nombre`,' ',`canalista`.`Apellido_Paterno`,' ',`canalista`.`Apellido_Materno`) AS `analista_bnmx`,`canalista`.`Ext` AS `ext_analista_bnmx`,`canalista`.`Movil` AS `celular_analista_bnmx`,`canalista`.`Email` AS `email_analista_bnmx`,concat(`clider`.`Primer_Nombre`,' ',`clider`.`Segundo_Nombre`,' ',`clider`.`Apellido_Paterno`,' ',`clider`.`Apellido_Materno`) AS `lider_bnmx`,`clider`.`Ext` AS `ext_lider_bnmx`,`clider`.`Movil` AS `celular_lider_bnmx`,`clider`.`Email` AS `email_lider_bnmx`,concat(`cgerente`.`Primer_Nombre`,' ',`cgerente`.`Segundo_Nombre`,' ',`cgerente`.`Apellido_Paterno`,' ',`cgerente`.`Apellido_Materno`) AS `gerente_bnmx`,`cgerente`.`Ext` AS `ext_gerente_bnmx`,`cgerente`.`Movil` AS `celular_gerente_bnmx`,`cgerente`.`Email` AS `email_gerente_bnmx`,`cp`.`Descripcion` AS `proveedor`,concat(`presponsable`.`Primer_Nombre`,' ',`presponsable`.`Segundo_Nombre`,' ',`presponsable`.`Apellido_Paterno`,' ',`presponsable`.`Apellido_Materno`) AS `responsable_prov`,`presponsable`.`Ext_Citi` AS `ext_responsable_banamex_prov`,`presponsable`.`LD_celular` AS `lada_cel_responsable_prov`,`presponsable`.`Movil_Personal` AS `cel_responsable_prov`,`presponsable`.`Email_Citi` AS `email_responsable_bnmx_prov`,`presponsable`.`LD_particular` AS `lada_otro_responsable_prov`,`presponsable`.`Telefono_Particular` AS `tel_otro_responsable_prov`,`presponsable`.`Email_Proveedor` AS `email_responsable_prov`,concat(`pbackup`.`Primer_Nombre`,' ',`pbackup`.`Segundo_Nombre`,' ',`pbackup`.`Apellido_Paterno`,' ',`pbackup`.`Apellido_Materno`) AS `backup_prov`,`pbackup`.`Ext_Citi` AS `ext_backup_banamex_prov`,`pbackup`.`LD_celular` AS `lada_cel_backup_prov`,`pbackup`.`Movil_Personal` AS `cel_backup_prov`,`pbackup`.`Email_Citi` AS `email_backup_bnmx_prov`,`pbackup`.`LD_particular` AS `lada_otro_backup_prov`,`pbackup`.`Telefono_Particular` AS `tel_otro_backup_prov`,`pbackup`.`Email_Proveedor` AS `email_backup_prov`,concat(`plider`.`Primer_Nombre`,' ',`plider`.`Segundo_Nombre`,' ',`plider`.`Apellido_Paterno`,' ',`plider`.`Apellido_Materno`) AS `lider_prov`,`plider`.`Ext_Citi` AS `ext_lider_banamex_prov`,`plider`.`LD_celular` AS `lada_cel_lider_prov`,`plider`.`Movil_Personal` AS `cel_lider_prov`,`plider`.`Email_Citi` AS `email_lider_bnmx_prov`,`plider`.`LD_particular` AS `lada_otro_lider_prov`,`plider`.`Telefono_Particular` AS `tel_otro_lider_prov`,`plider`.`Email_Proveedor` AS `email_lider_prov`,concat(`pprojectmanager`.`Primer_Nombre`,' ',`pprojectmanager`.`Segundo_Nombre`,' ',`pprojectmanager`.`Apellido_Paterno`,' ',`pprojectmanager`.`Apellido_Materno`) AS `p_manager_prov`,`pprojectmanager`.`Ext_Citi` AS `ext_p_manager_banamex_prov`,`pprojectmanager`.`LD_celular` AS `lada_cel_p_manager_prov`,`pprojectmanager`.`Movil_Personal` AS `cel_p_manager_prov`,`pprojectmanager`.`Email_Citi` AS `email_p_manager_bnmx_prov`,`pprojectmanager`.`LD_particular` AS `lada_otro_p_manager_prov`,`pprojectmanager`.`Telefono_Particular` AS `tel_otro_p_manager_prov`,`pprojectmanager`.`Email_Proveedor` AS `email_p_manager_prov`,concat(`pdelivery`.`Primer_Nombre`,' ',`pdelivery`.`Segundo_Nombre`,' ',`pdelivery`.`Apellido_Paterno`,' ',`pdelivery`.`Apellido_Materno`) AS `d_manager_prov`,`pdelivery`.`Ext_Citi` AS `ext_d_manager_banamex_prov`,`pdelivery`.`LD_celular` AS `lada_cel_d_manager_prov`,`pdelivery`.`Movil_Personal` AS `cel_d_manager_prov`,`pdelivery`.`Email_Citi` AS `email_d_manager_bnmx_prov`,`pdelivery`.`LD_particular` AS `lada_otro_d_manager_prov`,`pdelivery`.`Telefono_Particular` AS `tel_otro_d_manager_prov`,`pdelivery`.`Email_Proveedor` AS `email_d_manager_prov` from (((((((((((`APLICACION` `a` join `CAT_PROVEEDOR` `cp` on((`a`.`Id_L2` = `cp`.`Id`))) join `L2APLICACION` `l2` on((`a`.`Csi_Id` = `l2`.`idAplicacionCiti`))) join `RECURSO_CITI` `canalista` on((`canalista`.`Soe_Id` = `l2`.`idAnalistaRCiti`))) join `RECURSO_CITI` `clider` on((`clider`.`Soe_Id` = `l2`.`idLiderRCiti`))) join `RECURSO_CITI` `cgerente` on((`cgerente`.`Soe_Id` = `l2`.`idGerenteRCiti`))) join `RECURSO_PROVEEDOR` `presponsable` on((`presponsable`.`Id` = `l2`.`idResponsableRProveedor`))) join `RECURSO_PROVEEDOR` `pbackup` on((`pbackup`.`Id` = `l2`.`idBackupRProveedor`))) join `RECURSO_PROVEEDOR` `plider` on((`plider`.`Id` = `l2`.`idLiderRProveedor`))) join `RECURSO_PROVEEDOR` `pprojectmanager` on((`pprojectmanager`.`Id` = `l2`.`idProjectManagerRProveedor`))) join `RECURSO_PROVEEDOR` `pdelivery` on((`pdelivery`.`Id` = `l2`.`idDeliveryManagerRProveedor`))) join `CAT_DOMINIO` `d` on((`d`.`Id` = `a`.`Id_Dominio`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `detailsl3application`
+--
+
+/*!50001 DROP VIEW IF EXISTS `detailsl3application`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `detailsl3application` AS select `a`.`Csi_Id` AS `idApp`,`d`.`Descripcion` AS `dominio`,'L3' AS `L3`,concat(`canalista`.`Primer_Nombre`,' ',`canalista`.`Segundo_Nombre`,' ',`canalista`.`Apellido_Paterno`,' ',`canalista`.`Apellido_Materno`) AS `analista_bnmx`,`canalista`.`Ext` AS `ext_analista_bnmx`,`canalista`.`Movil` AS `celular_analista_bnmx`,`canalista`.`Email` AS `email_analista_bnmx`,concat(`clider`.`Primer_Nombre`,' ',`clider`.`Segundo_Nombre`,' ',`clider`.`Apellido_Paterno`,' ',`clider`.`Apellido_Materno`) AS `lider_bnmx`,`clider`.`Ext` AS `ext_lider_bnmx`,`clider`.`Movil` AS `celular_lider_bnmx`,`clider`.`Email` AS `email_lider_bnmx`,concat(`cgerente`.`Primer_Nombre`,' ',`cgerente`.`Segundo_Nombre`,' ',`cgerente`.`Apellido_Paterno`,' ',`cgerente`.`Apellido_Materno`) AS `gerente_bnmx`,`cgerente`.`Ext` AS `ext_gerente_bnmx`,`cgerente`.`Movil` AS `celular_gerente_bnmx`,`cgerente`.`Email` AS `email_gerente_bnmx`,`cp`.`Descripcion` AS `proveedor`,concat(`presponsable`.`Primer_Nombre`,' ',`presponsable`.`Segundo_Nombre`,' ',`presponsable`.`Apellido_Paterno`,' ',`presponsable`.`Apellido_Materno`) AS `responsable_prov`,`presponsable`.`Ext_Citi` AS `ext_responsable_banamex_prov`,`presponsable`.`LD_celular` AS `lada_cel_responsable_prov`,`presponsable`.`Movil_Personal` AS `cel_responsable_prov`,`presponsable`.`Email_Citi` AS `email_responsable_bnmx_prov`,`presponsable`.`LD_particular` AS `lada_otro_responsable_prov`,`presponsable`.`Telefono_Particular` AS `tel_otro_responsable_prov`,`presponsable`.`Email_Proveedor` AS `email_responsable_prov`,concat(`pbackup`.`Primer_Nombre`,' ',`pbackup`.`Segundo_Nombre`,' ',`pbackup`.`Apellido_Paterno`,' ',`pbackup`.`Apellido_Materno`) AS `backup_prov`,`pbackup`.`Ext_Citi` AS `ext_backup_banamex_prov`,`pbackup`.`LD_celular` AS `lada_cel_backup_prov`,`pbackup`.`Movil_Personal` AS `cel_backup_prov`,`pbackup`.`Email_Citi` AS `email_backup_bnmx_prov`,`pbackup`.`LD_particular` AS `lada_otro_backup_prov`,`pbackup`.`Telefono_Particular` AS `tel_otro_backup_prov`,`pbackup`.`Email_Proveedor` AS `email_backup_prov`,concat(`plider`.`Primer_Nombre`,' ',`plider`.`Segundo_Nombre`,' ',`plider`.`Apellido_Paterno`,' ',`plider`.`Apellido_Materno`) AS `lider_prov`,`plider`.`Ext_Citi` AS `ext_lider_banamex_prov`,`plider`.`LD_celular` AS `lada_cel_lider_prov`,`plider`.`Movil_Personal` AS `cel_lider_prov`,`plider`.`Email_Citi` AS `email_lider_bnmx_prov`,`plider`.`LD_particular` AS `lada_otro_lider_prov`,`plider`.`Telefono_Particular` AS `tel_otro_lider_prov`,`plider`.`Email_Proveedor` AS `email_lider_prov`,concat(`pprojectmanager`.`Primer_Nombre`,' ',`pprojectmanager`.`Segundo_Nombre`,' ',`pprojectmanager`.`Apellido_Paterno`,' ',`pprojectmanager`.`Apellido_Materno`) AS `p_manager_prov`,`pprojectmanager`.`Ext_Citi` AS `ext_p_manager_banamex_prov`,`pprojectmanager`.`LD_celular` AS `lada_cel_p_manager_prov`,`pprojectmanager`.`Movil_Personal` AS `cel_p_manager_prov`,`pprojectmanager`.`Email_Citi` AS `email_p_manager_bnmx_prov`,`pprojectmanager`.`LD_particular` AS `lada_otro_p_manager_prov`,`pprojectmanager`.`Telefono_Particular` AS `tel_otro_p_manager_prov`,`pprojectmanager`.`Email_Proveedor` AS `email_p_manager_prov`,concat(`pdelivery`.`Primer_Nombre`,' ',`pdelivery`.`Segundo_Nombre`,' ',`pdelivery`.`Apellido_Paterno`,' ',`pdelivery`.`Apellido_Materno`) AS `d_manager_prov`,`pdelivery`.`Ext_Citi` AS `ext_d_manager_banamex_prov`,`pdelivery`.`LD_celular` AS `lada_cel_d_manager_prov`,`pdelivery`.`Movil_Personal` AS `cel_d_manager_prov`,`pdelivery`.`Email_Citi` AS `email_d_manager_bnmx_prov`,`pdelivery`.`LD_particular` AS `lada_otro_d_manager_prov`,`pdelivery`.`Telefono_Particular` AS `tel_otro_d_manager_prov`,`pdelivery`.`Email_Proveedor` AS `email_d_manager_prov` from (((((((((((`APLICACION` `a` join `CAT_PROVEEDOR` `cp` on((`a`.`Id_L3` = `cp`.`Id`))) join `L3APLICACION` `l3` on((`a`.`Csi_Id` = `l3`.`idAplicacionCiti`))) join `RECURSO_CITI` `canalista` on((`canalista`.`Soe_Id` = `l3`.`idAnalistaRCiti`))) join `RECURSO_CITI` `clider` on((`clider`.`Soe_Id` = `l3`.`idLiderRCiti`))) join `RECURSO_CITI` `cgerente` on((`cgerente`.`Soe_Id` = `l3`.`idGerenteRCiti`))) join `RECURSO_PROVEEDOR` `presponsable` on((`presponsable`.`Id` = `l3`.`idResponsableRProveedor`))) join `RECURSO_PROVEEDOR` `pbackup` on((`pbackup`.`Id` = `l3`.`idBackupRProveedor`))) join `RECURSO_PROVEEDOR` `plider` on((`plider`.`Id` = `l3`.`idLiderRProveedor`))) join `RECURSO_PROVEEDOR` `pprojectmanager` on((`pprojectmanager`.`Id` = `l3`.`idProjectManagerRProveedor`))) join `RECURSO_PROVEEDOR` `pdelivery` on((`pdelivery`.`Id` = `l3`.`idDeliveryManagerRProveedor`))) join `CAT_DOMINIO` `d` on((`d`.`Id` = `a`.`Id_Dominio`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -611,4 +1472,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-05-26 18:41:48
+-- Dump completed on 2017-06-05 16:36:59
