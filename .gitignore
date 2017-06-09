@@ -8,5 +8,5 @@ RemoteSystemsTempFiles/
 **/RemoteSystemsTempFiles/
 */**/.idea/
 APPS/nearshore-appsms/.idea/
-APPS/.recommenders/
-CATALOGS/.recommenders/
+*/**/.recommenders/
+*.bak

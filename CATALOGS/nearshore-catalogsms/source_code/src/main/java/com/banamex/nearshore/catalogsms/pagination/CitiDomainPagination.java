@@ -1,9 +1,10 @@
-package com.banamex.nearshore.catalogsms.domain;
+package com.banamex.nearshore.catalogsms.pagination;
 
-public class Pagination {
+public class CitiDomainPagination {
 	
 	private Integer index;
 	private Integer rows;
+	private Integer idDomain;
 	
 	public Integer getIndex() {
 		return index;
@@ -17,7 +18,10 @@ public class Pagination {
 	public void setRows(Integer rows) {
 		this.rows = rows;
 	}
-	
-	
-
+	public Integer getIdDomain() {
+		return idDomain;
+	}
+	public void setIdDomain(Integer idDomain) {
+		this.idDomain = idDomain;
+	}
 }

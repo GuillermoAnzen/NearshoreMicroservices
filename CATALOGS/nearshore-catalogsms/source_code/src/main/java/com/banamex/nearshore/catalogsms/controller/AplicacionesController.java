@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.banamex.nearshore.catalogsms.domain.Aplicacion;
 import com.banamex.nearshore.catalogsms.domain.AplicacionProveedor;
 import com.banamex.nearshore.catalogsms.domain.AplicacionRecursoCiti;
+import com.banamex.nearshore.catalogsms.domain.SoporteAplicacion;
 import com.banamex.nearshore.catalogsms.exception.NearshoreDatabaseMicroserviceException;
 import com.banamex.nearshore.databasems.Data;
 import com.banamex.nearshore.databasems.DatabaseMicroserviceClientService;
@@ -32,6 +33,124 @@ public class AplicacionesController {
 	private DatabaseMicroserviceClientService databaseMicroserviceClientService;
 	
 	/*
+	 * PUT APPLICATION DETAILS TO L SUPPORT
+	 */
+	@RequestMapping(value = "/detailsSupport/{level}", method = RequestMethod.PUT, produces = "application/json")
+	public Object putdetailsL(@RequestBody SoporteAplicacion aplicacion, @PathVariable Integer level){
+		HashMap<String, Object> resultParameter = new HashMap<String, Object>();
+		List<Data> queryParams = new ArrayList<>();
+		Object resultBase = null;
+		
+		queryParams = getQueryParamsSupport(aplicacion);
+				
+		resultParameter.put("tipoQuery", Constants.UPDATE_STATEMENT_TYPE);
+		resultParameter.put("sql", "UPDATE "
+				+ "L"+level+"APLICACION SET "
+				+ "idAnalistaRCiti=?, "
+				+ "idLiderRCiti=?, "
+				+ "idGerenteRCiti=?, "
+				+ "idResponsableRProveedor=?, "
+				+ "idBackupRProveedor=?, "
+				+ "idLiderRProveedor=?, "
+				+ "idProjectManagerRProveedor=?, "
+				+ "idDeliveryManagerRProveedor=? "
+				+ "WHERE idAplicacionCiti=?");
+		resultParameter.put("data", queryParams);
+		
+		try{
+			resultBase = databaseMicroserviceClientService.callBase(resultParameter);
+		}catch(Exception e){
+			throw new NearshoreDatabaseMicroserviceException(e.getMessage());
+		}
+
+		return resultBase;
+	}
+	
+	/*
+	 * GET APPLICATION DETAILS TO L3 SUPPORT
+	 */
+	@RequestMapping(value = "/detailsL3/{idApp}", method = RequestMethod.GET, produces = "application/json")
+	public Object getdetailsL3(@PathVariable Integer idApp){
+		HashMap<String, Object> resultParameter = new HashMap<String, Object>();
+		List<Data> queryParams = new ArrayList<>();
+		Data queryParam01 = new Data();
+		Object resultBase = null;
+		
+		queryParam01.setIndex(1);
+		queryParam01.setType("INT");
+		queryParam01.setValue(idApp.toString());
+		queryParams.add(queryParam01);
+		
+		resultParameter.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
+		resultParameter.put("sql", "SELECT * FROM detailsl3application WHERE idApp = ?");
+		resultParameter.put("data", queryParams);
+		
+		try{
+			resultBase = databaseMicroserviceClientService.callBase(resultParameter);
+		}catch(Exception e){
+			throw new NearshoreDatabaseMicroserviceException(e.getMessage());
+		}
+
+		return resultBase;
+	}
+	
+	/*
+	 * GET APPLICATION DETAILS TO L2 SUPPORT
+	 */
+	@RequestMapping(value = "/detailsL2/{idApp}", method = RequestMethod.GET, produces = "application/json")
+	public Object getdetailsL2(@PathVariable Integer idApp){
+		HashMap<String, Object> resultParameter = new HashMap<String, Object>();
+		List<Data> queryParams = new ArrayList<>();
+		Data queryParam01 = new Data();
+		Object resultBase = null;
+		
+		queryParam01.setIndex(1);
+		queryParam01.setType("INT");
+		queryParam01.setValue(idApp.toString());
+		queryParams.add(queryParam01);
+		
+		resultParameter.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
+		resultParameter.put("sql", "SELECT * FROM detailsl2application WHERE idApp = ?");
+		resultParameter.put("data", queryParams);
+		
+		try{
+			resultBase = databaseMicroserviceClientService.callBase(resultParameter);
+		}catch(Exception e){
+			throw new NearshoreDatabaseMicroserviceException(e.getMessage());
+		}
+
+		return resultBase;
+	}
+	
+	/*
+	 * GET APPLICATION DETAILS TO L1 SUPPORT
+	 */
+	@RequestMapping(value = "/detailsL1/{idApp}", method = RequestMethod.GET, produces = "application/json")
+	public Object getdetailsL1(@PathVariable Integer idApp){
+		HashMap<String, Object> resultParameter = new HashMap<String, Object>();
+		List<Data> queryParams = new ArrayList<>();
+		Data queryParam01 = new Data();
+		Object resultBase = null;
+		
+		queryParam01.setIndex(1);
+		queryParam01.setType("INT");
+		queryParam01.setValue(idApp.toString());
+		queryParams.add(queryParam01);
+		
+		resultParameter.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
+		resultParameter.put("sql", "SELECT * FROM detailsl1application WHERE idApp = ?");
+		resultParameter.put("data", queryParams);
+		
+		try{
+			resultBase = databaseMicroserviceClientService.callBase(resultParameter);
+		}catch(Exception e){
+			throw new NearshoreDatabaseMicroserviceException(e.getMessage());
+		}
+
+		return resultBase;
+	}
+	
+	/*
 	 * GET APLICACION
 	 * El endpoint devuelve un listado de aplicaciones desarrolladas para CitiBanamex.
 	 */
@@ -40,7 +159,7 @@ public class AplicacionesController {
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
 		
 		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
-		requestParams.put("sql", "SELECT * FROM " + Constants.APLICACION);
+		requestParams.put("sql", "SELECT A.Csi_Id as CSI_ID,A.Descripcion_Corta,D.Descripcion as dominio FROM APLICACION A INNER JOIN CAT_DOMINIO D WHERE A.Id_Dominio = D.Id");
 		
 		Object resultBase = null;
 		try {
@@ -91,7 +210,7 @@ public class AplicacionesController {
 		List<Data> queryParams = getQueryParamsAplicacion(aplicacion,false);
 		
 		requestParams.put("tipoQuery", Constants.UPDATE_STATEMENT_TYPE);
-		requestParams.put("sql", "INSERT INTO " + Constants.APLICACION + " (Id_Dominio , PTB_ID , Descripcion_Corta , Descripcion_Larga , Id_L1 , Id_L2 , Id_L3 , Id_Plat1 , Id_Plat2 , Id_Plat3 , Comentarios) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		requestParams.put("sql", "INSERT INTO " + Constants.APLICACION + " (Id_Dominio , PTB_ID , Descripcion_Corta , Descripcion_Larga , Id_L1 , Id_L2 , Id_L3 , Id_Plat1 , Id_Plat2 , Id_Plat3 , Comentarios,Csi_Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)");
 		requestParams.put("data", queryParams);
 		
 		Object resultBase = null;
@@ -408,7 +527,7 @@ public class AplicacionesController {
 			datos = new Data[12]; 
 			datos[11] = Util.createDataObj(aplicacion.getCsiId(), "INT", 12);
 		}else {
-			datos = new Data[11];
+			datos = new Data[12];
 		}
 			
 		datos[0] = Util.createDataObj(aplicacion.getIdDominio(), "INT", 1);
@@ -422,7 +541,31 @@ public class AplicacionesController {
 		datos[8] = Util.createDataObj(aplicacion.getIdPlat2(), "INT", 9);
 		datos[9] = Util.createDataObj(aplicacion.getIdPlat3(), "INT", 10);
 		datos[10] = Util.createDataObj(aplicacion.getComentarios(), "STRING", 11);
+		datos[11] = Util.createDataObj(aplicacion.getCsiId(), "INT", 12);
 			
+		for(Data dato : datos) {
+			queryParams.add(dato);
+		}
+					
+		return queryParams;
+	}
+	
+	private List<Data> getQueryParamsSupport(SoporteAplicacion aplicacion) {
+		List<Data> queryParams = new ArrayList<Data>();
+		
+		Data datos [];
+		datos = new Data[9]; 
+			
+		datos[0] = Util.createDataObj(aplicacion.getIdAnalistaB(), "STRING", 1);
+		datos[1] = Util.createDataObj(aplicacion.getIdLiderB(), "STRING", 2);
+		datos[2] = Util.createDataObj(aplicacion.getIdGerenteB(), "STRING", 3);
+		datos[3] = Util.createDataObj(aplicacion.getIdResponsableP(), "INT", 4);
+		datos[4] = Util.createDataObj(aplicacion.getIdBackupP(), "INT", 5);
+		datos[5] = Util.createDataObj(aplicacion.getIdLiderP(), "INT", 6);
+		datos[6] = Util.createDataObj(aplicacion.getIdPManagerP(), "INT", 7);
+		datos[7] = Util.createDataObj(aplicacion.getIdDManagerP(), "INT", 8);
+		datos[8] = Util.createDataObj(aplicacion.getIdAplicacion(), "INT", 9);
+
 		for(Data dato : datos) {
 			queryParams.add(dato);
 		}

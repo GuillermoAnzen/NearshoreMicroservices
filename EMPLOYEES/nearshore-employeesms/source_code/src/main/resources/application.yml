@@ -1,17 +1,17 @@
 variables:
   eureka:
-    host: localhost
-    #host: hostEureka
+    #host: localhost
+    host: hostEureka
     port: 8761
 info:
-  component: Domains and Applications microservice (nearshore-appsms)
+  component: Domains and Applications microservice (nearshore-employeesms)
 server:
-  port: 7702
+  port: 7703
 spring:
   config:
-    name: nearshore-appsms
+    name: nearshore-employeesms
   application:
-    name: nearshore-appsms
+    name: nearshore-employeesms
 
 logging:
   level:

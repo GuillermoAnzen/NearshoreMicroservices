@@ -1,7 +1,5 @@
 package com.banamex.nearshore.catalogsms.domain;
 
-import javax.validation.constraints.NotNull;
-
 public class AplicacionProveedor {
 
 	private Integer idAplicacionProveedor;

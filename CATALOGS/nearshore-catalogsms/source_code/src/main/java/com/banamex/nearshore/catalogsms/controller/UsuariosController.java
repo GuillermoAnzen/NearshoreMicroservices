@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.banamex.nearshore.catalogsms.domain.Pagination;
 import com.banamex.nearshore.catalogsms.domain.Usuario;
 import com.banamex.nearshore.catalogsms.exception.NearshoreDatabaseMicroserviceException;
+import com.banamex.nearshore.catalogsms.pagination.Pagination;
 import com.banamex.nearshore.databasems.Data;
 import com.banamex.nearshore.databasems.DatabaseMicroserviceClientService;
 import com.banamex.nearshore.databasems.ResultBase;

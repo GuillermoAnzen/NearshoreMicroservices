@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.banamex.nearshore.catalogsms.domain.RecursoCiti;
 import com.banamex.nearshore.catalogsms.domain.RecursoProveedor;
 import com.banamex.nearshore.catalogsms.exception.NearshoreDatabaseMicroserviceException;
+import com.banamex.nearshore.catalogsms.pagination.AppsEmployePagination;
+import com.banamex.nearshore.catalogsms.pagination.CitiDomainPagination;
+import com.banamex.nearshore.catalogsms.pagination.Pagination;
 import com.banamex.nearshore.databasems.Data;
 import com.banamex.nearshore.databasems.ResultBase;
 import com.banamex.nearshore.util.Constants;
@@ -29,29 +32,106 @@ public class EmpleadosController {
 	DbMicroserviceClient databaseMicroserviceClient;
 
 	/*
+	 * GET MANAGER EMPLOYEES 
+	 */
+	@RequestMapping(value = "/gerentes", method = RequestMethod.GET, produces = "application/json")
+	public Object getManagerList(){
+		HashMap<String, Object> requestParams = new HashMap<String, Object>();
+		
+		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
+		requestParams.put("sql", "SELECT "
+				+ "RC.Soe_Id AS id, "
+				+ "concat(RC.Primer_Nombre,' ', RC.Segundo_Nombre,' ',RC.Apellido_Paterno,' ',RC.Apellido_Materno) AS gerente "
+				+ "FROM RECURSO_CITI RC "
+				+ "INNER JOIN CAT_PUESTOCITI PC "
+				+ "ON RC.Id_Puesto = PC.Id WHERE PC.Descripcion like 'gerente' OR PC.Descripcion like 'manager'");
+		
+		Object resultBase = null;
+		try{
+			resultBase = databaseMicroserviceClient.getResultQuery(requestParams);
+		}catch(Exception e){
+			throw new NearshoreDatabaseMicroserviceException(e.getMessage());
+		}
+		return resultBase;
+	}	
+	
+	/*
+	 * GET LEADER EMPLOYEES 
+	 */
+	@RequestMapping(value = "/lideres", method = RequestMethod.GET, produces = "application/json")
+	public Object getLeaderList(){
+		HashMap<String, Object> requestParams = new HashMap<String, Object>();
+		
+		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
+		requestParams.put("sql", "SELECT "
+				+ "RC.Soe_Id AS id, "
+				+ "concat(RC.Primer_Nombre,' ', RC.Segundo_Nombre,' ',RC.Apellido_Paterno,' ',RC.Apellido_Materno) AS lider "
+				+ "FROM RECURSO_CITI RC "
+				+ "INNER JOIN CAT_PUESTOCITI PC "
+				+ "ON RC.Id_Puesto = PC.Id WHERE PC.Descripcion like 'lider'");
+		
+		Object resultBase = null;
+		try{
+			resultBase = databaseMicroserviceClient.getResultQuery(requestParams);
+		}catch(Exception e){
+			throw new NearshoreDatabaseMicroserviceException(e.getMessage());
+		}
+		return resultBase;
+	}
+	
+	/*
+	 * GET ANALIST EMPLOYEES 
+	 */
+	@RequestMapping(value = "/analistas", method = RequestMethod.GET, produces = "application/json")
+	public Object getAnalistList(){
+		HashMap<String, Object> requestParams = new HashMap<String, Object>();
+		
+		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
+		requestParams.put("sql", "SELECT "
+				+ "RC.Soe_Id AS id, "
+				+ "concat(RC.Primer_Nombre,' ', RC.Segundo_Nombre,' ',RC.Apellido_Paterno,' ',RC.Apellido_Materno) AS analista "
+				+ "FROM RECURSO_CITI RC "
+				+ "INNER JOIN CAT_PUESTOCITI PC "
+				+ "ON RC.Id_Puesto = PC.Id "
+				+ "WHERE PC.Descripcion like 'analista'");
+		
+		Object resultBase = null;
+		try{
+			resultBase = databaseMicroserviceClient.getResultQuery(requestParams);
+		}catch(Exception e){
+			throw new NearshoreDatabaseMicroserviceException(e.getMessage());
+		}
+		return resultBase;
+	}
+	
+	/*
 	 * GET APLICATION DEVELOPED BY A EMPLOYE PER ID 
 	 */
-	@RequestMapping(value = "/appsEmpleadoCiti/{soeId}", method = RequestMethod.GET, produces = "application/json")
-	public Object retrieveAppsCitiEmploye(@PathVariable String soeId){
+	@RequestMapping(value = "/appsEmpleadoCiti", method = RequestMethod.POST, produces = "application/json")
+	public Object retrieveAppsCitiEmploye( @RequestBody AppsEmployePagination pagination ){
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
-		Data param01 = new Data();
 		List<Data> queryParams = new ArrayList<>();
+		Data param01 = new Data();
+		Data param02 = new Data();
+		Data param03 = new Data();
 		
 		param01.setIndex(1);
-		param01.setType("STRING");
-		param01.setValue(soeId.toString());
+		param01.setType("INT");
+		param01.setValue(pagination.getIndex().toString());
 		queryParams.add(param01);
 		
+		param02.setIndex(2);
+		param02.setType("INT");
+		param02.setValue(pagination.getRows().toString());
+		queryParams.add(param02);
+		
+		param03.setIndex(3);
+		param03.setType("STRING");
+		param03.setValue(pagination.getSoeId());
+		queryParams.add(param03);
+		
 		requestParams.put("tipoQuery", 2);
-		requestParams.put("sql", "SELECT A.Csi_Id AS idAplicacion, "
-				+ "A.Descripcion_Corta AS descripcion "
-				+ "FROM APLICACION A INNER JOIN "
-				+ "RECURSOCITI_APLICACION RCA INNER JOIN "
-				+ "RECURSO_CITI RC "
-				+ "WHERE "
-				+ "A.Csi_Id = RCA.idAplicacion AND "
-				+ "RCA.idRecursoCiti = RC.Soe_Id AND "
-				+ "RCA.idRecursoCiti = ?");
+		requestParams.put("sql", "call nearshore.paginationAppsCitiEmploye(?, ?, ?)");
 		requestParams.put("data", queryParams);
 		
 		Object resultBase = null;
@@ -67,12 +147,32 @@ public class EmpleadosController {
 	 * GET EMPLOYES PER DOMAIN
 	 * Endpoint that return a list with citi employes per domain.
 	 */
-	@RequestMapping(value = "/citiDomain", method = RequestMethod.GET, produces = "application/json")
-	public Object retrieveCitiEmployesDomain(){
+	@RequestMapping(value = "/citiDomainId", method = RequestMethod.POST, produces = "application/json")
+	public Object retrieveCitiEmployesDomain(@RequestBody CitiDomainPagination pagination){
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
+		List<Data> queryParams = new ArrayList<>();
+		Data queryParam01 = new Data();
+		Data queryParam02 = new Data();
+		Data queryParam03 = new Data();
+		
+		queryParam01.setIndex(1);
+		queryParam01.setType("INT");
+		queryParam01.setValue(pagination.getIndex().toString());
+		queryParams.add(queryParam01);
+		
+		queryParam02.setIndex(2);
+		queryParam02.setType("INT");
+		queryParam02.setValue(pagination.getRows().toString());
+		queryParams.add(queryParam02);
+		
+		queryParam03.setIndex(3);
+		queryParam03.setType("INT");
+		queryParam03.setValue(pagination.getIdDomain().toString());
+		queryParams.add(queryParam03);
 		
 		requestParams.put("tipoQuery", 2);
-		requestParams.put("sql", "SELECT RC.Soe_Id,RC.Primer_Nombre, RC.Segundo_Nombre,RC.Apellido_Paterno,RC.Apellido_Materno,PC.Descripcion as puesto FROM RECURSO_CITI RC INNER JOIN CAT_PUESTOCITI PC WHERE RC.Id_Puesto = PC.Id");
+		requestParams.put("sql", "call nearshore.paginationEmployesDomain(?, ?, ?)");
+		requestParams.put("data", queryParams);
 		
 		Object resultBase = null;
 		try{
@@ -84,20 +184,65 @@ public class EmpleadosController {
 		return resultBase;
 	}
 	
+	/*
+	 * LIST OF EMPLOYES VS DOMAIN
+	 * Return one list with each domain name and each employe in that domain
+	 */
+	@RequestMapping(value = "/citiDomain", method = RequestMethod.POST, produces = "application/json")
+	public Object retrieveAllCitiEmployesDomain(@RequestBody Pagination pagination){
+		HashMap<String, Object> requestParams = new HashMap<String, Object>();
+		List<Data> queryParams = new ArrayList<>();
+		Data queryParam01 = new Data();
+		Data queryParam02 = new Data();
+		
+		queryParam01.setIndex(1);
+		queryParam01.setType("INT");
+		queryParam01.setValue(pagination.getIndex().toString());
+		queryParams.add(queryParam01);
+		
+		queryParam02.setIndex(2);
+		queryParam02.setType("INT");
+		queryParam02.setValue(pagination.getRows().toString());
+		queryParams.add(queryParam02);
+
+		requestParams.put("tipoQuery", 2);
+		requestParams.put("sql", "call nearshore.paginationAllEmployesDomain(?, ?)");
+		requestParams.put("data", queryParams);
+		
+		Object resultBase = null;
+		try{
+			resultBase = databaseMicroserviceClient.getResultQuery(requestParams);
+		}catch(Exception e){
+			throw new NearshoreDatabaseMicroserviceException(e.getMessage());
+		}
+		
+		return resultBase;
+	}
 	
 	/*
 	 * GET EMPLEADOS(CITI)
 	 * Endpoint que devuelve un listado de los empleados de CitiBanamex.
 	 */
-	@RequestMapping(value = "/citi", method = RequestMethod.GET, produces = "application/json")
-	public Object retrieveAllCitiEmployees() {
+	@RequestMapping(value = "/citiList", method = RequestMethod.POST, produces = "application/json")
+	public Object retrieveAllCitiEmployees(@RequestBody Pagination pagination) {
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
+		List<Data> queryParams = new ArrayList<>();
+		Data queryParam01 = new Data();
+		Data queryParam02 = new Data();
+		
+		queryParam01.setIndex(1);
+		queryParam01.setType("INT");
+		queryParam01.setValue(pagination.getIndex().toString());
+		queryParams.add(queryParam01);
+		
+		queryParam02.setIndex(2);
+		queryParam02.setType("INT");
+		queryParam02.setValue(pagination.getRows().toString());
+		queryParams.add(queryParam02);
 		
 		requestParams.put("tipoQuery", 2);
-		requestParams.put("sql", "SELECT SOE_ID, Apellido_Paterno, Apellido_Materno, Primer_Nombre, Segundo_Nombre, "
-						+ "Id_Dominio, Id_Puesto, Id_Ciudad, "
-						+ "Ext, Movil, Telefono, Email, Id_ReportaA, Comentarios "
-						+ "FROM "+Constants.RECURSO_CITI);
+		requestParams.put("sql", "call nearshore.paginationCitiEmployes(?, ?)");
+		requestParams.put("data", queryParams);
 		
 		Object resultBase = null;
 		try{

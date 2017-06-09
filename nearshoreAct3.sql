@@ -64,6 +64,36 @@ LOCK TABLES `APLICACION` WRITE;
 INSERT INTO `APLICACION` (`Csi_Id`, `Id_Dominio`, `Ptb_Id`, `Descripcion_Corta`, `Descripcion_Larga`, `Id_L1`, `Id_L2`, `Id_L3`, `Id_Plat1`, `Id_Plat2`, `Id_Plat3`, `Comentarios`) VALUES (1,1,'1','Nearshore','Aplicación del catálogo de proveedores',1,2,4,1,2,1,'Sin comentarios.'),(2,5,'23','Microservicios Nearshoe','Microservicios de la aplicación de proveedores Banamex.',1,1,2,1,2,3,'Dsarrollado.'),(3,5,'22','Microservicios V2 Nearshore','Segunda versión de microservicios para aplicación de proveedores.',1,2,2,1,2,3,'En desarrollo.'),(4,1,'12','Backbase','FrontEnd with Backbase framework.',1,2,3,4,5,3,'No hay comentarios'),(5,1,'12','Backbase','FrontEnd with Backbase framework.',1,2,3,4,5,3,'No hay comentarios');
 /*!40000 ALTER TABLE `APLICACION` ENABLE KEYS */;
 UNLOCK TABLES;
+UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `nearshore`.`aplicacion_AFTER_INSERT` AFTER INSERT ON APLICACION FOR EACH ROW
+BEGIN
+	INSERT INTO L1APLICACION (idAplicacionCiti)
+    SELECT NEW.Csi_id FROM APLICACION WHERE Csi_id = NEW.Csi_id;
+    INSERT INTO L2APLICACION (idAplicacionCiti)
+    SELECT NEW.Csi_id FROM APLICACION WHERE Csi_id = NEW.Csi_id;
+    INSERT INTO L3APLICACION (idAplicacionCiti)
+    SELECT NEW.Csi_id FROM APLICACION WHERE Csi_id = NEW.Csi_id;
+    INSERT INTO APLICACION_PROVEEDOR (Csi_Id, Id_Proveedor)
+    SELECT NEW.Csi_Id, NEW.Id_L1 FROM APLICACION WHERE Csi_Id = NEW.Csi_Id;
+    INSERT INTO APLICACION_PROVEEDOR (Csi_Id, Id_Proveedor)
+    SELECT NEW.Csi_Id, NEW.Id_L2 FROM APLICACION WHERE Csi_Id = NEW.Csi_Id;
+    INSERT INTO APLICACION_PROVEEDOR (Csi_Id, Id_Proveedor)
+    SELECT NEW.Csi_Id, NEW.Id_L3 FROM APLICACION WHERE Csi_Id = NEW.Csi_Id;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `APLICACION_PROVEEDOR`
@@ -73,15 +103,13 @@ DROP TABLE IF EXISTS `APLICACION_PROVEEDOR`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `APLICACION_PROVEEDOR` (
-  `Id_Proveedor` int(11) NOT NULL,
-  `Csi_Id` int(11) NOT NULL,
-  PRIMARY KEY (`Id_Proveedor`,`Csi_Id`),
-  KEY `fk_APLICACION_APLICACION_PROVEEDOR_idx` (`Csi_Id`),
-  KEY `fk_CAT_PROVEEDOR_APLICACION_PROVEEDOR` (`Id_Proveedor`),
-  CONSTRAINT `fk_APLICACION_APLICACION_PROVEEDOR` FOREIGN KEY (`Csi_Id`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  CONSTRAINT `fk_CAT_PROVEEDOR_APLICACION_PROVEEDOR` FOREIGN KEY (`Id_Proveedor`) REFERENCES `CAT_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+   `Csi_Id` int(11) NOT NULL,
+   `Id_Proveedor` int(11) NOT NULL,
+   KEY `fk_aplicacion_proveedor_aplicacion1_idx` (`Csi_Id`),
+   KEY `fk_aplicacion_proveedor_cat_proveedor1_idx` (`Id_Proveedor`),
+   CONSTRAINT `fk_aplicacion_proveedor_aplicacion1` FOREIGN KEY (`Csi_Id`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+   CONSTRAINT `fk_aplicacion_proveedor_cat_proveedor1` FOREIGN KEY (`Id_Proveedor`) REFERENCES `CAT_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `APLICACION_PROVEEDOR`
@@ -498,35 +526,26 @@ DROP TABLE IF EXISTS `L1APLICACION`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `L1APLICACION` (
-  `idAplicacionCiti` int(11) NOT NULL,
-  `idAnalistaRCiti` varchar(7) NOT NULL,
-  `idLiderRCiti` varchar(7) NOT NULL,
-  `idGerenteRCiti` varchar(7) NOT NULL,
-  `idResponsableRProveedor` int(11) NOT NULL,
-  `idBackupRProveedor` int(11) NOT NULL,
-  `idLiderRProveedor` int(11) NOT NULL,
-  `idProjectManagerRProveedor` int(11) NOT NULL,
-  `idDeliveryManagerRProveedor` int(11) NOT NULL,
-  PRIMARY KEY (`idAplicacionCiti`,`idAnalistaRCiti`,`idLiderRCiti`,`idGerenteRCiti`,`idResponsableRProveedor`,`idBackupRProveedor`,`idLiderRProveedor`,`idProjectManagerRProveedor`,`idDeliveryManagerRProveedor`),
-  KEY `fk_L1Aplicacion_recurso_proveedor1_idx` (`idResponsableRProveedor`),
-  KEY `fk_L1Aplicacion_recurso_citi1_idx` (`idAnalistaRCiti`),
-  KEY `fk_L1Aplicacion_recurso_citi2_idx` (`idLiderRCiti`),
-  KEY `fk_L1Aplicacion_recurso_citi3_idx` (`idGerenteRCiti`),
-  KEY `fk_L1Aplicacion_recurso_proveedor2_idx` (`idBackupRProveedor`),
-  KEY `fk_L1Aplicacion_recurso_proveedor3_idx` (`idLiderRProveedor`),
-  KEY `fk_L1Aplicacion_recurso_proveedor4_idx` (`idProjectManagerRProveedor`),
-  KEY `fk_L1Aplicacion_recurso_proveedor5_idx` (`idDeliveryManagerRProveedor`),
-  CONSTRAINT `fk_L1Aplicacion_aplicacion` FOREIGN KEY (`idAplicacionCiti`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L1Aplicacion_recurso_citi1` FOREIGN KEY (`idAnalistaRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L1Aplicacion_recurso_citi2` FOREIGN KEY (`idLiderRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L1Aplicacion_recurso_citi3` FOREIGN KEY (`idGerenteRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L1Aplicacion_recurso_proveedor1` FOREIGN KEY (`idResponsableRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L1Aplicacion_recurso_proveedor2` FOREIGN KEY (`idBackupRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L1Aplicacion_recurso_proveedor3` FOREIGN KEY (`idLiderRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L1Aplicacion_recurso_proveedor4` FOREIGN KEY (`idProjectManagerRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L1Aplicacion_recurso_proveedor5` FOREIGN KEY (`idDeliveryManagerRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+   `idAplicacionCiti` int(11) NOT NULL,
+   `idAnalistaRCiti` varchar(7) DEFAULT NULL,
+   `idLiderRCiti` varchar(7) DEFAULT NULL,
+   `idGerenteRCiti` varchar(7) DEFAULT NULL,
+   `idResponsableRProveedor` int(11) DEFAULT NULL,
+   `idBackupRProveedor` int(11) DEFAULT NULL,
+   `idLiderRProveedor` int(11) DEFAULT NULL,
+   `idProjectManagerRProveedor` int(11) DEFAULT NULL,
+   `idDeliveryManagerRProveedor` int(11) DEFAULT NULL,
+   PRIMARY KEY (`idAplicacionCiti`),
+   KEY `fk_L1Aplicacion_recurso_proveedor1_idx` (`idResponsableRProveedor`),
+   KEY `fk_L1Aplicacion_recurso_citi1_idx` (`idAnalistaRCiti`),
+   KEY `fk_L1Aplicacion_recurso_citi2_idx` (`idLiderRCiti`),
+   KEY `fk_L1Aplicacion_recurso_citi3_idx` (`idGerenteRCiti`),
+   KEY `fk_L1Aplicacion_recurso_proveedor2_idx` (`idBackupRProveedor`),
+   KEY `fk_L1Aplicacion_recurso_proveedor3_idx` (`idLiderRProveedor`),
+   KEY `fk_L1Aplicacion_recurso_proveedor4_idx` (`idProjectManagerRProveedor`),
+   KEY `fk_L1Aplicacion_recurso_proveedor5_idx` (`idDeliveryManagerRProveedor`),
+   CONSTRAINT `fk_L1Aplicacion_aplicacion` FOREIGN KEY (`idAplicacionCiti`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE CASCADE ON UPDATE NO ACTION
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `L1APLICACION`
@@ -546,35 +565,18 @@ DROP TABLE IF EXISTS `L2APLICACION`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `L2APLICACION` (
-  `idAplicacionCiti` int(11) NOT NULL,
-  `idAnalistaRCiti` varchar(7) NOT NULL,
-  `idLiderRCiti` varchar(7) NOT NULL,
-  `idGerenteRCiti` varchar(7) NOT NULL,
-  `idResponsableRProveedor` int(11) NOT NULL,
-  `idBackupRProveedor` int(11) NOT NULL,
-  `idLiderRProveedor` int(11) NOT NULL,
-  `idProjectManagerRProveedor` int(11) NOT NULL,
-  `idDeliveryManagerRProveedor` int(11) NOT NULL,
-  PRIMARY KEY (`idAplicacionCiti`,`idAnalistaRCiti`,`idLiderRCiti`,`idGerenteRCiti`,`idResponsableRProveedor`,`idBackupRProveedor`,`idLiderRProveedor`,`idProjectManagerRProveedor`,`idDeliveryManagerRProveedor`),
-  KEY `fk_L2Aplicacion_recurso_citi1_idx` (`idAnalistaRCiti`),
-  KEY `fk_L2Aplicacion_recurso_citi2_idx` (`idLiderRCiti`),
-  KEY `fk_L2Aplicacion_recurso_citi3_idx` (`idGerenteRCiti`),
-  KEY `fk_L2Aplicacion_recurso_proveedor1_idx` (`idResponsableRProveedor`),
-  KEY `fk_L2Aplicacion_recurso_proveedor2_idx` (`idBackupRProveedor`),
-  KEY `fk_L2Aplicacion_recurso_proveedor3_idx` (`idLiderRProveedor`),
-  KEY `fk_L2Aplicacion_recurso_proveedor4_idx` (`idProjectManagerRProveedor`),
-  KEY `fk_L2Aplicacion_recurso_proveedor5_idx` (`idDeliveryManagerRProveedor`),
-  CONSTRAINT `fk_L2Aplicacion_aplicacion1` FOREIGN KEY (`idAplicacionCiti`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L2Aplicacion_recurso_citi1` FOREIGN KEY (`idAnalistaRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L2Aplicacion_recurso_citi2` FOREIGN KEY (`idLiderRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L2Aplicacion_recurso_citi3` FOREIGN KEY (`idGerenteRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L2Aplicacion_recurso_proveedor1` FOREIGN KEY (`idResponsableRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L2Aplicacion_recurso_proveedor2` FOREIGN KEY (`idBackupRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L2Aplicacion_recurso_proveedor3` FOREIGN KEY (`idLiderRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L2Aplicacion_recurso_proveedor4` FOREIGN KEY (`idProjectManagerRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L2Aplicacion_recurso_proveedor5` FOREIGN KEY (`idDeliveryManagerRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+   `idAplicacionCiti` int(11) NOT NULL,
+   `idAnalistaRCiti` varchar(7) DEFAULT NULL,
+   `idLiderRCiti` varchar(7) DEFAULT NULL,
+   `idGerenteRCiti` varchar(7) DEFAULT NULL,
+   `idResponsableRProveedor` int(11) DEFAULT NULL,
+   `idBackupRProveedor` int(11) DEFAULT NULL,
+   `idLiderRProveedor` int(11) DEFAULT NULL,
+   `idProjectManagerRProveedor` int(11) DEFAULT NULL,
+   `idDeliveryManagerRProveedor` int(11) DEFAULT NULL,
+   PRIMARY KEY (`idAplicacionCiti`),
+   CONSTRAINT `fk_L2Aplicacion_aplicacion1` FOREIGN KEY (`idAplicacionCiti`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE CASCADE ON UPDATE NO ACTION
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `L2APLICACION`
@@ -593,35 +595,18 @@ DROP TABLE IF EXISTS `L3APLICACION`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `L3APLICACION` (
-  `idAplicacionCiti` int(11) NOT NULL,
-  `idAnalistaRCiti` varchar(7) NOT NULL,
-  `idLiderRCiti` varchar(7) NOT NULL,
-  `idGerenteRCiti` varchar(7) NOT NULL,
-  `idResponsableRProveedor` int(11) NOT NULL,
-  `idBackupRProveedor` int(11) NOT NULL,
-  `idLiderRProveedor` int(11) NOT NULL,
-  `idProjectManagerRProveedor` int(11) NOT NULL,
-  `idDeliveryManagerRProveedor` int(11) NOT NULL,
-  PRIMARY KEY (`idAplicacionCiti`,`idAnalistaRCiti`,`idLiderRCiti`,`idGerenteRCiti`,`idResponsableRProveedor`,`idBackupRProveedor`,`idLiderRProveedor`,`idProjectManagerRProveedor`,`idDeliveryManagerRProveedor`),
-  KEY `fk_L3Aplicacion_recurso_citi1_idx` (`idAnalistaRCiti`),
-  KEY `fk_L3Aplicacion_recurso_citi2_idx` (`idLiderRCiti`),
-  KEY `fk_L3Aplicacion_recurso_citi3_idx` (`idGerenteRCiti`),
-  KEY `fk_L3Aplicacion_recurso_proveedor1_idx` (`idResponsableRProveedor`),
-  KEY `fk_L3Aplicacion_recurso_proveedor2_idx` (`idBackupRProveedor`),
-  KEY `fk_L3Aplicacion_recurso_proveedor3_idx` (`idLiderRProveedor`),
-  KEY `fk_L3Aplicacion_recurso_proveedor4_idx` (`idProjectManagerRProveedor`),
-  KEY `fk_L3Aplicacion_recurso_proveedor5_idx` (`idDeliveryManagerRProveedor`),
-  CONSTRAINT `fk_L3Aplicacion_aplicacion1` FOREIGN KEY (`idAplicacionCiti`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L3Aplicacion_recurso_citi1` FOREIGN KEY (`idAnalistaRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L3Aplicacion_recurso_citi2` FOREIGN KEY (`idLiderRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L3Aplicacion_recurso_citi3` FOREIGN KEY (`idGerenteRCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L3Aplicacion_recurso_proveedor1` FOREIGN KEY (`idResponsableRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L3Aplicacion_recurso_proveedor2` FOREIGN KEY (`idBackupRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L3Aplicacion_recurso_proveedor3` FOREIGN KEY (`idLiderRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L3Aplicacion_recurso_proveedor4` FOREIGN KEY (`idProjectManagerRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_L3Aplicacion_recurso_proveedor5` FOREIGN KEY (`idDeliveryManagerRProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+   `idAplicacionCiti` int(11) NOT NULL,
+   `idAnalistaRCiti` varchar(7) DEFAULT NULL,
+   `idLiderRCiti` varchar(7) DEFAULT NULL,
+   `idGerenteRCiti` varchar(7) DEFAULT NULL,
+   `idResponsableRProveedor` int(11) DEFAULT NULL,
+   `idBackupRProveedor` int(11) DEFAULT NULL,
+   `idLiderRProveedor` int(11) DEFAULT NULL,
+   `idProjectManagerRProveedor` int(11) DEFAULT NULL,
+   `idDeliveryManagerRProveedor` int(11) DEFAULT NULL,
+   PRIMARY KEY (`idAplicacionCiti`),
+   CONSTRAINT `fk_L3Aplicacion_aplicacion1` FOREIGN KEY (`idAplicacionCiti`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE CASCADE ON UPDATE NO ACTION
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `L3APLICACION`
@@ -742,7 +727,7 @@ CREATE TABLE `RECURSOCITI_APLICACION` (
   `idAplicacion` int(11) NOT NULL,
   PRIMARY KEY (`idRecursoCiti`,`idAplicacion`),
   KEY `fk_recursociti_aplicacion_aplicacion1_idx` (`idAplicacion`),
-  CONSTRAINT `fk_recursociti_aplicacion_aplicacion1` FOREIGN KEY (`idAplicacion`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_recursociti_aplicacion_aplicacion1` FOREIGN KEY (`idAplicacion`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_recursociti_aplicacion_recurso_citi` FOREIGN KEY (`idRecursoCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -769,7 +754,7 @@ CREATE TABLE `RECURSOPROVEEDOR_APLICACION` (
   `idAplicacion` int(11) NOT NULL,
   PRIMARY KEY (`idRecursoProveedor`,`idAplicacion`),
   KEY `fk_recursoproveedor_aplicacion_aplicacion1_idx` (`idAplicacion`),
-  CONSTRAINT `fk_recursoproveedor_aplicacion_aplicacion1` FOREIGN KEY (`idAplicacion`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  CONSTRAINT `fk_recursoproveedor_aplicacion_aplicacion1` FOREIGN KEY (`idAplicacion`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_recursoproveedor_aplicacion_recurso_proveedor` FOREIGN KEY (`idRecursoProveedor`) REFERENCES `RECURSO_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1422,7 +1407,7 @@ DELIMITER ;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `detailsl1application` AS select `a`.`Csi_Id` AS `idApp`,`d`.`Descripcion` AS `dominio`,'L1' AS `L1`,concat(`canalista`.`Primer_Nombre`,' ',`canalista`.`Segundo_Nombre`,' ',`canalista`.`Apellido_Paterno`,' ',`canalista`.`Apellido_Materno`) AS `analista_bnmx`,`canalista`.`Ext` AS `ext_analista_bnmx`,`canalista`.`Movil` AS `celular_analista_bnmx`,`canalista`.`Email` AS `email_analista_bnmx`,concat(`clider`.`Primer_Nombre`,' ',`clider`.`Segundo_Nombre`,' ',`clider`.`Apellido_Paterno`,' ',`clider`.`Apellido_Materno`) AS `lider_bnmx`,`clider`.`Ext` AS `ext_lider_bnmx`,`clider`.`Movil` AS `celular_lider_bnmx`,`clider`.`Email` AS `email_lider_bnmx`,concat(`cgerente`.`Primer_Nombre`,' ',`cgerente`.`Segundo_Nombre`,' ',`cgerente`.`Apellido_Paterno`,' ',`cgerente`.`Apellido_Materno`) AS `gerente_bnmx`,`cgerente`.`Ext` AS `ext_gerente_bnmx`,`cgerente`.`Movil` AS `celular_gerente_bnmx`,`cgerente`.`Email` AS `email_gerente_bnmx`,`cp`.`Descripcion` AS `proveedor`,concat(`presponsable`.`Primer_Nombre`,' ',`presponsable`.`Segundo_Nombre`,' ',`presponsable`.`Apellido_Paterno`,' ',`presponsable`.`Apellido_Materno`) AS `responsable_prov`,`presponsable`.`Ext_Citi` AS `ext_responsable_banamex_prov`,`presponsable`.`LD_celular` AS `lada_cel_responsable_prov`,`presponsable`.`Movil_Personal` AS `cel_responsable_prov`,`presponsable`.`Email_Citi` AS `email_responsable_bnmx_prov`,`presponsable`.`LD_particular` AS `lada_otro_responsable_prov`,`presponsable`.`Telefono_Particular` AS `tel_otro_responsable_prov`,`presponsable`.`Email_Proveedor` AS `email_responsable_prov`,concat(`pbackup`.`Primer_Nombre`,' ',`pbackup`.`Segundo_Nombre`,' ',`pbackup`.`Apellido_Paterno`,' ',`pbackup`.`Apellido_Materno`) AS `backup_prov`,`pbackup`.`Ext_Citi` AS `ext_backup_banamex_prov`,`pbackup`.`LD_celular` AS `lada_cel_backup_prov`,`pbackup`.`Movil_Personal` AS `cel_backup_prov`,`pbackup`.`Email_Citi` AS `email_backup_bnmx_prov`,`pbackup`.`LD_particular` AS `lada_otro_backup_prov`,`pbackup`.`Telefono_Particular` AS `tel_otro_backup_prov`,`pbackup`.`Email_Proveedor` AS `email_backup_prov`,concat(`plider`.`Primer_Nombre`,' ',`plider`.`Segundo_Nombre`,' ',`plider`.`Apellido_Paterno`,' ',`plider`.`Apellido_Materno`) AS `lider_prov`,`plider`.`Ext_Citi` AS `ext_lider_banamex_prov`,`plider`.`LD_celular` AS `lada_cel_lider_prov`,`plider`.`Movil_Personal` AS `cel_lider_prov`,`plider`.`Email_Citi` AS `email_lider_bnmx_prov`,`plider`.`LD_particular` AS `lada_otro_lider_prov`,`plider`.`Telefono_Particular` AS `tel_otro_lider_prov`,`plider`.`Email_Proveedor` AS `email_lider_prov`,concat(`pprojectmanager`.`Primer_Nombre`,' ',`pprojectmanager`.`Segundo_Nombre`,' ',`pprojectmanager`.`Apellido_Paterno`,' ',`pprojectmanager`.`Apellido_Materno`) AS `p_manager_prov`,`pprojectmanager`.`Ext_Citi` AS `ext_p_manager_banamex_prov`,`pprojectmanager`.`LD_celular` AS `lada_cel_p_manager_prov`,`pprojectmanager`.`Movil_Personal` AS `cel_p_manager_prov`,`pprojectmanager`.`Email_Citi` AS `email_p_manager_bnmx_prov`,`pprojectmanager`.`LD_particular` AS `lada_otro_p_manager_prov`,`pprojectmanager`.`Telefono_Particular` AS `tel_otro_p_manager_prov`,`pprojectmanager`.`Email_Proveedor` AS `email_p_manager_prov`,concat(`pdelivery`.`Primer_Nombre`,' ',`pdelivery`.`Segundo_Nombre`,' ',`pdelivery`.`Apellido_Paterno`,' ',`pdelivery`.`Apellido_Materno`) AS `d_manager_prov`,`pdelivery`.`Ext_Citi` AS `ext_d_manager_banamex_prov`,`pdelivery`.`LD_celular` AS `lada_cel_d_manager_prov`,`pdelivery`.`Movil_Personal` AS `cel_d_manager_prov`,`pdelivery`.`Email_Citi` AS `email_d_manager_bnmx_prov`,`pdelivery`.`LD_particular` AS `lada_otro_d_manager_prov`,`pdelivery`.`Telefono_Particular` AS `tel_otro_d_manager_prov`,`pdelivery`.`Email_Proveedor` AS `email_d_manager_prov` from (((((((((((`APLICACION` `a` join `CAT_PROVEEDOR` `cp` on((`a`.`Id_L1` = `cp`.`Id`))) join `L1APLICACION` `l1` on((`a`.`Csi_Id` = `l1`.`idAplicacionCiti`))) join `RECURSO_CITI` `canalista` on((`canalista`.`Soe_Id` = `l1`.`idAnalistaRCiti`))) join `RECURSO_CITI` `clider` on((`clider`.`Soe_Id` = `l1`.`idLiderRCiti`))) join `RECURSO_CITI` `cgerente` on((`cgerente`.`Soe_Id` = `l1`.`idGerenteRCiti`))) join `RECURSO_PROVEEDOR` `presponsable` on((`presponsable`.`Id` = `l1`.`idResponsableRProveedor`))) join `RECURSO_PROVEEDOR` `pbackup` on((`pbackup`.`Id` = `l1`.`idBackupRProveedor`))) join `RECURSO_PROVEEDOR` `plider` on((`plider`.`Id` = `l1`.`idLiderRProveedor`))) join `RECURSO_PROVEEDOR` `pprojectmanager` on((`pprojectmanager`.`Id` = `l1`.`idProjectManagerRProveedor`))) join `RECURSO_PROVEEDOR` `pdelivery` on((`pdelivery`.`Id` = `l1`.`idDeliveryManagerRProveedor`))) join `CAT_DOMINIO` `d` on((`d`.`Id` = `a`.`Id_Dominio`))) */;
+/*!50001 VIEW `detailsl1application` AS select `a`.`Csi_Id` AS `idApp`,`d`.`Descripcion` AS `dominio`,'L1' AS `L`,concat(`canalista`.`Primer_Nombre`,' ',`canalista`.`Segundo_Nombre`,' ',`canalista`.`Apellido_Paterno`,' ',`canalista`.`Apellido_Materno`) AS `analista_bnmx`,`canalista`.`Ext` AS `ext_analista_bnmx`,`canalista`.`Movil` AS `celular_analista_bnmx`,`canalista`.`Email` AS `email_analista_bnmx`,concat(`clider`.`Primer_Nombre`,' ',`clider`.`Segundo_Nombre`,' ',`clider`.`Apellido_Paterno`,' ',`clider`.`Apellido_Materno`) AS `lider_bnmx`,`clider`.`Ext` AS `ext_lider_bnmx`,`clider`.`Movil` AS `celular_lider_bnmx`,`clider`.`Email` AS `email_lider_bnmx`,concat(`cgerente`.`Primer_Nombre`,' ',`cgerente`.`Segundo_Nombre`,' ',`cgerente`.`Apellido_Paterno`,' ',`cgerente`.`Apellido_Materno`) AS `gerente_bnmx`,`cgerente`.`Ext` AS `ext_gerente_bnmx`,`cgerente`.`Movil` AS `celular_gerente_bnmx`,`cgerente`.`Email` AS `email_gerente_bnmx`,`cp`.`Descripcion` AS `proveedor`,concat(`presponsable`.`Primer_Nombre`,' ',`presponsable`.`Segundo_Nombre`,' ',`presponsable`.`Apellido_Paterno`,' ',`presponsable`.`Apellido_Materno`) AS `responsable_prov`,`presponsable`.`Ext_Citi` AS `ext_responsable_banamex_prov`,`presponsable`.`LD_celular` AS `lada_cel_responsable_prov`,`presponsable`.`Movil_Personal` AS `cel_responsable_prov`,`presponsable`.`Email_Citi` AS `email_responsable_bnmx_prov`,`presponsable`.`LD_particular` AS `lada_otro_responsable_prov`,`presponsable`.`Telefono_Particular` AS `tel_otro_responsable_prov`,`presponsable`.`Email_Proveedor` AS `email_responsable_prov`,concat(`pbackup`.`Primer_Nombre`,' ',`pbackup`.`Segundo_Nombre`,' ',`pbackup`.`Apellido_Paterno`,' ',`pbackup`.`Apellido_Materno`) AS `backup_prov`,`pbackup`.`Ext_Citi` AS `ext_backup_banamex_prov`,`pbackup`.`LD_celular` AS `lada_cel_backup_prov`,`pbackup`.`Movil_Personal` AS `cel_backup_prov`,`pbackup`.`Email_Citi` AS `email_backup_bnmx_prov`,`pbackup`.`LD_particular` AS `lada_otro_backup_prov`,`pbackup`.`Telefono_Particular` AS `tel_otro_backup_prov`,`pbackup`.`Email_Proveedor` AS `email_backup_prov`,concat(`plider`.`Primer_Nombre`,' ',`plider`.`Segundo_Nombre`,' ',`plider`.`Apellido_Paterno`,' ',`plider`.`Apellido_Materno`) AS `lider_prov`,`plider`.`Ext_Citi` AS `ext_lider_banamex_prov`,`plider`.`LD_celular` AS `lada_cel_lider_prov`,`plider`.`Movil_Personal` AS `cel_lider_prov`,`plider`.`Email_Citi` AS `email_lider_bnmx_prov`,`plider`.`LD_particular` AS `lada_otro_lider_prov`,`plider`.`Telefono_Particular` AS `tel_otro_lider_prov`,`plider`.`Email_Proveedor` AS `email_lider_prov`,concat(`pprojectmanager`.`Primer_Nombre`,' ',`pprojectmanager`.`Segundo_Nombre`,' ',`pprojectmanager`.`Apellido_Paterno`,' ',`pprojectmanager`.`Apellido_Materno`) AS `p_manager_prov`,`pprojectmanager`.`Ext_Citi` AS `ext_p_manager_banamex_prov`,`pprojectmanager`.`LD_celular` AS `lada_cel_p_manager_prov`,`pprojectmanager`.`Movil_Personal` AS `cel_p_manager_prov`,`pprojectmanager`.`Email_Citi` AS `email_p_manager_bnmx_prov`,`pprojectmanager`.`LD_particular` AS `lada_otro_p_manager_prov`,`pprojectmanager`.`Telefono_Particular` AS `tel_otro_p_manager_prov`,`pprojectmanager`.`Email_Proveedor` AS `email_p_manager_prov`,concat(`pdelivery`.`Primer_Nombre`,' ',`pdelivery`.`Segundo_Nombre`,' ',`pdelivery`.`Apellido_Paterno`,' ',`pdelivery`.`Apellido_Materno`) AS `d_manager_prov`,`pdelivery`.`Ext_Citi` AS `ext_d_manager_banamex_prov`,`pdelivery`.`LD_celular` AS `lada_cel_d_manager_prov`,`pdelivery`.`Movil_Personal` AS `cel_d_manager_prov`,`pdelivery`.`Email_Citi` AS `email_d_manager_bnmx_prov`,`pdelivery`.`LD_particular` AS `lada_otro_d_manager_prov`,`pdelivery`.`Telefono_Particular` AS `tel_otro_d_manager_prov`,`pdelivery`.`Email_Proveedor` AS `email_d_manager_prov` from (((((((((((`APLICACION` `a` left join `CAT_PROVEEDOR` `cp` on((`a`.`Id_L1` = `cp`.`Id`))) left join `L1APLICACION` `l1` on((`a`.`Csi_Id` = `l1`.`idAplicacionCiti`))) left join `RECURSO_CITI` `canalista` on((`canalista`.`Soe_Id` = `l1`.`idAnalistaRCiti`))) left join `RECURSO_CITI` `clider` on((`clider`.`Soe_Id` = `l1`.`idLiderRCiti`))) left join `RECURSO_CITI` `cgerente` on((`cgerente`.`Soe_Id` = `l1`.`idGerenteRCiti`))) left join `RECURSO_PROVEEDOR` `presponsable` on((`presponsable`.`Id` = `l1`.`idResponsableRProveedor`))) left join `RECURSO_PROVEEDOR` `pbackup` on((`pbackup`.`Id` = `l1`.`idBackupRProveedor`))) left join `RECURSO_PROVEEDOR` `plider` on((`plider`.`Id` = `l1`.`idLiderRProveedor`))) left join `RECURSO_PROVEEDOR` `pprojectmanager` on((`pprojectmanager`.`Id` = `l1`.`idProjectManagerRProveedor`))) left join `RECURSO_PROVEEDOR` `pdelivery` on((`pdelivery`.`Id` = `l1`.`idDeliveryManagerRProveedor`))) left join `CAT_DOMINIO` `d` on((`d`.`Id` = `a`.`Id_Dominio`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -1440,7 +1425,7 @@ DELIMITER ;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `detailsl2application` AS select `a`.`Csi_Id` AS `idApp`,`d`.`Descripcion` AS `dominio`,'L2' AS `L2`,concat(`canalista`.`Primer_Nombre`,' ',`canalista`.`Segundo_Nombre`,' ',`canalista`.`Apellido_Paterno`,' ',`canalista`.`Apellido_Materno`) AS `analista_bnmx`,`canalista`.`Ext` AS `ext_analista_bnmx`,`canalista`.`Movil` AS `celular_analista_bnmx`,`canalista`.`Email` AS `email_analista_bnmx`,concat(`clider`.`Primer_Nombre`,' ',`clider`.`Segundo_Nombre`,' ',`clider`.`Apellido_Paterno`,' ',`clider`.`Apellido_Materno`) AS `lider_bnmx`,`clider`.`Ext` AS `ext_lider_bnmx`,`clider`.`Movil` AS `celular_lider_bnmx`,`clider`.`Email` AS `email_lider_bnmx`,concat(`cgerente`.`Primer_Nombre`,' ',`cgerente`.`Segundo_Nombre`,' ',`cgerente`.`Apellido_Paterno`,' ',`cgerente`.`Apellido_Materno`) AS `gerente_bnmx`,`cgerente`.`Ext` AS `ext_gerente_bnmx`,`cgerente`.`Movil` AS `celular_gerente_bnmx`,`cgerente`.`Email` AS `email_gerente_bnmx`,`cp`.`Descripcion` AS `proveedor`,concat(`presponsable`.`Primer_Nombre`,' ',`presponsable`.`Segundo_Nombre`,' ',`presponsable`.`Apellido_Paterno`,' ',`presponsable`.`Apellido_Materno`) AS `responsable_prov`,`presponsable`.`Ext_Citi` AS `ext_responsable_banamex_prov`,`presponsable`.`LD_celular` AS `lada_cel_responsable_prov`,`presponsable`.`Movil_Personal` AS `cel_responsable_prov`,`presponsable`.`Email_Citi` AS `email_responsable_bnmx_prov`,`presponsable`.`LD_particular` AS `lada_otro_responsable_prov`,`presponsable`.`Telefono_Particular` AS `tel_otro_responsable_prov`,`presponsable`.`Email_Proveedor` AS `email_responsable_prov`,concat(`pbackup`.`Primer_Nombre`,' ',`pbackup`.`Segundo_Nombre`,' ',`pbackup`.`Apellido_Paterno`,' ',`pbackup`.`Apellido_Materno`) AS `backup_prov`,`pbackup`.`Ext_Citi` AS `ext_backup_banamex_prov`,`pbackup`.`LD_celular` AS `lada_cel_backup_prov`,`pbackup`.`Movil_Personal` AS `cel_backup_prov`,`pbackup`.`Email_Citi` AS `email_backup_bnmx_prov`,`pbackup`.`LD_particular` AS `lada_otro_backup_prov`,`pbackup`.`Telefono_Particular` AS `tel_otro_backup_prov`,`pbackup`.`Email_Proveedor` AS `email_backup_prov`,concat(`plider`.`Primer_Nombre`,' ',`plider`.`Segundo_Nombre`,' ',`plider`.`Apellido_Paterno`,' ',`plider`.`Apellido_Materno`) AS `lider_prov`,`plider`.`Ext_Citi` AS `ext_lider_banamex_prov`,`plider`.`LD_celular` AS `lada_cel_lider_prov`,`plider`.`Movil_Personal` AS `cel_lider_prov`,`plider`.`Email_Citi` AS `email_lider_bnmx_prov`,`plider`.`LD_particular` AS `lada_otro_lider_prov`,`plider`.`Telefono_Particular` AS `tel_otro_lider_prov`,`plider`.`Email_Proveedor` AS `email_lider_prov`,concat(`pprojectmanager`.`Primer_Nombre`,' ',`pprojectmanager`.`Segundo_Nombre`,' ',`pprojectmanager`.`Apellido_Paterno`,' ',`pprojectmanager`.`Apellido_Materno`) AS `p_manager_prov`,`pprojectmanager`.`Ext_Citi` AS `ext_p_manager_banamex_prov`,`pprojectmanager`.`LD_celular` AS `lada_cel_p_manager_prov`,`pprojectmanager`.`Movil_Personal` AS `cel_p_manager_prov`,`pprojectmanager`.`Email_Citi` AS `email_p_manager_bnmx_prov`,`pprojectmanager`.`LD_particular` AS `lada_otro_p_manager_prov`,`pprojectmanager`.`Telefono_Particular` AS `tel_otro_p_manager_prov`,`pprojectmanager`.`Email_Proveedor` AS `email_p_manager_prov`,concat(`pdelivery`.`Primer_Nombre`,' ',`pdelivery`.`Segundo_Nombre`,' ',`pdelivery`.`Apellido_Paterno`,' ',`pdelivery`.`Apellido_Materno`) AS `d_manager_prov`,`pdelivery`.`Ext_Citi` AS `ext_d_manager_banamex_prov`,`pdelivery`.`LD_celular` AS `lada_cel_d_manager_prov`,`pdelivery`.`Movil_Personal` AS `cel_d_manager_prov`,`pdelivery`.`Email_Citi` AS `email_d_manager_bnmx_prov`,`pdelivery`.`LD_particular` AS `lada_otro_d_manager_prov`,`pdelivery`.`Telefono_Particular` AS `tel_otro_d_manager_prov`,`pdelivery`.`Email_Proveedor` AS `email_d_manager_prov` from (((((((((((`APLICACION` `a` join `CAT_PROVEEDOR` `cp` on((`a`.`Id_L2` = `cp`.`Id`))) join `L2APLICACION` `l2` on((`a`.`Csi_Id` = `l2`.`idAplicacionCiti`))) join `RECURSO_CITI` `canalista` on((`canalista`.`Soe_Id` = `l2`.`idAnalistaRCiti`))) join `RECURSO_CITI` `clider` on((`clider`.`Soe_Id` = `l2`.`idLiderRCiti`))) join `RECURSO_CITI` `cgerente` on((`cgerente`.`Soe_Id` = `l2`.`idGerenteRCiti`))) join `RECURSO_PROVEEDOR` `presponsable` on((`presponsable`.`Id` = `l2`.`idResponsableRProveedor`))) join `RECURSO_PROVEEDOR` `pbackup` on((`pbackup`.`Id` = `l2`.`idBackupRProveedor`))) join `RECURSO_PROVEEDOR` `plider` on((`plider`.`Id` = `l2`.`idLiderRProveedor`))) join `RECURSO_PROVEEDOR` `pprojectmanager` on((`pprojectmanager`.`Id` = `l2`.`idProjectManagerRProveedor`))) join `RECURSO_PROVEEDOR` `pdelivery` on((`pdelivery`.`Id` = `l2`.`idDeliveryManagerRProveedor`))) join `CAT_DOMINIO` `d` on((`d`.`Id` = `a`.`Id_Dominio`))) */;
+/*!50001 VIEW `detailsl2application` AS select `a`.`Csi_Id` AS `idApp`,`d`.`Descripcion` AS `dominio`,'L2' AS `L`,concat(`canalista`.`Primer_Nombre`,' ',`canalista`.`Segundo_Nombre`,' ',`canalista`.`Apellido_Paterno`,' ',`canalista`.`Apellido_Materno`) AS `analista_bnmx`,`canalista`.`Ext` AS `ext_analista_bnmx`,`canalista`.`Movil` AS `celular_analista_bnmx`,`canalista`.`Email` AS `email_analista_bnmx`,concat(`clider`.`Primer_Nombre`,' ',`clider`.`Segundo_Nombre`,' ',`clider`.`Apellido_Paterno`,' ',`clider`.`Apellido_Materno`) AS `lider_bnmx`,`clider`.`Ext` AS `ext_lider_bnmx`,`clider`.`Movil` AS `celular_lider_bnmx`,`clider`.`Email` AS `email_lider_bnmx`,concat(`cgerente`.`Primer_Nombre`,' ',`cgerente`.`Segundo_Nombre`,' ',`cgerente`.`Apellido_Paterno`,' ',`cgerente`.`Apellido_Materno`) AS `gerente_bnmx`,`cgerente`.`Ext` AS `ext_gerente_bnmx`,`cgerente`.`Movil` AS `celular_gerente_bnmx`,`cgerente`.`Email` AS `email_gerente_bnmx`,`cp`.`Descripcion` AS `proveedor`,concat(`presponsable`.`Primer_Nombre`,' ',`presponsable`.`Segundo_Nombre`,' ',`presponsable`.`Apellido_Paterno`,' ',`presponsable`.`Apellido_Materno`) AS `responsable_prov`,`presponsable`.`Ext_Citi` AS `ext_responsable_banamex_prov`,`presponsable`.`LD_celular` AS `lada_cel_responsable_prov`,`presponsable`.`Movil_Personal` AS `cel_responsable_prov`,`presponsable`.`Email_Citi` AS `email_responsable_bnmx_prov`,`presponsable`.`LD_particular` AS `lada_otro_responsable_prov`,`presponsable`.`Telefono_Particular` AS `tel_otro_responsable_prov`,`presponsable`.`Email_Proveedor` AS `email_responsable_prov`,concat(`pbackup`.`Primer_Nombre`,' ',`pbackup`.`Segundo_Nombre`,' ',`pbackup`.`Apellido_Paterno`,' ',`pbackup`.`Apellido_Materno`) AS `backup_prov`,`pbackup`.`Ext_Citi` AS `ext_backup_banamex_prov`,`pbackup`.`LD_celular` AS `lada_cel_backup_prov`,`pbackup`.`Movil_Personal` AS `cel_backup_prov`,`pbackup`.`Email_Citi` AS `email_backup_bnmx_prov`,`pbackup`.`LD_particular` AS `lada_otro_backup_prov`,`pbackup`.`Telefono_Particular` AS `tel_otro_backup_prov`,`pbackup`.`Email_Proveedor` AS `email_backup_prov`,concat(`plider`.`Primer_Nombre`,' ',`plider`.`Segundo_Nombre`,' ',`plider`.`Apellido_Paterno`,' ',`plider`.`Apellido_Materno`) AS `lider_prov`,`plider`.`Ext_Citi` AS `ext_lider_banamex_prov`,`plider`.`LD_celular` AS `lada_cel_lider_prov`,`plider`.`Movil_Personal` AS `cel_lider_prov`,`plider`.`Email_Citi` AS `email_lider_bnmx_prov`,`plider`.`LD_particular` AS `lada_otro_lider_prov`,`plider`.`Telefono_Particular` AS `tel_otro_lider_prov`,`plider`.`Email_Proveedor` AS `email_lider_prov`,concat(`pprojectmanager`.`Primer_Nombre`,' ',`pprojectmanager`.`Segundo_Nombre`,' ',`pprojectmanager`.`Apellido_Paterno`,' ',`pprojectmanager`.`Apellido_Materno`) AS `p_manager_prov`,`pprojectmanager`.`Ext_Citi` AS `ext_p_manager_banamex_prov`,`pprojectmanager`.`LD_celular` AS `lada_cel_p_manager_prov`,`pprojectmanager`.`Movil_Personal` AS `cel_p_manager_prov`,`pprojectmanager`.`Email_Citi` AS `email_p_manager_bnmx_prov`,`pprojectmanager`.`LD_particular` AS `lada_otro_p_manager_prov`,`pprojectmanager`.`Telefono_Particular` AS `tel_otro_p_manager_prov`,`pprojectmanager`.`Email_Proveedor` AS `email_p_manager_prov`,concat(`pdelivery`.`Primer_Nombre`,' ',`pdelivery`.`Segundo_Nombre`,' ',`pdelivery`.`Apellido_Paterno`,' ',`pdelivery`.`Apellido_Materno`) AS `d_manager_prov`,`pdelivery`.`Ext_Citi` AS `ext_d_manager_banamex_prov`,`pdelivery`.`LD_celular` AS `lada_cel_d_manager_prov`,`pdelivery`.`Movil_Personal` AS `cel_d_manager_prov`,`pdelivery`.`Email_Citi` AS `email_d_manager_bnmx_prov`,`pdelivery`.`LD_particular` AS `lada_otro_d_manager_prov`,`pdelivery`.`Telefono_Particular` AS `tel_otro_d_manager_prov`,`pdelivery`.`Email_Proveedor` AS `email_d_manager_prov` from (((((((((((`APLICACION` `a` left join `CAT_PROVEEDOR` `cp` on((`a`.`Id_L2` = `cp`.`Id`))) left join `L2APLICACION` `l1` on((`a`.`Csi_Id` = `l1`.`idAplicacionCiti`))) left join `RECURSO_CITI` `canalista` on((`canalista`.`Soe_Id` = `l1`.`idAnalistaRCiti`))) left join `RECURSO_CITI` `clider` on((`clider`.`Soe_Id` = `l1`.`idLiderRCiti`))) left join `RECURSO_CITI` `cgerente` on((`cgerente`.`Soe_Id` = `l1`.`idGerenteRCiti`))) left join `RECURSO_PROVEEDOR` `presponsable` on((`presponsable`.`Id` = `l1`.`idResponsableRProveedor`))) left join `RECURSO_PROVEEDOR` `pbackup` on((`pbackup`.`Id` = `l1`.`idBackupRProveedor`))) left join `RECURSO_PROVEEDOR` `plider` on((`plider`.`Id` = `l1`.`idLiderRProveedor`))) left join `RECURSO_PROVEEDOR` `pprojectmanager` on((`pprojectmanager`.`Id` = `l1`.`idProjectManagerRProveedor`))) left join `RECURSO_PROVEEDOR` `pdelivery` on((`pdelivery`.`Id` = `l1`.`idDeliveryManagerRProveedor`))) left join `CAT_DOMINIO` `d` on((`d`.`Id` = `a`.`Id_Dominio`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -1458,7 +1443,7 @@ DELIMITER ;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `detailsl3application` AS select `a`.`Csi_Id` AS `idApp`,`d`.`Descripcion` AS `dominio`,'L3' AS `L3`,concat(`canalista`.`Primer_Nombre`,' ',`canalista`.`Segundo_Nombre`,' ',`canalista`.`Apellido_Paterno`,' ',`canalista`.`Apellido_Materno`) AS `analista_bnmx`,`canalista`.`Ext` AS `ext_analista_bnmx`,`canalista`.`Movil` AS `celular_analista_bnmx`,`canalista`.`Email` AS `email_analista_bnmx`,concat(`clider`.`Primer_Nombre`,' ',`clider`.`Segundo_Nombre`,' ',`clider`.`Apellido_Paterno`,' ',`clider`.`Apellido_Materno`) AS `lider_bnmx`,`clider`.`Ext` AS `ext_lider_bnmx`,`clider`.`Movil` AS `celular_lider_bnmx`,`clider`.`Email` AS `email_lider_bnmx`,concat(`cgerente`.`Primer_Nombre`,' ',`cgerente`.`Segundo_Nombre`,' ',`cgerente`.`Apellido_Paterno`,' ',`cgerente`.`Apellido_Materno`) AS `gerente_bnmx`,`cgerente`.`Ext` AS `ext_gerente_bnmx`,`cgerente`.`Movil` AS `celular_gerente_bnmx`,`cgerente`.`Email` AS `email_gerente_bnmx`,`cp`.`Descripcion` AS `proveedor`,concat(`presponsable`.`Primer_Nombre`,' ',`presponsable`.`Segundo_Nombre`,' ',`presponsable`.`Apellido_Paterno`,' ',`presponsable`.`Apellido_Materno`) AS `responsable_prov`,`presponsable`.`Ext_Citi` AS `ext_responsable_banamex_prov`,`presponsable`.`LD_celular` AS `lada_cel_responsable_prov`,`presponsable`.`Movil_Personal` AS `cel_responsable_prov`,`presponsable`.`Email_Citi` AS `email_responsable_bnmx_prov`,`presponsable`.`LD_particular` AS `lada_otro_responsable_prov`,`presponsable`.`Telefono_Particular` AS `tel_otro_responsable_prov`,`presponsable`.`Email_Proveedor` AS `email_responsable_prov`,concat(`pbackup`.`Primer_Nombre`,' ',`pbackup`.`Segundo_Nombre`,' ',`pbackup`.`Apellido_Paterno`,' ',`pbackup`.`Apellido_Materno`) AS `backup_prov`,`pbackup`.`Ext_Citi` AS `ext_backup_banamex_prov`,`pbackup`.`LD_celular` AS `lada_cel_backup_prov`,`pbackup`.`Movil_Personal` AS `cel_backup_prov`,`pbackup`.`Email_Citi` AS `email_backup_bnmx_prov`,`pbackup`.`LD_particular` AS `lada_otro_backup_prov`,`pbackup`.`Telefono_Particular` AS `tel_otro_backup_prov`,`pbackup`.`Email_Proveedor` AS `email_backup_prov`,concat(`plider`.`Primer_Nombre`,' ',`plider`.`Segundo_Nombre`,' ',`plider`.`Apellido_Paterno`,' ',`plider`.`Apellido_Materno`) AS `lider_prov`,`plider`.`Ext_Citi` AS `ext_lider_banamex_prov`,`plider`.`LD_celular` AS `lada_cel_lider_prov`,`plider`.`Movil_Personal` AS `cel_lider_prov`,`plider`.`Email_Citi` AS `email_lider_bnmx_prov`,`plider`.`LD_particular` AS `lada_otro_lider_prov`,`plider`.`Telefono_Particular` AS `tel_otro_lider_prov`,`plider`.`Email_Proveedor` AS `email_lider_prov`,concat(`pprojectmanager`.`Primer_Nombre`,' ',`pprojectmanager`.`Segundo_Nombre`,' ',`pprojectmanager`.`Apellido_Paterno`,' ',`pprojectmanager`.`Apellido_Materno`) AS `p_manager_prov`,`pprojectmanager`.`Ext_Citi` AS `ext_p_manager_banamex_prov`,`pprojectmanager`.`LD_celular` AS `lada_cel_p_manager_prov`,`pprojectmanager`.`Movil_Personal` AS `cel_p_manager_prov`,`pprojectmanager`.`Email_Citi` AS `email_p_manager_bnmx_prov`,`pprojectmanager`.`LD_particular` AS `lada_otro_p_manager_prov`,`pprojectmanager`.`Telefono_Particular` AS `tel_otro_p_manager_prov`,`pprojectmanager`.`Email_Proveedor` AS `email_p_manager_prov`,concat(`pdelivery`.`Primer_Nombre`,' ',`pdelivery`.`Segundo_Nombre`,' ',`pdelivery`.`Apellido_Paterno`,' ',`pdelivery`.`Apellido_Materno`) AS `d_manager_prov`,`pdelivery`.`Ext_Citi` AS `ext_d_manager_banamex_prov`,`pdelivery`.`LD_celular` AS `lada_cel_d_manager_prov`,`pdelivery`.`Movil_Personal` AS `cel_d_manager_prov`,`pdelivery`.`Email_Citi` AS `email_d_manager_bnmx_prov`,`pdelivery`.`LD_particular` AS `lada_otro_d_manager_prov`,`pdelivery`.`Telefono_Particular` AS `tel_otro_d_manager_prov`,`pdelivery`.`Email_Proveedor` AS `email_d_manager_prov` from (((((((((((`APLICACION` `a` join `CAT_PROVEEDOR` `cp` on((`a`.`Id_L3` = `cp`.`Id`))) join `L3APLICACION` `l3` on((`a`.`Csi_Id` = `l3`.`idAplicacionCiti`))) join `RECURSO_CITI` `canalista` on((`canalista`.`Soe_Id` = `l3`.`idAnalistaRCiti`))) join `RECURSO_CITI` `clider` on((`clider`.`Soe_Id` = `l3`.`idLiderRCiti`))) join `RECURSO_CITI` `cgerente` on((`cgerente`.`Soe_Id` = `l3`.`idGerenteRCiti`))) join `RECURSO_PROVEEDOR` `presponsable` on((`presponsable`.`Id` = `l3`.`idResponsableRProveedor`))) join `RECURSO_PROVEEDOR` `pbackup` on((`pbackup`.`Id` = `l3`.`idBackupRProveedor`))) join `RECURSO_PROVEEDOR` `plider` on((`plider`.`Id` = `l3`.`idLiderRProveedor`))) join `RECURSO_PROVEEDOR` `pprojectmanager` on((`pprojectmanager`.`Id` = `l3`.`idProjectManagerRProveedor`))) join `RECURSO_PROVEEDOR` `pdelivery` on((`pdelivery`.`Id` = `l3`.`idDeliveryManagerRProveedor`))) join `CAT_DOMINIO` `d` on((`d`.`Id` = `a`.`Id_Dominio`))) */;
+/*!50001 VIEW `detailsl3application` AS select `a`.`Csi_Id` AS `idApp`,`d`.`Descripcion` AS `dominio`,'L3' AS `L`,concat(`canalista`.`Primer_Nombre`,' ',`canalista`.`Segundo_Nombre`,' ',`canalista`.`Apellido_Paterno`,' ',`canalista`.`Apellido_Materno`) AS `analista_bnmx`,`canalista`.`Ext` AS `ext_analista_bnmx`,`canalista`.`Movil` AS `celular_analista_bnmx`,`canalista`.`Email` AS `email_analista_bnmx`,concat(`clider`.`Primer_Nombre`,' ',`clider`.`Segundo_Nombre`,' ',`clider`.`Apellido_Paterno`,' ',`clider`.`Apellido_Materno`) AS `lider_bnmx`,`clider`.`Ext` AS `ext_lider_bnmx`,`clider`.`Movil` AS `celular_lider_bnmx`,`clider`.`Email` AS `email_lider_bnmx`,concat(`cgerente`.`Primer_Nombre`,' ',`cgerente`.`Segundo_Nombre`,' ',`cgerente`.`Apellido_Paterno`,' ',`cgerente`.`Apellido_Materno`) AS `gerente_bnmx`,`cgerente`.`Ext` AS `ext_gerente_bnmx`,`cgerente`.`Movil` AS `celular_gerente_bnmx`,`cgerente`.`Email` AS `email_gerente_bnmx`,`cp`.`Descripcion` AS `proveedor`,concat(`presponsable`.`Primer_Nombre`,' ',`presponsable`.`Segundo_Nombre`,' ',`presponsable`.`Apellido_Paterno`,' ',`presponsable`.`Apellido_Materno`) AS `responsable_prov`,`presponsable`.`Ext_Citi` AS `ext_responsable_banamex_prov`,`presponsable`.`LD_celular` AS `lada_cel_responsable_prov`,`presponsable`.`Movil_Personal` AS `cel_responsable_prov`,`presponsable`.`Email_Citi` AS `email_responsable_bnmx_prov`,`presponsable`.`LD_particular` AS `lada_otro_responsable_prov`,`presponsable`.`Telefono_Particular` AS `tel_otro_responsable_prov`,`presponsable`.`Email_Proveedor` AS `email_responsable_prov`,concat(`pbackup`.`Primer_Nombre`,' ',`pbackup`.`Segundo_Nombre`,' ',`pbackup`.`Apellido_Paterno`,' ',`pbackup`.`Apellido_Materno`) AS `backup_prov`,`pbackup`.`Ext_Citi` AS `ext_backup_banamex_prov`,`pbackup`.`LD_celular` AS `lada_cel_backup_prov`,`pbackup`.`Movil_Personal` AS `cel_backup_prov`,`pbackup`.`Email_Citi` AS `email_backup_bnmx_prov`,`pbackup`.`LD_particular` AS `lada_otro_backup_prov`,`pbackup`.`Telefono_Particular` AS `tel_otro_backup_prov`,`pbackup`.`Email_Proveedor` AS `email_backup_prov`,concat(`plider`.`Primer_Nombre`,' ',`plider`.`Segundo_Nombre`,' ',`plider`.`Apellido_Paterno`,' ',`plider`.`Apellido_Materno`) AS `lider_prov`,`plider`.`Ext_Citi` AS `ext_lider_banamex_prov`,`plider`.`LD_celular` AS `lada_cel_lider_prov`,`plider`.`Movil_Personal` AS `cel_lider_prov`,`plider`.`Email_Citi` AS `email_lider_bnmx_prov`,`plider`.`LD_particular` AS `lada_otro_lider_prov`,`plider`.`Telefono_Particular` AS `tel_otro_lider_prov`,`plider`.`Email_Proveedor` AS `email_lider_prov`,concat(`pprojectmanager`.`Primer_Nombre`,' ',`pprojectmanager`.`Segundo_Nombre`,' ',`pprojectmanager`.`Apellido_Paterno`,' ',`pprojectmanager`.`Apellido_Materno`) AS `p_manager_prov`,`pprojectmanager`.`Ext_Citi` AS `ext_p_manager_banamex_prov`,`pprojectmanager`.`LD_celular` AS `lada_cel_p_manager_prov`,`pprojectmanager`.`Movil_Personal` AS `cel_p_manager_prov`,`pprojectmanager`.`Email_Citi` AS `email_p_manager_bnmx_prov`,`pprojectmanager`.`LD_particular` AS `lada_otro_p_manager_prov`,`pprojectmanager`.`Telefono_Particular` AS `tel_otro_p_manager_prov`,`pprojectmanager`.`Email_Proveedor` AS `email_p_manager_prov`,concat(`pdelivery`.`Primer_Nombre`,' ',`pdelivery`.`Segundo_Nombre`,' ',`pdelivery`.`Apellido_Paterno`,' ',`pdelivery`.`Apellido_Materno`) AS `d_manager_prov`,`pdelivery`.`Ext_Citi` AS `ext_d_manager_banamex_prov`,`pdelivery`.`LD_celular` AS `lada_cel_d_manager_prov`,`pdelivery`.`Movil_Personal` AS `cel_d_manager_prov`,`pdelivery`.`Email_Citi` AS `email_d_manager_bnmx_prov`,`pdelivery`.`LD_particular` AS `lada_otro_d_manager_prov`,`pdelivery`.`Telefono_Particular` AS `tel_otro_d_manager_prov`,`pdelivery`.`Email_Proveedor` AS `email_d_manager_prov` from (((((((((((`APLICACION` `a` left join `CAT_PROVEEDOR` `cp` on((`a`.`Id_L3` = `cp`.`Id`))) left join `L3APLICACION` `l1` on((`a`.`Csi_Id` = `l1`.`idAplicacionCiti`))) left join `RECURSO_CITI` `canalista` on((`canalista`.`Soe_Id` = `l1`.`idAnalistaRCiti`))) left join `RECURSO_CITI` `clider` on((`clider`.`Soe_Id` = `l1`.`idLiderRCiti`))) left join `RECURSO_CITI` `cgerente` on((`cgerente`.`Soe_Id` = `l1`.`idGerenteRCiti`))) left join `RECURSO_PROVEEDOR` `presponsable` on((`presponsable`.`Id` = `l1`.`idResponsableRProveedor`))) left join `RECURSO_PROVEEDOR` `pbackup` on((`pbackup`.`Id` = `l1`.`idBackupRProveedor`))) left join `RECURSO_PROVEEDOR` `plider` on((`plider`.`Id` = `l1`.`idLiderRProveedor`))) left join `RECURSO_PROVEEDOR` `pprojectmanager` on((`pprojectmanager`.`Id` = `l1`.`idProjectManagerRProveedor`))) left join `RECURSO_PROVEEDOR` `pdelivery` on((`pdelivery`.`Id` = `l1`.`idDeliveryManagerRProveedor`))) left join `CAT_DOMINIO` `d` on((`d`.`Id` = `a`.`Id_Dominio`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;

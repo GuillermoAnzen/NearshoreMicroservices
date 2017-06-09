@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.banamex.nearshore.catalogsms.domain.Proveedor;
-import com.banamex.nearshore.catalogsms.domain.Pagination;
 import com.banamex.nearshore.catalogsms.exception.NearshoreDatabaseMicroserviceException;
+import com.banamex.nearshore.catalogsms.pagination.AppsByEmployeProviderPagination;
+import com.banamex.nearshore.catalogsms.pagination.Pagination;
+import com.banamex.nearshore.catalogsms.pagination.ProviderPagination;
 import com.banamex.nearshore.databasems.Data;
 import com.banamex.nearshore.databasems.DatabaseMicroserviceClientService;
 import com.banamex.nearshore.databasems.ResultBase;
@@ -31,7 +33,7 @@ public class ProveedoresController {
 	 * 
 	 * 
 	 */
-	@RequestMapping(value = "/pagination", method = RequestMethod.POST, produces = "application/json")
+	@RequestMapping(value = "/providers", method = RequestMethod.POST, produces = "application/json")
 	public Object retrieveTestPagination(@RequestBody Pagination pagination){
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
 		List<Data> queryParams = new ArrayList<>();
@@ -44,12 +46,12 @@ public class ProveedoresController {
 		queryParams.add(queryParam01);
 		
 		queryParam02.setIndex(2);
-		queryParam02.setType("STRING");
+		queryParam02.setType("INT");
 		queryParam02.setValue(pagination.getRows().toString());
 		queryParams.add(queryParam02);
 		
 		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
-		requestParams.put("sql", "call nearshore.PAGINATION(?, ?)");
+		requestParams.put("sql", "call nearshore.paginationProviders(?, ?)");
 		requestParams.put("data", queryParams);
 		
 		Object resultBase = null;
@@ -65,28 +67,31 @@ public class ProveedoresController {
 	 * GET APPLICATIONS DEVELOPED BY PROVIDER EMPLOYE
 	 * Return a list with applications developed by a specific provider employe  
 	 */
-	@RequestMapping(value = "/appsProvider/{idEmploye}", method = RequestMethod.GET, produces = "application/json")
-	public Object retrieveAppsBySpecificEmployeProvider(@PathVariable String idEmploye){
+	@RequestMapping(value = "/appsProvider", method = RequestMethod.POST, produces = "application/json")
+	public Object retrieveAppsBySpecificEmployeProvider(@RequestBody AppsByEmployeProviderPagination pagination){
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
 		List<Data> queryParams = new ArrayList<>();
 		Data queryParam01 = new Data();
+		Data queryParam02 = new Data();
+		Data queryParam03 = new Data();
 		
 		queryParam01.setIndex(1);
-		queryParam01.setType("STRING");
-		queryParam01.setValue(idEmploye.toString());
+		queryParam01.setType("INT");
+		queryParam01.setValue(pagination.getIndex().toString());
 		queryParams.add(queryParam01);
 		
+		queryParam02.setIndex(2);
+		queryParam02.setType("INT");
+		queryParam02.setValue(pagination.getRows().toString());
+		queryParams.add(queryParam02);
+		
+		queryParam03.setIndex(3);
+		queryParam03.setType("INT");
+		queryParam03.setValue(pagination.getIdEmployee().toString());
+		queryParams.add(queryParam03);
+		
 		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
-		requestParams.put("sql", "SELECT A.Csi_Id AS idAplicacion,"
-				+ "A.Descripcion_Corta "
-				+ "FROM APLICACION A " 
-				+ "INNER JOIN APLICACION_PROVEEDOR AP "
-				+ "INNER JOIN RECURSOPROVEEDOR_APLICACION RPA "
-				+ "INNER JOIN RECURSO_PROVEEDOR RP "
-				+ "WHERE AP.Id_Aplicacion_Proveedor = A.Csi_Id "
-				+ "AND RPA.idAplicacion = AP.Id_Aplicacion_Proveedor "
-				+ "AND RP.Id = RPA.idRecursoProveedor " 
-				+ "AND RP.Id = ?");
+		requestParams.put("sql", "call nearshore.paginationAppsByProviderEmploye(?, ?, ?)");
 		requestParams.put("data", queryParams);
 		
 		Object resultBase = null;
@@ -102,12 +107,66 @@ public class ProveedoresController {
 	 * GET DETAILS OF ALL PROVIDERS
 	 * Return a list with the name and role of providers' employes.  
 	 */
-	@RequestMapping(value = "/detailsProvider", method = RequestMethod.GET, produces = "application/json")
-	public Object retrieveDetailsOfAllProviders(){
+	@RequestMapping(value = "/detailsProviders", method = RequestMethod.POST, produces = "application/json")
+	public Object retrieveDetailsOfAllProviders(@RequestBody Pagination pagination){
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
+		List<Data> queryParams = new ArrayList<>();
+		Data queryParam01 = new Data();
+		Data queryParam02 = new Data();
+		
+		queryParam01.setIndex(1);
+		queryParam01.setType("INT");
+		queryParam01.setValue(pagination.getIndex().toString());
+		queryParams.add(queryParam01);
+		
+		queryParam02.setIndex(2);
+		queryParam02.setType("INT");
+		queryParam02.setValue(pagination.getRows().toString());
+		queryParams.add(queryParam02);
 		
 		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
-		requestParams.put("sql", "SELECT RP.Id,RP.Clave_Empleado,concat(RP.Primer_Nombre,' ',RP.Segundo_Nombre,' ',RP.Apellido_Paterno,' ',RP.Apellido_Materno) AS nombre ,CPP.Descripcion AS puesto FROM RECURSO_PROVEEDOR RP INNER JOIN CAT_PUESTO_PROVEEDOR CPP WHERE CPP.Id = RP.Id_Puesto");
+		requestParams.put("sql", "call nearshore.paginationDetailsProviders(?, ?)");
+		requestParams.put("data", queryParams);
+		
+		Object resultBase = null;
+		try{
+			resultBase = databaseMicroserviceClientService.callBase(requestParams);
+		}catch(Exception e){
+			throw new NearshoreDatabaseMicroserviceException(e.getMessage());
+		}
+		return resultBase;
+	}
+	
+	/*
+	 * GET DETAILS OF SPECIFIC PROVIDER
+	 * Return a list with the name and role of providers' employes.  
+	 */
+	@RequestMapping(value = "/detailsProvider", method = RequestMethod.POST, produces = "application/json")
+	public Object retrieveDetailsOfProvider(@RequestBody ProviderPagination pagination){
+		HashMap<String, Object> requestParams = new HashMap<String, Object>();
+		List<Data> queryParams = new ArrayList<>();
+		Data queryParam01 = new Data();
+		Data queryParam02 = new Data();
+		Data queryParam03 = new Data();
+		
+		queryParam01.setIndex(1);
+		queryParam01.setType("INT");
+		queryParam01.setValue(pagination.getIndex().toString());
+		queryParams.add(queryParam01);
+		
+		queryParam02.setIndex(2);
+		queryParam02.setType("INT");
+		queryParam02.setValue(pagination.getRows().toString());
+		queryParams.add(queryParam02);
+		
+		queryParam03.setIndex(3);
+		queryParam03.setType("INT");
+		queryParam03.setValue(pagination.getIdProvider().toString());
+		queryParams.add(queryParam03);
+		
+		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
+		requestParams.put("sql", "call paginationDetailsProviderId(?,?,?)");
+		requestParams.put("data", queryParams);
 		
 		Object resultBase = null;
 		try{
@@ -122,7 +181,7 @@ public class ProveedoresController {
 	 * GET PROVIDER DETAILS
 	 * Return a list with the name and role of providers' employes.  
 	 */
-	@RequestMapping(value = "/detailsProvider/{idProvider}", method = RequestMethod.GET, produces = "application/json")
+	/*@RequestMapping(value = "/detailsProvider/{idProvider}", method = RequestMethod.GET, produces = "application/json")
 	public Object retrieveProvidersDetails(@PathVariable String idProvider){
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
 		List<Data> queryParams = new ArrayList<>();
@@ -144,7 +203,7 @@ public class ProveedoresController {
 			throw new NearshoreDatabaseMicroserviceException(e.getMessage());
 		}
 		return resultBase;
-	}
+	}*/
 	
 	/*
 	 * GET PROVEEDOR

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.banamex.nearshore.catalogsms.domain.Dominio;
 import com.banamex.nearshore.catalogsms.exception.NearshoreDatabaseMicroserviceException;
+import com.banamex.nearshore.catalogsms.pagination.Pagination;
 import com.banamex.nearshore.databasems.Data;
 import com.banamex.nearshore.databasems.DatabaseMicroserviceClientService;
 import com.banamex.nearshore.databasems.ResultBase;
@@ -30,12 +31,26 @@ public class DominiosController {
 	 * GET DOMINIOS
 	 * El endpoint devuelve un listado de dominios.
 	 */
-	@RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
-	public Object retrieveAllDomains() {
+	@RequestMapping(value = "/domainList", method = RequestMethod.POST, produces = "application/json")
+	public Object retrieveAllDomains(@RequestBody Pagination pagination) {
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
+		List<Data> queryParams = new ArrayList<>();
+		Data queryParam01 = new Data();
+		Data queryParam02 = new Data();
+		
+		queryParam01.setIndex(1);
+		queryParam01.setType("INT");
+		queryParam01.setValue(pagination.getIndex().toString());
+		queryParams.add(queryParam01);
+		
+		queryParam02.setIndex(2);
+		queryParam02.setType("INT");
+		queryParam02.setValue(pagination.getRows().toString());
+		queryParams.add(queryParam02);
 		
 		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
-		requestParams.put("sql", "SELECT ID, DESCRIPCION FROM "+Constants.CAT_DOMINIO);
+		requestParams.put("sql", "call nearshore.paginationDomains(?, ?)");
+		requestParams.put("data", queryParams);
 		
 		Object resultBase = null;
 		try {
@@ -51,7 +66,7 @@ public class DominiosController {
 	 * GET DOMINIOS
 	 * Devuelve un dominio por id.
 	 */
-	@RequestMapping(value = "/{idDominio}", method = RequestMethod.GET, produces = "application/json")
+	/*@RequestMapping(value = "/{idDominio}", method = RequestMethod.GET, produces = "application/json")
 	public Object retrieveDomainById(@PathVariable Integer idDominio) {
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
 		
@@ -74,7 +89,7 @@ public class DominiosController {
 		}
 		
 		return resultBase;
-	}
+	}*/
 	
 	/*
 	 * POST DOMINIOS
