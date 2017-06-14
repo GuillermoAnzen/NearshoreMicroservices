@@ -15,11 +15,8 @@ import com.banamex.nearshore.catalogsms.controller.EmpleadosController.DbMicrose
 import com.banamex.nearshore.catalogsms.domain.EmpleadoProveedor;
 import com.banamex.nearshore.catalogsms.exception.NearshoreDatabaseMicroserviceException;
 import com.banamex.nearshore.databasems.Data;
-import com.banamex.nearshore.databasems.ResultBase;
 import com.banamex.nearshore.util.Constants;
 import com.banamex.nearshore.util.Util;
-
-import io.netty.handler.codec.http.HttpContentEncoder.Result;
 
 @RestController
 @RequestMapping("empProvider")
@@ -43,6 +40,7 @@ public class EmpleadoProveedorController {
 		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
 		requestParams.put("sql", "SELECT "
 				+ "r.Id AS id,"
+				+ "r.Clave_Empleado AS clave,"
 				+ "concat(r.Primer_Nombre,' ', r.Segundo_Nombre,' ',r.Apellido_Paterno,' ',r.Apellido_Materno) AS nombre "
 				+ "FROM RECURSO_PROVEEDOR r "
 				+ "WHERE Id_Proveedor = ?");
@@ -231,9 +229,14 @@ public class EmpleadoProveedorController {
 				+ "RC.Segundo_Nombre, "
 				+ "RC.Apellido_Paterno, "
 				+ "RC.Apellido_Materno, "
+				+ "RC.Clave_Empleado, "
+				+ "RC.Id_Proveedor, "
 				+ "CPP.Descripcion AS puesto, "
+				+ "CPP.Id AS idPuesto, "
 				+ "CP.Descripcion AS pais, "
+				+ "CP.Id AS idPais, "
 				+ "CC.Descripcion AS ciudad,"
+				+ "CC.Id AS idCiudad, "
 				+ "RC.LD_celular, "
 				+ "RC.Movil_Personal AS celular, "
 				+ "RC.LD_particular AS ladaOtro, "
@@ -247,7 +250,8 @@ public class EmpleadoProveedorController {
 				+ "RC.Ext_Citi, "
 				+ "RC.Email_Citi, "
 				+ "concat( RPR.Primer_Nombre,' ',RPR.Segundo_Nombre, ' ', RPR.Apellido_Paterno, ' ', RPR.Apellido_Materno ) AS reportaA, "
-				+ "RPR.Id AS idReporta "
+				+ "RPR.Clave_Empleado AS idReporta, "
+				+ "RC.Comentarios "
 				+ "FROM "
 				+ "RECURSO_PROVEEDOR RC "
 				+ "INNER JOIN CAT_PUESTO_PROVEEDOR CPP "
@@ -256,7 +260,7 @@ public class EmpleadoProveedorController {
 				+ "ON RC.Id_Ciudad = CC.Id "
 				+ "INNER JOIN CAT_PAIS CP "
 				+ "ON CP.Id = CC.Id_Pais " 
-				+ "INNER JOIN RECURSO_PROVEEDOR RPR "
+				+ "LEFT JOIN RECURSO_PROVEEDOR RPR "
 				+ "ON RC.Id_Reporta_A = RPR.Clave_Empleado "
 				+ "WHERE RC.Id = ?");
 		requestParams.put("data", queryParams);

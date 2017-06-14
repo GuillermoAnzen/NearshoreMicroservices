@@ -32,6 +32,39 @@ public class AplicacionesController {
 	@Autowired
 	private DatabaseMicroserviceClientService databaseMicroserviceClientService;
 	
+	/*
+	 * PUT APPLICATION DETAILS TO L SUPPORT
+	 */
+	@RequestMapping(value = "/detailsSupport/{level}", method = RequestMethod.POST, produces = "application/json")
+	public Object putdetailsL(@RequestBody SoporteAplicacion aplicacion, @PathVariable Integer level){
+		HashMap<String, Object> resultParameter = new HashMap<String, Object>();
+		List<Data> queryParams = new ArrayList<>();
+		Object resultBase = null;
+		
+		queryParams = getQueryParamsSupport(aplicacion);
+				
+		resultParameter.put("tipoQuery", Constants.UPDATE_STATEMENT_TYPE);
+		resultParameter.put("sql", "UPDATE "
+				+ "L"+level+"APLICACION SET "
+				+ "idAnalistaRCiti=?, "
+				+ "idLiderRCiti=?, "
+				+ "idGerenteRCiti=?, "
+				+ "idResponsableRProveedor=?, "
+				+ "idBackupRProveedor=?, "
+				+ "idLiderRProveedor=?, "
+				+ "idProjectManagerRProveedor=?, "
+				+ "idDeliveryManagerRProveedor=? "
+				+ "WHERE idAplicacionCiti=?");
+		resultParameter.put("data", queryParams);
+		
+		try{
+			resultBase = databaseMicroserviceClientService.callBase(resultParameter);
+		}catch(Exception e){
+			throw new NearshoreDatabaseMicroserviceException(e.getMessage());
+		}
+
+		return resultBase;
+	}
 	
 	/*
 	 * Devuelve las aplicaciones por de un dominio en particular 
@@ -291,6 +324,29 @@ public class AplicacionesController {
 		}
 
 		return resultBase;
+	}
+	
+	private List<Data> getQueryParamsSupport(SoporteAplicacion aplicacion) {
+		List<Data> queryParams = new ArrayList<Data>();
+		
+		Data datos [];
+		datos = new Data[9]; 
+			
+		datos[0] = Util.createDataObj(aplicacion.getIdAnalistaB(), "STRING", 1);
+		datos[1] = Util.createDataObj(aplicacion.getIdLiderB(), "STRING", 2);
+		datos[2] = Util.createDataObj(aplicacion.getIdGerenteB(), "STRING", 3);
+		datos[3] = Util.createDataObj(aplicacion.getIdResponsableP(), "INT", 4);
+		datos[4] = Util.createDataObj(aplicacion.getIdBackupP(), "INT", 5);
+		datos[5] = Util.createDataObj(aplicacion.getIdLiderP(), "INT", 6);
+		datos[6] = Util.createDataObj(aplicacion.getIdPManagerP(), "INT", 7);
+		datos[7] = Util.createDataObj(aplicacion.getIdDManagerP(), "INT", 8);
+		datos[8] = Util.createDataObj(aplicacion.getIdAplicacion(), "INT", 9);
+
+		for(Data dato : datos) {
+			queryParams.add(dato);
+		}
+					
+		return queryParams;
 	}
 	
 	@FeignClient(name = "mcTDCdbMain")
