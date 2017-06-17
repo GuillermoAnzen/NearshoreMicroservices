@@ -270,28 +270,34 @@ public class EmpleadosController {
 		queryParams.add(queryParam01);
 		
 		requestParams.put("tipoQuery", 2);
-		requestParams.put("sql", "SELECT D.Descripcion AS Dominio,"
-				+ "RC.Soe_Id,"
-				+ "RC.Primer_Nombre,"
-				+ "RC.Segundo_Nombre,"
-				+ "RC.Apellido_Paterno,"
-				+ "RC.Apellido_Materno,"
-				+ "RC.Movil,"
-				+ "RC.Telefono,"
-				+ "RC.Email,"
-				+ "RC.Ext,"
-				+ "C.Descripcion AS Ciudad,"
-				+ "P.Descripcion as Pais "
-				+ "FROM CAT_DOMINIO D INNER JOIN RECURSO_CITI RC "
-				+ "INNER JOIN CAT_PUESTOCITI PC "
-				+ "INNER JOIN CAT_CIUDAD C "
-				+ "INNER JOIN CAT_PAIS P "
-				+ "WHERE "
-				+ "RC.Id_Dominio=D.Id AND "
-				+ "PC.Id = RC.Id_Puesto AND "
-				+ "RC.Id_Ciudad = C.Id AND "
-				+ "P.Id = C.Id_Pais AND "
-				+ "RC.Soe_Id = ?");
+		requestParams.put("sql", "SELECT D.Descripcion AS Dominio," +
+				"D.Id AS idDominio," +
+				"RC.Soe_Id," +
+				"RC.Primer_Nombre," +
+				"RC.Segundo_Nombre," +
+				"RC.Apellido_Paterno," +
+				"RC.Apellido_Materno," +
+                "concat(RC.Primer_Nombre,' ',RC.Segundo_Nombre,' ',RC.Apellido_Paterno,' ',RC.Apellido_Materno) AS nombre," +
+				"RC.Movil," +
+				"RC.Telefono," +
+				"RC.Email," +
+				"RC.Ext," +
+				"C.Descripcion AS Ciudad," +
+                "C.Id AS idCiudad," +
+				"P.Descripcion as Pais," +
+                "P.Id AS idPais," +
+                "PC.Descripcion AS puesto," +
+                "PC.Id AS idPuesto" +
+				"FROM CAT_DOMINIO D INNER JOIN RECURSO_CITI RC" + 
+				"INNER JOIN CAT_PUESTOCITI PC " +
+				"INNER JOIN CAT_CIUDAD C " +
+				"INNER JOIN CAT_PAIS P " +
+				"WHERE " +
+				"RC.Id_Dominio=D.Id AND" + 
+				"PC.Id = RC.Id_Puesto AND " +
+				"RC.Id_Ciudad = C.Id AND " +
+				"P.Id = C.Id_Pais AND " +
+				"RC.Soe_Id = ?");
 		requestParams.put("data", queryParams);
 		
 		Object resultBase = null; 
