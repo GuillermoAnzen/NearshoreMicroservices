@@ -27,7 +27,7 @@ public class Logincontroler {
 	 	
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
 		ResultBase datoUser = callLogin(datos.get("usuario") , datos.get("password"));
-		  
+		
 		return datoUser;
 		
 	}

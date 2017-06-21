@@ -19,8 +19,6 @@ public class StringRedisRepository {
 		template.opsForValue().set(key, value);
 	}
 
-	
-
 	public void addTime(String key, String value,int segundos) {
 		template.opsForValue() .set(key, value,segundos,TimeUnit.SECONDS);
 	}

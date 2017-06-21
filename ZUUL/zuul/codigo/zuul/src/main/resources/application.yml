@@ -1,6 +1,7 @@
 variables:
   eureka:
-    host: hostEureka
+    #host: hostEureka
+    host: localhost
     port: 8761
       
     

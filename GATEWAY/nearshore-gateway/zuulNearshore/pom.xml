@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.banamex.nearshore</groupId>
-	<artifactId>zuul</artifactId>
-	<version>0.0.1</version>
+	<artifactId>nearshore-gateway</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>zuulNearshore</name>
+	<name>nearshore-gateway</name>
 	<description>Demo project for Spring Boot</description>
 
 	<parent>
