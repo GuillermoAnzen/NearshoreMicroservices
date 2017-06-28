@@ -1,11 +1,18 @@
 package com.banamex.nearshore.zuul;
 
+import java.util.HashMap;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
  
 import com.banamex.nearshore.data.zuul.ResultBase;
+import com.banamex.nearshore.zuul.util.Utils;
 
  
  
@@ -27,7 +34,34 @@ public class AplicacionesController {
 		return r;
 	}
 	
-	
+	@RequestMapping(value={"/getRedisVariables"}, method = {RequestMethod.POST}, produces = {"application/json"})
+	public Object getVariablesRedis(@RequestBody String applicationID){
+		Object proveedor = null;
+		HashMap<String, Object> result = new HashMap<String, Object>();
+		if (applicationID != null){
+			String datosUser = this.stringRedisRepository.getBy(applicationID);
+			
+			HashMap<String, Object> user = (HashMap)Utils.getMapObject(datosUser);
+			
+			List<HashMap<String, Object>> data = (List)user.get("data");
+			proveedor = ((HashMap)data.get(0)).get("idProvedor");
+			//proveedor = data.get("idProvedor");
+			String hola = "";
+			//result.put("prov", proveedor);
+			/*List<HashMap<String, String>> dataList = (List<HashMap<String, String>>) 
+			
+			if (dataList.isEmpty()) {
+				throw new UsernameNotFoundException("Username not found.");
+			}
+			
+			HashMap<String, String> userDetailsMap = dataList.get(0);
+			
+			String email = userDetailsMap.get("Email");
+			String password = userDetailsMap.get("Clave");
+			String role = userDetailsMap.get("Descripcion");*/
+		}
+		return proveedor;
+	}
 	
 /*
 	@RequestMapping(value = "/login" ,  method = RequestMethod.POST )

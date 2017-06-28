@@ -50,7 +50,7 @@ public class Logincontroler {
 		
 
 		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
-		requestParams.put("sql", "select Segundo_Nombre,Id_Perfil,ApellidoMaterno,Email,Apellido_Paterno,Primer_Nombre  from USUARIO where   Email=? and Clave=? ");
+		requestParams.put("sql", "select Segundo_Nombre,Id_Perfil,Proveedores AS idProvedor,ApellidoMaterno,Email,Apellido_Paterno,Primer_Nombre  from USUARIO where   Email=? and Clave=? ");
 		requestParams.put("data", queryParams);
 
 		ResultBase resultBase = null;

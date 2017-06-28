@@ -147,11 +147,23 @@ DROP TABLE IF EXISTS `APLICACION_PROVEEDOR`;
 CREATE TABLE `APLICACION_PROVEEDOR` (
    `Csi_Id` int(11) NOT NULL,
    `Id_Proveedor` int(11) NOT NULL,
+   `nivel` tinyint(1) NOT NULL,
+   PRIMARY KEY (`nivel`,`Csi_Id`),
    KEY `fk_aplicacion_proveedor_aplicacion1_idx` (`Csi_Id`),
    KEY `fk_aplicacion_proveedor_cat_proveedor1_idx` (`Id_Proveedor`),
    CONSTRAINT `fk_aplicacion_proveedor_aplicacion1` FOREIGN KEY (`Csi_Id`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE CASCADE ON UPDATE NO ACTION,
    CONSTRAINT `fk_aplicacion_proveedor_cat_proveedor1` FOREIGN KEY (`Id_Proveedor`) REFERENCES `CAT_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ 
+ /*CREATE TABLE `APLICACION_PROVEEDOR` (
+   `Csi_Id` int(11) NOT NULL,
+   `Id_Proveedor` int(11) NOT NULL,
+   `nivel` tinyint(1) NOT NULL,
+   KEY `fk_aplicacion_proveedor_aplicacion1_idx` (`Csi_Id`),
+   KEY `fk_aplicacion_proveedor_cat_proveedor1_idx` (`Id_Proveedor`),
+   CONSTRAINT `fk_aplicacion_proveedor_aplicacion1` FOREIGN KEY (`Csi_Id`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+   CONSTRAINT `fk_aplicacion_proveedor_cat_proveedor1` FOREIGN KEY (`Id_Proveedor`) REFERENCES `CAT_PROVEEDOR` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;*/
 
 --
 -- Dumping data for table `APLICACION_PROVEEDOR`
@@ -1128,7 +1140,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationAplicationPerDomain`(IN StartIndex INT,IN Count INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationAplicationPerDomain`(IN StartIndex INT,IN Count INT, IN _prov INT)
 BEGIN
 DECLARE LowerBound INT;
 DECLARE UpperBound INT;
@@ -1136,21 +1148,36 @@ DECLARE rownum INT;
 SET LowerBound = ((StartIndex - 1) * Count) + 1;
 SET UpperBound = ((StartIndex - 1) * Count) + Count;
 
-SELECT  (select count(*) FROM APLICACION aplic INNER JOIN CAT_DOMINIO D WHERE aplic.Id_Dominio = D.Id) as total,
-		(select ceiling(count(*)/Count) FROM APLICACION aplic INNER JOIN CAT_DOMINIO D WHERE aplic.Id_Dominio = D.Id) as pages,
+SELECT  (select count(distinct (aplic.CSI_ID))
+                FROM 
+                APLICACION aplic INNER JOIN 
+                CAT_DOMINIO D  INNER JOIN APLICACION_PROVEEDOR AP ON
+                AP.Csi_Id = aplic.Csi_Id
+                WHERE 
+                aplic.Id_Dominio = D.Id
+                AND AP.Id_Proveedor = _prov) as total,
+		(select ceiling(count(distinct (aplic.CSI_ID))/Count) FROM 
+                APLICACION aplic INNER JOIN 
+                CAT_DOMINIO D  INNER JOIN APLICACION_PROVEEDOR AP ON
+                AP.Csi_Id = aplic.Csi_Id
+                WHERE 
+                aplic.Id_Dominio = D.Id
+                AND AP.Id_Proveedor = _prov) as pages,
         CSI_ID,
         Descripcion_Corta,
         dominio
   from (SELECT *, @rownum := @rownum + 1 AS rank 
 		from (SELECT 
-				aplic.CSI_ID,
+				distinct (aplic.CSI_ID),
                 aplic.Descripcion_Corta,
                 D.Descripcion as dominio 
                 FROM 
                 APLICACION aplic INNER JOIN 
-                CAT_DOMINIO D 
+                CAT_DOMINIO D  INNER JOIN APLICACION_PROVEEDOR AP ON
+                AP.Csi_Id = aplic.Csi_Id
                 WHERE 
                 aplic.Id_Dominio = D.Id
+                AND AP.Id_Proveedor = _prov
 				) d, (SELECT @rownum  := 0) r ) m
 WHERE rank >= LowerBound and rank <= UpperBound;
 

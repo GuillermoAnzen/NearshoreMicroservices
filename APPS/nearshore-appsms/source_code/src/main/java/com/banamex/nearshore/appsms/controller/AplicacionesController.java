@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +23,7 @@ import com.banamex.nearshore.appsms.exception.NearshoreDatabaseMicroserviceExcep
 import com.banamex.nearshore.databasems.Data;
 import com.banamex.nearshore.databasems.DatabaseMicroserviceClientService;
 import com.banamex.nearshore.databasems.ResultBase;
+import com.banamex.nearshore.redis.RedisVariablesService;
 import com.banamex.nearshore.util.Constants;
 import com.banamex.nearshore.util.Util;
 
@@ -32,6 +35,8 @@ public class AplicacionesController {
 	@Autowired
 	private DatabaseMicroserviceClientService databaseMicroserviceClientService;
 	
+	@Autowired
+	private RedisVariablesService redisVariablesService;
 	/*
 	 * PUT APPLICATION DETAILS TO L SUPPORT
 	 */
@@ -110,11 +115,16 @@ public class AplicacionesController {
  	*Endpoint que devuelve las aplicaciones por dominio
  	*/
 	@RequestMapping(value = "/dominios", method = RequestMethod.POST, produces = "application/json")
-	public Object retrieveApplicationsByDomains(@RequestBody Pagination pagination){
+	public Object retrieveApplicationsByDomains(@RequestBody Pagination pagination, HttpServletRequest request){
+		
+		String appID = request.getHeader("ApplicationID");
+		Integer proveedor = redisVariablesService.getVariables(appID);
+		
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
 		List<Data> queryParams = new ArrayList<>();
 		Data queryParam01 = new Data();
 		Data queryParam02 = new Data();
+		Data queryParam03 = new Data();
 		
 		queryParam01.setIndex(1);
 		queryParam01.setType("INT");
@@ -126,8 +136,13 @@ public class AplicacionesController {
 		queryParam02.setValue(pagination.getRows().toString());
 		queryParams.add(queryParam02);
 		
+		queryParam02.setIndex(3);
+		queryParam02.setType("INT");
+		queryParam02.setValue(proveedor.toString());
+		queryParams.add(queryParam03);
+		
 		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
-		requestParams.put("sql", "call nearshore.paginationAplicationPerDomain(?, ?)");
+		requestParams.put("sql", "call nearshore.paginationAplicationPerDomain(?, ?, ?)");
 		requestParams.put("data", queryParams);
 
 		Object resultBase = null;
@@ -357,4 +372,11 @@ public class AplicacionesController {
 
 	}
 
+	@FeignClient(name = "zuul")
+	public interface ZuulRedisClient {
+
+		@RequestMapping(value = "/getRedisVariables", method = RequestMethod.POST)
+		public Integer getProveedor(@RequestBody String applicationID);
+
+	}
 }
