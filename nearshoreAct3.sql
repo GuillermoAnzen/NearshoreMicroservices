@@ -1148,7 +1148,35 @@ DECLARE rownum INT;
 SET LowerBound = ((StartIndex - 1) * Count) + 1;
 SET UpperBound = ((StartIndex - 1) * Count) + Count;
 
-SELECT  (select count(distinct (aplic.CSI_ID))
+IF _prov = 0 THEN
+		SELECT  (select count(distinct (aplic.CSI_ID))
+					FROM 
+					APLICACION aplic INNER JOIN 
+					CAT_DOMINIO D
+					WHERE 
+					aplic.Id_Dominio = D.Id) as total,
+			(select ceiling(count(distinct (aplic.CSI_ID))/Count) FROM 
+					APLICACION aplic INNER JOIN 
+					CAT_DOMINIO D
+					WHERE 
+					aplic.Id_Dominio = D.Id) as pages,
+			CSI_ID,
+			Descripcion_Corta,
+			dominio
+	  from (SELECT *, @rownum := @rownum + 1 AS rank 
+			from (SELECT 
+					distinct (aplic.CSI_ID),
+					aplic.Descripcion_Corta,
+					D.Descripcion as dominio 
+					FROM 
+					APLICACION aplic INNER JOIN 
+					CAT_DOMINIO D
+					WHERE 
+					aplic.Id_Dominio = D.Id
+					) d, (SELECT @rownum  := 0) r ) m
+	WHERE rank >= LowerBound and rank <= UpperBound;
+ELSE
+	SELECT  (select count(distinct (aplic.CSI_ID))
                 FROM 
                 APLICACION aplic INNER JOIN 
                 CAT_DOMINIO D  INNER JOIN APLICACION_PROVEEDOR AP ON
@@ -1180,6 +1208,7 @@ SELECT  (select count(distinct (aplic.CSI_ID))
                 AND AP.Id_Proveedor = _prov
 				) d, (SELECT @rownum  := 0) r ) m
 WHERE rank >= LowerBound and rank <= UpperBound;
+END IF;
 
 END ;;
 DELIMITER ;
@@ -1197,7 +1226,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationAplicationPerIdDomain`(IN StartIndex INT,IN Count INT, IN _Domain INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationAplicationPerIdDomain`(IN StartIndex INT,IN Count INT, IN _Domain INT, IN _prov INT)
 BEGIN
 DECLARE LowerBound INT;
 DECLARE UpperBound INT;
@@ -1205,23 +1234,52 @@ DECLARE rownum INT;
 SET LowerBound = ((StartIndex - 1) * Count) + 1;
 SET UpperBound = ((StartIndex - 1) * Count) + Count;
 
-SELECT  (SELECT count(*) FROM APLICACION aplic INNER JOIN CAT_DOMINIO D WHERE aplic.Id_Dominio = D.Id AND aplic.Id_Dominio = _Domain) as total,
-		(SELECT ceiling(count(*)/Count) FROM APLICACION aplic INNER JOIN CAT_DOMINIO D WHERE aplic.Id_Dominio = D.Id AND aplic.Id_Dominio = _Domain) as pages,
-        CSI_ID,
-        Descripcion_Corta
-  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
-		FROM (SELECT 
-				aplic.CSI_ID,
-                aplic.Descripcion_Corta 
-                FROM 
-                APLICACION aplic INNER JOIN 
-                CAT_DOMINIO D 
-                WHERE 
-                aplic.Id_Dominio = D.Id AND 
-                aplic.Id_Dominio = _Domain
-				) d, (SELECT @rownum  := 0) r ) m
-WHERE rank >= LowerBound AND rank <= UpperBound;
-
+	IF _prov = 0 THEN
+		SELECT  (SELECT count(*) FROM APLICACION aplic INNER JOIN CAT_DOMINIO D WHERE aplic.Id_Dominio = D.Id AND aplic.Id_Dominio = _Domain) as total,
+				(SELECT ceiling(count(*)/Count) FROM APLICACION aplic INNER JOIN CAT_DOMINIO D WHERE aplic.Id_Dominio = D.Id AND aplic.Id_Dominio = _Domain) as pages,
+				CSI_ID,
+				Descripcion_Corta
+		  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
+				FROM (SELECT 
+						aplic.CSI_ID,
+						aplic.Descripcion_Corta 
+						FROM 
+						APLICACION aplic INNER JOIN 
+						CAT_DOMINIO D 
+						WHERE 
+						aplic.Id_Dominio = D.Id AND 
+						aplic.Id_Dominio = _Domain
+						) d, (SELECT @rownum  := 0) r ) m
+		WHERE rank >= LowerBound AND rank <= UpperBound;
+	ELSE
+		SELECT  (SELECT count(distinct(aplic.CSI_ID)) FROM APLICACION aplic INNER JOIN 
+						CAT_DOMINIO D INNER JOIN
+						APLICACION_PROVEEDOR AP ON AP.Csi_Id = aplic.Csi_Id
+						WHERE 
+						aplic.Id_Dominio = D.Id AND 
+						aplic.Id_Dominio = _Domain AND AP.Id_Proveedor = _prov) as total,
+				(SELECT ceiling(count(distinct(aplic.CSI_ID))/Count) FROM APLICACION aplic INNER JOIN 
+						CAT_DOMINIO D INNER JOIN
+						APLICACION_PROVEEDOR AP ON AP.Csi_Id = aplic.Csi_Id
+						WHERE 
+						aplic.Id_Dominio = D.Id AND 
+						aplic.Id_Dominio = _Domain AND AP.Id_Proveedor = _prov) as pages,
+				CSI_ID,
+				Descripcion_Corta
+		  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
+				FROM (SELECT 
+						distinct(aplic.CSI_ID),
+						aplic.Descripcion_Corta 
+						FROM 
+						APLICACION aplic INNER JOIN 
+						CAT_DOMINIO D INNER JOIN
+						APLICACION_PROVEEDOR AP ON AP.Csi_Id = aplic.Csi_Id
+						WHERE 
+						aplic.Id_Dominio = D.Id AND 
+						aplic.Id_Dominio = _Domain AND AP.Id_Proveedor = _prov
+						) d, (SELECT @rownum  := 0) r ) m
+		WHERE rank >= LowerBound AND rank <= UpperBound;
+	END IF;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;

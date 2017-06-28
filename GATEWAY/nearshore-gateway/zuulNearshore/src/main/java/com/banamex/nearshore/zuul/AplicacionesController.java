@@ -40,25 +40,9 @@ public class AplicacionesController {
 		HashMap<String, Object> result = new HashMap<String, Object>();
 		if (applicationID != null){
 			String datosUser = this.stringRedisRepository.getBy(applicationID);
-			
 			HashMap<String, Object> user = (HashMap)Utils.getMapObject(datosUser);
-			
 			List<HashMap<String, Object>> data = (List)user.get("data");
 			proveedor = ((HashMap)data.get(0)).get("idProvedor");
-			//proveedor = data.get("idProvedor");
-			String hola = "";
-			//result.put("prov", proveedor);
-			/*List<HashMap<String, String>> dataList = (List<HashMap<String, String>>) 
-			
-			if (dataList.isEmpty()) {
-				throw new UsernameNotFoundException("Username not found.");
-			}
-			
-			HashMap<String, String> userDetailsMap = dataList.get(0);
-			
-			String email = userDetailsMap.get("Email");
-			String password = userDetailsMap.get("Clave");
-			String role = userDetailsMap.get("Descripcion");*/
 		}
 		return proveedor;
 	}

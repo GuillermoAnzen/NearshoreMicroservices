@@ -1,7 +1,5 @@
 package com.banamex.nearshore.appsms.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,12 +73,17 @@ public class AplicacionesController {
 	 * Devuelve las aplicaciones por de un dominio en particular 
 	*/
 	@RequestMapping(value = "/dominio", method = RequestMethod.POST, produces = "application/json")
-	public Object getApplicacionsByIdDomain( @RequestBody AplicationPagination pagination){
+	public Object getApplicacionsByIdDomain( @RequestBody AplicationPagination pagination, HttpServletRequest request){
+		
+		String appID = request.getHeader("ApplicationID");
+		Integer proveedor = redisVariablesService.getVariables(appID);
+		
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
 		List<Data> queryParams = new ArrayList<>();
 		Data queryParam01 = new Data();
 		Data queryParam02 = new Data();
 		Data queryParam03 = new Data();
+		Data queryParam04 = new Data();
 		
 		queryParam01.setIndex(1);
 		queryParam01.setType("INT");
@@ -96,9 +99,14 @@ public class AplicacionesController {
 		queryParam03.setType("INT");
 		queryParam03.setValue(pagination.getIdDomain().toString());
 		queryParams.add(queryParam03);
+		
+		queryParam04.setIndex(4);
+		queryParam04.setType("INT");
+		queryParam04.setValue(proveedor.toString());
+		queryParams.add(queryParam04);
 
 		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
-		requestParams.put("sql", "call nearshore.paginationAplicationPeriDDomain(?, ?, ?)");
+		requestParams.put("sql", "call nearshore.paginationAplicationPeriDDomain(?, ?, ?, ?)");
 		requestParams.put("data", queryParams);
 
 		Object resultBase = null;
@@ -136,9 +144,9 @@ public class AplicacionesController {
 		queryParam02.setValue(pagination.getRows().toString());
 		queryParams.add(queryParam02);
 		
-		queryParam02.setIndex(3);
-		queryParam02.setType("INT");
-		queryParam02.setValue(proveedor.toString());
+		queryParam03.setIndex(3);
+		queryParam03.setType("INT");
+		queryParam03.setValue(proveedor.toString());
 		queryParams.add(queryParam03);
 		
 		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
@@ -159,7 +167,11 @@ public class AplicacionesController {
 	 * Endpoint que devuelve las aplicaciones por un id de dominio 
 	 */
 	@RequestMapping(value = "/idAplicacion/{idCsi}", method = RequestMethod.GET, produces = "application/json")
-	public Object retrieveApplicationsByDomain(@PathVariable Integer idCsi) {
+	public Object retrieveApplicationsByDomain(@PathVariable Integer idCsi, HttpServletRequest request){
+		
+		String appID = request.getHeader("ApplicationID");
+		Integer proveedor = redisVariablesService.getVariables(appID);
+		
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
 
 		List<Data> queryParams = new ArrayList<>();
@@ -171,6 +183,7 @@ public class AplicacionesController {
 
 		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
 		requestParams.put("sql", "SELECT "
+				+ proveedor + " AS idOwnVendor,"
 				+ "D.Descripcion as dominio,"
 				+ "D.Id as idDominio,"
 				+ "a.Csi_Id,"
