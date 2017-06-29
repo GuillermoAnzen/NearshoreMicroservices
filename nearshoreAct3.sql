@@ -1661,26 +1661,40 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationProviders`(IN StartIndex INT,IN Count INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationProviders`(IN StartIndex INT,IN Count INT, IN proveedor INT)
 BEGIN
 DECLARE LowerBound INT;
 DECLARE UpperBound INT;
 DECLARE rownum INT;
 SET LowerBound = ((StartIndex - 1) * Count) + 1;
 SET UpperBound = ((StartIndex - 1) * Count) + Count;
-
-SELECT   	(SELECT count(*) FROM CAT_PROVEEDOR) as total,
-			(SELECT ceiling(count(*) / Count) FROM CAT_PROVEEDOR) as pages,
-			Id,
-			Descripcion 
-  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
-		FROM (SELECT 
-				Id,
-				Descripcion 
-                FROM 
-                CAT_PROVEEDOR
-				) d, (SELECT @rownum  := 0) r ) m
-WHERE rank >= LowerBound AND rank <= UpperBound;
+IF proveedor=0 THEN
+    SELECT   	(SELECT count(*) FROM CAT_PROVEEDOR) as total,
+			    (SELECT ceiling(count(*) / Count) FROM CAT_PROVEEDOR) as pages,
+			    Id,
+			    Descripcion
+    FROM (SELECT *, @rownum := @rownum + 1 AS rank
+		    FROM (SELECT
+				    Id,
+				    Descripcion
+                    FROM
+                    CAT_PROVEEDOR
+				    ) d, (SELECT @rownum  := 0) r ) m
+    WHERE rank >= LowerBound AND rank <= UpperBound;
+ELSE
+    SELECT (SELECT count(*) From CAT_PROVEEDOR where Id= proveedor )as total,
+            (SELECT ceiling(count(*)/ Count) FROM CAT_PROVEEDOR WHERE Id= proveedor) as pages,
+            Id,
+            Descripcion
+            FROM(SELECT *, @rownum:= @rownum + 1 AS rank
+             FROM (SELECT
+                    Id,
+                    DESCRIPCION
+                    FROM
+                    CAT_PROVEEDOR
+                    WHERE Id= proveedor)d, (SELECT @rownum  := 0) r ) m
+    WHERE rank >= LowerBound AND rank <= UpperBound;
+END IF;
 
 END ;;
 DELIMITER ;

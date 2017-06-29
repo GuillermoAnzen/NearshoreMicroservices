@@ -12,7 +12,7 @@ public class RedisVariablesService {
 	@Autowired
 	private ZuulRedisClient zuulRedisClient;
 	
-	public Integer getVariables(@RequestBody String applicationID) {
-		return zuulRedisClient.getProveedor(applicationID);
+	public Integer getVariables(@RequestBody String applicationId) {
+		return zuulRedisClient.getProveedor(applicationId);
 	}
 }
