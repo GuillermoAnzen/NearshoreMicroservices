@@ -82,12 +82,12 @@ BEGIN
     SELECT NEW.Csi_id FROM APLICACION WHERE Csi_id = NEW.Csi_id;
     INSERT INTO L3APLICACION (idAplicacionCiti)
     SELECT NEW.Csi_id FROM APLICACION WHERE Csi_id = NEW.Csi_id;
-    INSERT INTO APLICACION_PROVEEDOR (Csi_Id, Id_Proveedor)
-    SELECT NEW.Csi_Id, NEW.Id_L1 FROM APLICACION WHERE Csi_Id = NEW.Csi_Id;
-    INSERT INTO APLICACION_PROVEEDOR (Csi_Id, Id_Proveedor)
-    SELECT NEW.Csi_Id, NEW.Id_L2 FROM APLICACION WHERE Csi_Id = NEW.Csi_Id;
-    INSERT INTO APLICACION_PROVEEDOR (Csi_Id, Id_Proveedor)
-    SELECT NEW.Csi_Id, NEW.Id_L3 FROM APLICACION WHERE Csi_Id = NEW.Csi_Id;
+    INSERT INTO APLICACION_PROVEEDOR (Csi_Id, Id_Proveedor, nivel)
+    SELECT NEW.Csi_Id, NEW.Id_L1,1 FROM APLICACION WHERE Csi_Id = NEW.Csi_Id;
+    INSERT INTO APLICACION_PROVEEDOR (Csi_Id, Id_Proveedor, nivel)
+    SELECT NEW.Csi_Id, NEW.Id_L2,2 FROM APLICACION WHERE Csi_Id = NEW.Csi_Id;
+    INSERT INTO APLICACION_PROVEEDOR (Csi_Id, Id_Proveedor, nivel)
+    SELECT NEW.Csi_Id, NEW.Id_L3,3 FROM APLICACION WHERE Csi_Id = NEW.Csi_Id;
 END */;;
 DELIMITER ;
 
@@ -112,24 +112,31 @@ DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `nearshore`.`aplicacion_AFTER_UPDATE` AFTER UPDATE ON `APLICACION` FOR EACH ROW
 BEGIN
     DECLARE _L1 INT(11);
+    DECLARE _idProv INT(11);
 	SELECT Csi_Id FROM APLICACION WHERE Id_L1=NEW.Id_L1 INTO _L1;
     IF NEW.Id_L1 <> OLD.Id_L1 THEN
+		SELECT Id_L1 FROM APLICACION WHERE Id_L1 = NEW.Id_L1 INTO _idProv;
 		UPDATE L1APLICACION SET idResponsableRProveedor = null,idBackupRProveedor = null,
 			idLiderRProveedor = null, idProjectManagerRProveedor = null,
             idDeliveryManagerRProveedor = null WHERE idAplicacionCiti=_L1;
 		UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor = null WHERE idAplicacion = _L1 AND nivel = 1;
+        UPDATE APLICACION_PROVEEDOR SET Id_Proveedor = _idProv WHERE Csi_Id = _L1 AND nivel = 1;
     END IF;
 	IF NEW.Id_L2 <> OLD.Id_L2 THEN
+		SELECT Id_L2 FROM APLICACION WHERE Id_L2 = NEW.Id_L2 INTO _idProv;
 		UPDATE L2APLICACION SET idResponsableRProveedor = null,idBackupRProveedor = null,
 			idLiderRProveedor = null, idProjectManagerRProveedor = null,
             idDeliveryManagerRProveedor = null WHERE idAplicacionCiti=_L1;
 		UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor = null WHERE idAplicacion = _L1 AND nivel = 2;
+        UPDATE APLICACION_PROVEEDOR SET Id_Proveedor = _idProv WHERE Csi_Id = _L1 AND nivel = 2;
     END IF;
     IF NEW.Id_L3 <> OLD.Id_L3 THEN
+		SELECT Id_L3 FROM APLICACION WHERE Id_L3 = NEW.Id_L3 INTO _idProv;
 		UPDATE L3APLICACION SET idResponsableRProveedor = null,idBackupRProveedor = null,
 			idLiderRProveedor = null, idProjectManagerRProveedor = null,
             idDeliveryManagerRProveedor = null WHERE idAplicacionCiti=_L1;
 		UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor = null WHERE idAplicacion = _L1 AND nivel = 3;
+        UPDATE APLICACION_PROVEEDOR SET Id_Proveedor = _idProv WHERE Csi_Id = _L1 AND nivel = 3;
     END IF;
 END */;;
 DELIMITER ;
