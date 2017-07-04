@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.banamex.nearshore.catalogsms.domain.Ciudad;
 import com.banamex.nearshore.catalogsms.exception.NearshoreDatabaseMicroserviceException;
+import com.banamex.nearshore.catalogsms.pagination.Pagination;
 import com.banamex.nearshore.databasems.Data;
 import com.banamex.nearshore.databasems.DatabaseMicroserviceClientService;
 import com.banamex.nearshore.databasems.ResultBase;
@@ -80,19 +81,31 @@ public class CiudadesController{
 	 * GET CIUDADES
 	 * Devuelve las ciudades de determinado país.
 	 */
-	@RequestMapping(value = "/paises/{idPais}/ciudades", method = RequestMethod.GET, produces = "application/json")
-	public Object retrieveCityByIdCountry(@PathVariable Integer idPais) {
+	@RequestMapping(value = "/paises/{idPais}", method = RequestMethod.POST, produces = "application/json")
+	public Object retrieveCityByIdCountry(@RequestBody Pagination pagination, @PathVariable Integer idPais) {
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
-		
 		List<Data> queryParams = new ArrayList<>();
 		Data queryParam01 = new Data();
+		Data queryParam02 = new Data();
+		Data queryParam03 = new Data();
+		
 		queryParam01.setIndex(1);
 		queryParam01.setType("INT");
-		queryParam01.setValue(idPais.toString());
+		queryParam01.setValue(pagination.getIndex().toString());
 		queryParams.add(queryParam01);
 		
+		queryParam02.setIndex(2);
+		queryParam02.setType("INT");
+		queryParam02.setValue(pagination.getRows().toString());
+		queryParams.add(queryParam02);
+		
+		queryParam03.setIndex(3);
+		queryParam03.setType("INT");
+		queryParam03.setValue(idPais.toString());
+		queryParams.add(queryParam03);
+		
 		requestParams.put("tipoQuery", Constants.QUERY_STATEMENT_TYPE);
-		requestParams.put("sql", "SELECT CIUDAD.* FROM " + Constants.CAT_CIUDAD + " CIUDAD INNER JOIN " + Constants.CAT_PAIS + " PAIS ON CIUDAD.ID_PAIS = PAIS.ID WHERE PAIS.ID = ?");
+		requestParams.put("sql", "call nearshore.paginationCities(?,?,?)");
 		requestParams.put("data", queryParams);
 		
 		Object resultBase = null;

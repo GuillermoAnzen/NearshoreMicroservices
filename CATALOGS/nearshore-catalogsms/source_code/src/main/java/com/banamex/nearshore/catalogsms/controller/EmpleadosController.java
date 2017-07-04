@@ -287,13 +287,13 @@ public class EmpleadosController {
 				"P.Descripcion as Pais," +
                 "P.Id AS idPais," +
                 "PC.Descripcion AS puesto," +
-                "PC.Id AS idPuesto" +
-				"FROM CAT_DOMINIO D INNER JOIN RECURSO_CITI RC" + 
+                "PC.Id AS idPuesto " +
+				"FROM CAT_DOMINIO D INNER JOIN RECURSO_CITI RC " + 
 				"INNER JOIN CAT_PUESTOCITI PC " +
 				"INNER JOIN CAT_CIUDAD C " +
 				"INNER JOIN CAT_PAIS P " +
 				"WHERE " +
-				"RC.Id_Dominio=D.Id AND" + 
+				"RC.Id_Dominio=D.Id AND " + 
 				"PC.Id = RC.Id_Puesto AND " +
 				"RC.Id_Ciudad = C.Id AND " +
 				"P.Id = C.Id_Pais AND " +
