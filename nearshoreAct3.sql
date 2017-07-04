@@ -621,19 +621,28 @@ DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `nearshore`.`l1aplicacion_AFTER_INSERT` AFTER INSERT ON L1APLICACION FOR EACH ROW
 BEGIN
 	INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'Responsable',1 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+		SELECT idAplicacionCiti,'Responsable',1 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
     INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'Backup',1 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+		SELECT idAplicacionCiti,'Backup',1 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
     INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'Lider',1 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+		SELECT idAplicacionCiti,'Lider',1 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
     INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'ProjectManager',1 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+		SELECT idAplicacionCiti,'ProjectManager',1 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
     INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'DeliveryManager',1 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+		SELECT idAplicacionCiti,'DeliveryManager',1 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+        
+	INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
+		SELECT idAplicacionCiti,'Analista',1 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+	
+    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
+		SELECT idAplicacionCiti,'Lider',1 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+	
+    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
+		SELECT idAplicacionCiti,'Gerente',1 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -650,33 +659,33 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `nearshore`.`l1aplicacion_AFTER_UPDATE` AFTER UPDATE ON `L1APLICACION` FOR EACH ROW
-BEGIN	
-	DECLARE my_resp VARCHAR(16);
+BEGIN
     DECLARE id_app INT(11);
-	SELECT idResponsableRProveedor,idAplicacionCiti FROM L1APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor INTO
-	my_resp,id_app;
+	SELECT idAplicacionCiti FROM L1APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor INTO id_app;
+	
 	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idResponsableRProveedor FROM L1APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor) 
-    where descripcion='Responsable' and nivel=1 and idAplicacion=id_app;
+		where descripcion='Responsable' and nivel=1 and idAplicacion=id_app;
     
-    SELECT idResponsableRProveedor,idAplicacionCiti FROM L1APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor INTO
-	my_resp,id_app;
 	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idBackupRProveedor FROM L1APLICACION WHERE idBackupRProveedor=NEW.idBackupRProveedor) 
-    where descripcion='Backup' and nivel=1 and idAplicacion=id_app;
-    
-    SELECT idResponsableRProveedor,idAplicacionCiti FROM L1APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor INTO
-	my_resp,id_app;
+		where descripcion='Backup' and nivel=1 and idAplicacion=id_app;
+	
 	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idLiderRProveedor FROM L1APLICACION WHERE idLiderRProveedor=NEW.idLiderRProveedor) 
-    where descripcion='Lider' and nivel=1 and idAplicacion=id_app;
-    
-    SELECT idResponsableRProveedor,idAplicacionCiti FROM L1APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor INTO
-	my_resp,id_app;
+		where descripcion='Lider' and nivel=1 and idAplicacion=id_app;
+		
 	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idProjectManagerRProveedor FROM L1APLICACION WHERE idProjectManagerRProveedor=NEW.idProjectManagerRProveedor) 
-    where descripcion='ProjectManager' and nivel=1 and idAplicacion=id_app;
+		where descripcion='ProjectManager' and nivel=1 and idAplicacion=id_app;
     
-    SELECT idResponsableRProveedor,idAplicacionCiti FROM L1APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor INTO
-	my_resp,id_app;
 	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idDeliveryManagerRProveedor FROM L1APLICACION WHERE idDeliveryManagerRProveedor=NEW.idDeliveryManagerRProveedor) 
-    where descripcion='DeliveryManager' and nivel=1 and idAplicacion=id_app;
+		where descripcion='DeliveryManager' and nivel=1 and idAplicacion=id_app;
+
+	UPDATE RECURSOCITI_APLICACION SET idRecursoCiti = (SELECT idAnalistaRCiti FROM L1APLICACION WHERE idAnalistaRCiti = NEW.idAnalistaRCiti)
+		WHERE descripcion='Analista' AND nivel = 1 AND idAplicacion = id_app;
+            
+    UPDATE RECURSOCITI_APLICACION SET idRecursoCiti = (SELECT idLiderRCiti FROM L1APLICACION  WHERE idLiderRCiti = NEW.idLiderRCiti)
+		WHERE descripcion='Lider' AND nivel = 1 AND idAplicacion = id_app;
+        
+    UPDATE RECURSOCITI_APLICACION SET idRecursoCiti = (SELECT idGerenteRCiti FROM L1APLICACION  WHERE idGerenteRCiti = NEW.idGerenteRCiti)
+		WHERE descripcion='Gerente' AND nivel = 1 AND idAplicacion = id_app;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -727,19 +736,28 @@ DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `nearshore`.`l2aplicacion_AFTER_INSERT` AFTER INSERT ON `L2APLICACION` FOR EACH ROW
 BEGIN
 	INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'Responsable',2 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    SELECT idAplicacionCiti,'Responsable',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
     INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'Backup',2 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    SELECT idAplicacionCiti,'Backup',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
     INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'Lider',2 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    SELECT idAplicacionCiti,'Lider',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
     INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'ProjectManager',2 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    SELECT idAplicacionCiti,'ProjectManager',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
     INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'DeliveryManager',2 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+		SELECT idAplicacionCiti,'DeliveryManager',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+	
+    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
+		SELECT idAplicacionCiti,'Analista',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+	
+    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
+		SELECT idAplicacionCiti,'Lider',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+	
+    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
+		SELECT idAplicacionCiti,'Gerente',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -757,32 +775,29 @@ DELIMITER ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `nearshore`.`l2aplicacion_AFTER_UPDATE` AFTER UPDATE ON `L2APLICACION` FOR EACH ROW
 BEGIN
-	DECLARE my_resp VARCHAR(16);
-    DECLARE id_app INT(11);
-	SELECT idResponsableRProveedor,idAplicacionCiti FROM L2APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor INTO
-	my_resp,id_app;
-	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idResponsableRProveedor FROM L2APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor) 
-    where descripcion='Responsable' and nivel=2 and idAplicacion=id_app;
+	INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
+    SELECT idAplicacionCiti,'Responsable',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
-    SELECT idResponsableRProveedor,idAplicacionCiti FROM L2APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor INTO
-	my_resp,id_app;
-	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idBackupRProveedor FROM L2APLICACION WHERE idBackupRProveedor=NEW.idBackupRProveedor) 
-    where descripcion='Backup' and nivel=2 and idAplicacion=id_app;
+    INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
+    SELECT idAplicacionCiti,'Backup',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
-    SELECT idResponsableRProveedor,idAplicacionCiti FROM L2APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor INTO
-	my_resp,id_app;
-	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idLiderRProveedor FROM L2APLICACION WHERE idLiderRProveedor=NEW.idLiderRProveedor) 
-    where descripcion='Lider' and nivel=2 and idAplicacion=id_app;
+    INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
+    SELECT idAplicacionCiti,'Lider',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
-    SELECT idResponsableRProveedor,idAplicacionCiti FROM L2APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor INTO
-	my_resp,id_app;
-	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idProjectManagerRProveedor FROM L2APLICACION WHERE idProjectManagerRProveedor=NEW.idProjectManagerRProveedor) 
-    where descripcion='ProjectManager' and nivel=2 and idAplicacion=id_app;
+    INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
+    SELECT idAplicacionCiti,'ProjectManager',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
-    SELECT idResponsableRProveedor,idAplicacionCiti FROM L2APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor INTO
-	my_resp,id_app;
-	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idDeliveryManagerRProveedor FROM L2APLICACION WHERE idDeliveryManagerRProveedor=NEW.idDeliveryManagerRProveedor) 
-    where descripcion='DeliveryManager' and nivel=2 and idAplicacion=id_app;
+    INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
+		SELECT idAplicacionCiti,'DeliveryManager',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+	
+    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
+		SELECT idAplicacionCiti,'Analista',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+	
+    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
+		SELECT idAplicacionCiti,'Lider',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+	
+    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
+		SELECT idAplicacionCiti,'Gerente',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -832,19 +847,28 @@ DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `nearshore`.`l3aplicacion_AFTER_INSERT` AFTER INSERT ON `L3APLICACION` FOR EACH ROW
 BEGIN
 	INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'Responsable',3 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    SELECT idAplicacionCiti,'Responsable',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
     INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'Backup',3 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    SELECT idAplicacionCiti,'Backup',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
     INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'Lider',3 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    SELECT idAplicacionCiti,'Lider',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
     INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'ProjectManager',3 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    SELECT idAplicacionCiti,'ProjectManager',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
     INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'DeliveryManager',3 FROM L1APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    SELECT idAplicacionCiti,'DeliveryManager',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    
+    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
+		SELECT idAplicacionCiti,'Analista',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+	
+    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
+		SELECT idAplicacionCiti,'Lider',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+	
+    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
+		SELECT idAplicacionCiti,'Gerente',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -862,32 +886,29 @@ DELIMITER ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `nearshore`.`l3aplicacion_AFTER_UPDATE` AFTER UPDATE ON `L3APLICACION` FOR EACH ROW
 BEGIN
-	DECLARE my_resp VARCHAR(16);
-    DECLARE id_app INT(11);
-	SELECT idResponsableRProveedor,idAplicacionCiti FROM L3APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor INTO
-	my_resp,id_app;
-	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idResponsableRProveedor FROM L3APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor) 
-    where descripcion='Responsable' and nivel=3 and idAplicacion=id_app;
+	INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
+    SELECT idAplicacionCiti,'Responsable',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
-    SELECT idResponsableRProveedor,idAplicacionCiti FROM L3APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor INTO
-	my_resp,id_app;
-	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idBackupRProveedor FROM L3APLICACION WHERE idBackupRProveedor=NEW.idBackupRProveedor) 
-    where descripcion='Backup' and nivel=3 and idAplicacion=id_app;
+    INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
+    SELECT idAplicacionCiti,'Backup',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
-    SELECT idResponsableRProveedor,idAplicacionCiti FROM L3APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor INTO
-	my_resp,id_app;
-	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idLiderRProveedor FROM L3APLICACION WHERE idLiderRProveedor=NEW.idLiderRProveedor) 
-    where descripcion='Lider' and nivel=3 and idAplicacion=id_app;
+    INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
+    SELECT idAplicacionCiti,'Lider',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
-    SELECT idResponsableRProveedor,idAplicacionCiti FROM L3APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor INTO
-	my_resp,id_app;
-	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idProjectManagerRProveedor FROM L3APLICACION WHERE idProjectManagerRProveedor=NEW.idProjectManagerRProveedor) 
-    where descripcion='ProjectManager' and nivel=3 and idAplicacion=id_app;
+    INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
+    SELECT idAplicacionCiti,'ProjectManager',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
     
-    SELECT idResponsableRProveedor,idAplicacionCiti FROM L3APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor INTO
-	my_resp,id_app;
-	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idDeliveryManagerRProveedor FROM L3APLICACION WHERE idDeliveryManagerRProveedor=NEW.idDeliveryManagerRProveedor) 
-    where descripcion='DeliveryManager' and nivel=3 and idAplicacion=id_app;
+    INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
+    SELECT idAplicacionCiti,'DeliveryManager',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    
+    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
+		SELECT idAplicacionCiti,'Analista',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+	
+    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
+		SELECT idAplicacionCiti,'Lider',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+	
+    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
+		SELECT idAplicacionCiti,'Gerente',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1000,13 +1021,16 @@ DROP TABLE IF EXISTS `RECURSOCITI_APLICACION`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `RECURSOCITI_APLICACION` (
-  `idRecursoCiti` varchar(7) NOT NULL,
-  `idAplicacion` int(11) NOT NULL,
-  PRIMARY KEY (`idRecursoCiti`,`idAplicacion`),
-  KEY `fk_recursociti_aplicacion_aplicacion1_idx` (`idAplicacion`),
-  CONSTRAINT `fk_recursociti_aplicacion_aplicacion1` FOREIGN KEY (`idAplicacion`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_recursociti_aplicacion_recurso_citi` FOREIGN KEY (`idRecursoCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `idRecursoCiti` varchar(7) DEFAULT NULL,
+   `idAplicacion` int(11) NOT NULL,
+   `descripcion` varchar(9) NOT NULL,
+   `nivel` tinyint(1) NOT NULL,
+   PRIMARY KEY (`descripcion`,`nivel`,`idAplicacion`),
+   KEY `fk_recursociti_aplicacion_aplicacion1_idx` (`idAplicacion`),
+   KEY `fk_recursociti_aplicacion_recurso_citi` (`idRecursoCiti`),
+   CONSTRAINT `fk_recursociti_aplicacion_aplicacion1` FOREIGN KEY (`idAplicacion`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `fk_recursociti_aplicacion_recurso_citi` FOREIGN KEY (`idRecursoCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1368,13 +1392,13 @@ DECLARE rownum INT;
 SET LowerBound = ((StartIndex - 1) * Count) + 1;
 SET UpperBound = ((StartIndex - 1) * Count) + Count;
 
-SELECT 	(SELECT count(*) FROM APLICACION A INNER JOIN RECURSOCITI_APLICACION RCA INNER JOIN RECURSO_CITI RC WHERE A.Csi_Id = RCA.idAplicacion AND RCA.idRecursoCiti = RC.Soe_Id AND RCA.idRecursoCiti = _soeId) as total,
-		(SELECT ceiling(count(*)/Count) FROM APLICACION A INNER JOIN RECURSOCITI_APLICACION RCA INNER JOIN RECURSO_CITI RC WHERE A.Csi_Id = RCA.idAplicacion AND RCA.idRecursoCiti = RC.Soe_Id AND RCA.idRecursoCiti = _soeId) as pages,
+SELECT 	(SELECT count(distinct( A.Csi_Id)) FROM APLICACION A INNER JOIN RECURSOCITI_APLICACION RCA INNER JOIN RECURSO_CITI RC WHERE A.Csi_Id = RCA.idAplicacion AND RCA.idRecursoCiti = RC.Soe_Id AND RCA.idRecursoCiti = _soeId) as total,
+		(SELECT ceiling(count(distinct( A.Csi_Id))/Count) FROM APLICACION A INNER JOIN RECURSOCITI_APLICACION RCA INNER JOIN RECURSO_CITI RC WHERE A.Csi_Id = RCA.idAplicacion AND RCA.idRecursoCiti = RC.Soe_Id AND RCA.idRecursoCiti = _soeId) as pages,
 			idAplicacion, 
 			descripcion 
   FROM (SELECT *, @rownum := @rownum + 1 AS rank 
 		FROM (SELECT 
-				A.Csi_Id AS idAplicacion, 
+				distinct( A.Csi_Id) AS idAplicacion, 
 				A.Descripcion_Corta AS descripcion 
 				FROM APLICACION A INNER JOIN 
 				RECURSOCITI_APLICACION RCA INNER JOIN 
@@ -1727,6 +1751,7 @@ SELECT 	(select count(*) from USUARIO u join CAT_PERFIL p on u.Id_Perfil=p.Id_Pe
         Clave,
         Activo,
         Dominios,
+        idProveedores,
         Proveedores,
 		Id_Perfil,
         Descripcion,
@@ -1742,19 +1767,171 @@ SELECT 	(select count(*) from USUARIO u join CAT_PERFIL p on u.Id_Perfil=p.Id_Pe
                     u.Clave,
                     u.Activo,
                     u.Dominios,
-                    u.Proveedores,
+                    u.Proveedores AS idProveedores,
+                    CP.Descripcion AS Proveedores,
 					p.Id_Perfil,
                     p.Descripcion FROM USUARIO u join CAT_PERFIL p on u.Id_Perfil=p.Id_Perfil
+                    LEFT JOIN CAT_PROVEEDOR CP ON CP.Id = u.Proveedores
 				) d, (SELECT @rownum  := 0) r ) m
 WHERE rank >= LowerBound and rank <= UpperBound;
 
+END ;;
+
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `paginationJobsCiti` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationJobsCiti`(IN StartIndex INT, IN Count INT)
+BEGIN
+	DECLARE LowerBound INT;
+	DECLARE UpperBound INT;
+	DECLARE rownum INT;
+	SET LowerBound = ((StartIndex - 1) * Count) + 1;
+	SET UpperBound = ((StartIndex - 1) * Count) + Count;
+
+	SELECT 	(SELECT count(*) FROM CAT_PUESTOCITI) as total,
+			(SELECT ceiling(count(*)/Count) FROM CAT_PUESTOCITI) as pages,
+				ID, 
+				DESCRIPCION 
+	  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
+			FROM (SELECT 
+					ID, 
+                    DESCRIPCION 
+                    FROM 
+                    CAT_PUESTOCITI
+					) d, (SELECT @rownum  := 0) r ) m
+	WHERE rank >= LowerBound AND rank <= UpperBound;
+END ;;
+
+
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `paginationCountries` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationCountries`(IN StartIndex INT, IN Count INT)
+BEGIN
+	DECLARE LowerBound INT;
+	DECLARE UpperBound INT;
+	DECLARE rownum INT;
+	SET LowerBound = ((StartIndex - 1) * Count) + 1;
+	SET UpperBound = ((StartIndex - 1) * Count) + Count;
+
+	SELECT 	(SELECT count(*) FROM CAT_PAIS) as total,
+			(SELECT ceiling(count(*)/Count) FROM CAT_PAIS) as pages,
+				ID, 
+				DESCRIPCION 
+	  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
+			FROM (SELECT 
+					ID, 
+                    DESCRIPCION 
+                    FROM 
+					CAT_PAIS
+					) d, (SELECT @rownum  := 0) r ) m
+	WHERE rank >= LowerBound AND rank <= UpperBound;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `paginationDetailsProviderId` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 
+
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `paginationCities` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationCities`(IN StartIndex INT, IN Count INT, IN id INT)
+BEGIN
+	DECLARE LowerBound INT;
+	DECLARE UpperBound INT;
+	DECLARE rownum INT;
+	SET LowerBound = ((StartIndex - 1) * Count) + 1;
+	SET UpperBound = ((StartIndex - 1) * Count) + Count;
+
+	SELECT 	(SELECT count(*) FROM 
+                    CAT_CIUDAD C INNER JOIN 
+                    CAT_PAIS P ON C.Id_Pais = P.Id 
+                    WHERE P.Id = id) as total,
+			(SELECT ceiling(count(*)/Count) FROM 
+                    CAT_CIUDAD C INNER JOIN 
+                    CAT_PAIS P ON C.Id_Pais = P.Id 
+                    WHERE P.Id = id) as pages,
+				Id, 
+				Descripcion 
+	  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
+			FROM (SELECT 
+					C.Id, 
+                    C.Descripcion 
+                    FROM 
+                    CAT_CIUDAD C INNER JOIN 
+                    CAT_PAIS P ON C.Id_Pais = P.Id 
+                    WHERE P.Id = id
+					) d, (SELECT @rownum  := 0) r ) m
+	WHERE rank >= LowerBound AND rank <= UpperBound;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `paginationCountries` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+
+
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 --
 -- Final view structure for view `detailsl1application`
 --
