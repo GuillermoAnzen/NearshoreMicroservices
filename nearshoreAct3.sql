@@ -61,7 +61,6 @@ CREATE TABLE `APLICACION` (
 
 LOCK TABLES `APLICACION` WRITE;
 /*!40000 ALTER TABLE `APLICACION` DISABLE KEYS */;
-INSERT INTO `APLICACION` (`Csi_Id`, `Id_Dominio`, `Ptb_Id`, `Descripcion_Corta`, `Descripcion_Larga`, `Id_L1`, `Id_L2`, `Id_L3`, `Id_Plat1`, `Id_Plat2`, `Id_Plat3`, `Comentarios`) VALUES (1,1,'1','Nearshore','Aplicación del catálogo de proveedores',1,2,4,1,2,1,'Sin comentarios.'),(2,5,'23','Microservicios Nearshoe','Microservicios de la aplicación de proveedores Banamex.',1,1,2,1,2,3,'Dsarrollado.'),(3,5,'22','Microservicios V2 Nearshore','Segunda versión de microservicios para aplicación de proveedores.',1,2,2,1,2,3,'En desarrollo.'),(4,1,'12','Backbase','FrontEnd with Backbase framework.',1,2,3,4,5,3,'No hay comentarios'),(5,1,'12','Backbase','FrontEnd with Backbase framework.',1,2,3,4,5,3,'No hay comentarios');
 /*!40000 ALTER TABLE `APLICACION` ENABLE KEYS */;
 UNLOCK TABLES;
 UNLOCK TABLES;
@@ -277,7 +276,7 @@ CREATE TABLE `CAT_PERFIL` (
 
 LOCK TABLES `CAT_PERFIL` WRITE;
 /*!40000 ALTER TABLE `CAT_PERFIL` DISABLE KEYS */;
-INSERT INTO `CAT_PERFIL` (`Id_Perfil`, `Descripcion`) VALUES (1,'Super Administrador'),(2,'Administrador'),(3,'Backup'),(4,'Lectura');
+INSERT INTO `CAT_PERFIL` (`Id_Perfil`, `Descripcion`) VALUES (1,'Super Administrador'),(2,'Administrador'),(3,'Backup'),(4,'Lectura'),(5,'Lectura Citi');
 /*!40000 ALTER TABLE `CAT_PERFIL` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -661,30 +660,38 @@ DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `nearshore`.`l1aplicacion_AFTER_UPDATE` AFTER UPDATE ON `L1APLICACION` FOR EACH ROW
 BEGIN
     DECLARE id_app INT(11);
-	SELECT idAplicacionCiti FROM L1APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor INTO id_app;
+	SELECT idAplicacionCiti FROM L1APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor 
+    AND idBackupRProveedor=NEW.idBackupRProveedor
+    AND idLiderRProveedor=NEW.idLiderRProveedor
+    AND idProjectManagerRProveedor=NEW.idProjectManagerRProveedor
+    AND idDeliveryManagerRProveedor=NEW.idDeliveryManagerRProveedor
+    AND idAnalistaRCiti=NEW.idAnalistaRCiti
+    AND idLiderRCiti=NEW.idLiderRCiti
+    AND idGerenteRCiti=NEW.idGerenteRCiti 
+    AND idAplicacionCiti=NEW.idAplicacionCiti INTO id_app;
 	
-	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idResponsableRProveedor FROM L1APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor) 
+	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idResponsableRProveedor FROM L1APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor AND idAplicacionCiti=id_app) 
 		where descripcion='Responsable' and nivel=1 and idAplicacion=id_app;
     
-	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idBackupRProveedor FROM L1APLICACION WHERE idBackupRProveedor=NEW.idBackupRProveedor) 
+	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idBackupRProveedor FROM L1APLICACION WHERE idBackupRProveedor=NEW.idBackupRProveedor AND idAplicacionCiti=id_app) 
 		where descripcion='Backup' and nivel=1 and idAplicacion=id_app;
 	
-	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idLiderRProveedor FROM L1APLICACION WHERE idLiderRProveedor=NEW.idLiderRProveedor) 
+	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idLiderRProveedor FROM L1APLICACION WHERE idLiderRProveedor=NEW.idLiderRProveedor AND idAplicacionCiti=id_app) 
 		where descripcion='Lider' and nivel=1 and idAplicacion=id_app;
 		
-	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idProjectManagerRProveedor FROM L1APLICACION WHERE idProjectManagerRProveedor=NEW.idProjectManagerRProveedor) 
+	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idProjectManagerRProveedor FROM L1APLICACION WHERE idProjectManagerRProveedor=NEW.idProjectManagerRProveedor AND idAplicacionCiti=id_app) 
 		where descripcion='ProjectManager' and nivel=1 and idAplicacion=id_app;
     
-	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idDeliveryManagerRProveedor FROM L1APLICACION WHERE idDeliveryManagerRProveedor=NEW.idDeliveryManagerRProveedor) 
+	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idDeliveryManagerRProveedor FROM L1APLICACION WHERE idDeliveryManagerRProveedor=NEW.idDeliveryManagerRProveedor AND idAplicacionCiti=id_app) 
 		where descripcion='DeliveryManager' and nivel=1 and idAplicacion=id_app;
 
-	UPDATE RECURSOCITI_APLICACION SET idRecursoCiti = (SELECT idAnalistaRCiti FROM L1APLICACION WHERE idAnalistaRCiti = NEW.idAnalistaRCiti)
+	UPDATE RECURSOCITI_APLICACION SET idRecursoCiti = (SELECT idAnalistaRCiti FROM L1APLICACION WHERE idAnalistaRCiti = NEW.idAnalistaRCiti AND idAplicacionCiti=id_app)
 		WHERE descripcion='Analista' AND nivel = 1 AND idAplicacion = id_app;
             
-    UPDATE RECURSOCITI_APLICACION SET idRecursoCiti = (SELECT idLiderRCiti FROM L1APLICACION  WHERE idLiderRCiti = NEW.idLiderRCiti)
+    UPDATE RECURSOCITI_APLICACION SET idRecursoCiti = (SELECT idLiderRCiti FROM L1APLICACION  WHERE idLiderRCiti = NEW.idLiderRCiti AND idAplicacionCiti=id_app)
 		WHERE descripcion='Lider' AND nivel = 1 AND idAplicacion = id_app;
         
-    UPDATE RECURSOCITI_APLICACION SET idRecursoCiti = (SELECT idGerenteRCiti FROM L1APLICACION  WHERE idGerenteRCiti = NEW.idGerenteRCiti)
+    UPDATE RECURSOCITI_APLICACION SET idRecursoCiti = (SELECT idGerenteRCiti FROM L1APLICACION  WHERE idGerenteRCiti = NEW.idGerenteRCiti AND idAplicacionCiti=id_app)
 		WHERE descripcion='Gerente' AND nivel = 1 AND idAplicacion = id_app;
 END */;;
 DELIMITER ;
@@ -775,29 +782,39 @@ DELIMITER ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `nearshore`.`l2aplicacion_AFTER_UPDATE` AFTER UPDATE ON `L2APLICACION` FOR EACH ROW
 BEGIN
-	INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'Responsable',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    DECLARE id_app INT(11);
+	SELECT idAplicacionCiti FROM L1APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor 
+    AND idBackupRProveedor=NEW.idBackupRProveedor
+    AND idLiderRProveedor=NEW.idLiderRProveedor
+    AND idProjectManagerRProveedor=NEW.idProjectManagerRProveedor
+    AND idDeliveryManagerRProveedor=NEW.idDeliveryManagerRProveedor
+    AND idAnalistaRCiti=NEW.idAnalistaRCiti
+    AND idLiderRCiti=NEW.idLiderRCiti
+    AND idGerenteRCiti=NEW.idGerenteRCiti 
+    AND idAplicacionCiti=NEW.idAplicacionCiti INTO id_app;
+	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idResponsableRProveedor FROM L2APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor AND idAplicacionCiti=id_app) 
+    where descripcion='Responsable' and nivel=2 and idAplicacion=id_app;
     
-    INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'Backup',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idBackupRProveedor FROM L2APLICACION WHERE idBackupRProveedor=NEW.idBackupRProveedor AND idAplicacionCiti=id_app) 
+    where descripcion='Backup' and nivel=2 and idAplicacion=id_app;
     
-    INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'Lider',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idLiderRProveedor FROM L2APLICACION WHERE idLiderRProveedor=NEW.idLiderRProveedor AND idAplicacionCiti=id_app) 
+    where descripcion='Lider' and nivel=2 and idAplicacion=id_app;
     
-    INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'ProjectManager',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idProjectManagerRProveedor FROM L2APLICACION WHERE idProjectManagerRProveedor=NEW.idProjectManagerRProveedor AND idAplicacionCiti=id_app) 
+    where descripcion='ProjectManager' and nivel=2 and idAplicacion=id_app;
     
-    INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-		SELECT idAplicacionCiti,'DeliveryManager',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
-	
-    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
-		SELECT idAplicacionCiti,'Analista',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
-	
-    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
-		SELECT idAplicacionCiti,'Lider',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
-	
-    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
-		SELECT idAplicacionCiti,'Gerente',2 FROM L2APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idDeliveryManagerRProveedor FROM L2APLICACION WHERE idDeliveryManagerRProveedor=NEW.idDeliveryManagerRProveedor AND idAplicacionCiti=id_app) 
+    where descripcion='DeliveryManager' and nivel=2 and idAplicacion=id_app;
+    
+    UPDATE RECURSOCITI_APLICACION SET idRecursoCiti = (SELECT idAnalistaRCiti FROM L2APLICACION WHERE idAnalistaRCiti = NEW.idAnalistaRCiti AND idAplicacionCiti=id_app)
+		WHERE descripcion='Analista' AND nivel = 2 AND idAplicacion = id_app;
+    
+    UPDATE RECURSOCITI_APLICACION SET idRecursoCiti = (SELECT idLiderRCiti FROM L2APLICACION  WHERE idLiderRCiti = NEW.idLiderRCiti AND idAplicacionCiti=id_app)
+		WHERE descripcion='Lider' AND nivel = 2 AND idAplicacion = id_app;
+    
+    UPDATE RECURSOCITI_APLICACION SET idRecursoCiti = (SELECT idGerenteRCiti FROM L2APLICACION  WHERE idGerenteRCiti = NEW.idGerenteRCiti AND idAplicacionCiti=id_app)
+		WHERE descripcion='Gerente' AND nivel = 2 AND idAplicacion = id_app;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -886,29 +903,39 @@ DELIMITER ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `nearshore`.`l3aplicacion_AFTER_UPDATE` AFTER UPDATE ON `L3APLICACION` FOR EACH ROW
 BEGIN
-	INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'Responsable',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    DECLARE id_app INT(11);
+	SELECT idAplicacionCiti FROM L1APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor 
+    AND idBackupRProveedor=NEW.idBackupRProveedor
+    AND idLiderRProveedor=NEW.idLiderRProveedor
+    AND idProjectManagerRProveedor=NEW.idProjectManagerRProveedor
+    AND idDeliveryManagerRProveedor=NEW.idDeliveryManagerRProveedor
+    AND idAnalistaRCiti=NEW.idAnalistaRCiti
+    AND idLiderRCiti=NEW.idLiderRCiti
+    AND idGerenteRCiti=NEW.idGerenteRCiti 
+    AND idAplicacionCiti=NEW.idAplicacionCiti INTO id_app;
+	UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idResponsableRProveedor FROM L3APLICACION WHERE idResponsableRProveedor=NEW.idResponsableRProveedor AND idAplicacionCiti=id_app) 
+    where descripcion='Responsable' and nivel=3 and idAplicacion=id_app;
     
-    INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'Backup',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idBackupRProveedor FROM L3APLICACION WHERE idBackupRProveedor=NEW.idBackupRProveedor AND idAplicacionCiti=id_app) 
+    where descripcion='Backup' and nivel=3 and idAplicacion=id_app;
     
-    INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'Lider',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idLiderRProveedor FROM L3APLICACION WHERE idLiderRProveedor=NEW.idLiderRProveedor AND idAplicacionCiti=id_app) 
+    where descripcion='Lider' and nivel=3 and idAplicacion=id_app;
     
-    INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'ProjectManager',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idProjectManagerRProveedor FROM L3APLICACION WHERE idProjectManagerRProveedor=NEW.idProjectManagerRProveedor AND idAplicacionCiti=id_app) 
+    where descripcion='ProjectManager' and nivel=3 and idAplicacion=id_app;
     
-    INSERT INTO RECURSOPROVEEDOR_APLICACION (idAplicacion, descripcion, nivel)
-    SELECT idAplicacionCiti,'DeliveryManager',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    UPDATE RECURSOPROVEEDOR_APLICACION SET idRecursoProveedor= (SELECT idDeliveryManagerRProveedor FROM L3APLICACION WHERE idDeliveryManagerRProveedor=NEW.idDeliveryManagerRProveedor AND idAplicacionCiti=id_app) 
+    where descripcion='DeliveryManager' and nivel=3 and idAplicacion=id_app;
     
-    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
-		SELECT idAplicacionCiti,'Analista',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
-	
-    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
-		SELECT idAplicacionCiti,'Lider',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
-	
-    INSERT INTO RECURSOCITI_APLICACION (idAplicacion, descripcion, nivel)
-		SELECT idAplicacionCiti,'Gerente',3 FROM L3APLICACION WHERE idAplicacionCiti = NEW.idAplicacionCiti;
+    UPDATE RECURSOCITI_APLICACION SET idRecursoCiti = (SELECT idAnalistaRCiti FROM L3APLICACION WHERE idAnalistaRCiti = NEW.idAnalistaRCiti AND idAplicacionCiti=id_app)
+		WHERE descripcion='Analista' AND nivel = 3 AND idAplicacion = id_app;
+    
+    UPDATE RECURSOCITI_APLICACION SET idRecursoCiti = (SELECT idLiderRCiti FROM L3APLICACION  WHERE idLiderRCiti = NEW.idLiderRCiti AND idAplicacionCiti=id_app)
+		WHERE descripcion='Lider' AND nivel = 3 AND idAplicacion = id_app;
+    
+    UPDATE RECURSOCITI_APLICACION SET idRecursoCiti = (SELECT idGerenteRCiti FROM L3APLICACION  WHERE idGerenteRCiti = NEW.idGerenteRCiti AND idAplicacionCiti=id_app)
+		WHERE descripcion='Gerente' AND nivel = 3 AND idAplicacion = id_app;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -945,7 +972,7 @@ CREATE TABLE `RECURSO_CITI` (
   CONSTRAINT `fk_CAT_CIUDAD_RECURSO_CITI` FOREIGN KEY (`Id_Ciudad`) REFERENCES `CAT_CIUDAD` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_CAT_DOMINIO_RECURSO_CITI` FOREIGN KEY (`Id_Dominio`) REFERENCES `CAT_DOMINIO` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_CAT_PUESTOCITI_RECURSO_CITI` FOREIGN KEY (`Id_Puesto`) REFERENCES `CAT_PUESTOCITI` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_RECURSO_CITIi_RECURSO_CITI` FOREIGN KEY (`Id_ReportaA`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_RECURSO_CITI_RECURSO_CITI` FOREIGN KEY (`Id_ReportaA`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE SET NULL ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1029,7 +1056,7 @@ CREATE TABLE `RECURSOCITI_APLICACION` (
    KEY `fk_recursociti_aplicacion_aplicacion1_idx` (`idAplicacion`),
    KEY `fk_recursociti_aplicacion_recurso_citi` (`idRecursoCiti`),
    CONSTRAINT `fk_recursociti_aplicacion_aplicacion1` FOREIGN KEY (`idAplicacion`) REFERENCES `APLICACION` (`Csi_Id`) ON DELETE CASCADE ON UPDATE CASCADE,
-   CONSTRAINT `fk_recursociti_aplicacion_recurso_citi` FOREIGN KEY (`idRecursoCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+   CONSTRAINT `fk_recursociti_aplicacion_recurso_citi` FOREIGN KEY (`idRecursoCiti`) REFERENCES `RECURSO_CITI` (`Soe_Id`) ON DELETE CASCADE ON UPDATE CASCADE
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1039,7 +1066,6 @@ CREATE TABLE `RECURSOCITI_APLICACION` (
 
 LOCK TABLES `RECURSOCITI_APLICACION` WRITE;
 /*!40000 ALTER TABLE `RECURSOCITI_APLICACION` DISABLE KEYS */;
-INSERT INTO `RECURSOCITI_APLICACION` (`idRecursoCiti`, `idAplicacion`) VALUES ('GC37337',1),('JP12345',1),('RS23323',1),('GC37337',2),('RS23323',3);
 /*!40000 ALTER TABLE `RECURSOCITI_APLICACION` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1066,7 +1092,6 @@ CREATE TABLE `RECURSOPROVEEDOR_APLICACION` (
 
 LOCK TABLES `RECURSOPROVEEDOR_APLICACION` WRITE;
 /*!40000 ALTER TABLE `RECURSOPROVEEDOR_APLICACION` DISABLE KEYS */;
-INSERT INTO `RECURSOPROVEEDOR_APLICACION` (`idRecursoProveedor`, `idAplicacion`) VALUES (1,1),(2,1),(3,1),(4,1),(2,2),(3,2),(4,2);
 /*!40000 ALTER TABLE `RECURSOPROVEEDOR_APLICACION` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1102,7 +1127,7 @@ CREATE TABLE `USUARIO` (
 
 LOCK TABLES `USUARIO` WRITE;
 /*!40000 ALTER TABLE `USUARIO` DISABLE KEYS */;
-INSERT INTO `USUARIO` (`Id_Usuarios`, `Email`, `Primer_Nombre`, `Segundo_Nombre`, `Apellido_Paterno`, `ApellidoMaterno`, `Clave`, `Id_Perfil`, `Activo`, `Dominios`, `Proveedores`) VALUES (1,'kdk@ksk.cpom','Hector','','Lozoya','Perez','1234',1,1,'Canales Digitales','Banamex'),(2,'qwerty@gmail.com','Deibid','','Ramirez','Morales','1234',1,1,'Canales Digitales','Anzen'),(3,'qwerty1@anzen.com','Julio','','Contreras','Carrillo','1234',2,1,'Canales Digitales','Anzen'),(4,'qwerty2@anzen.com','Sergio','','Santana','Martinez','1234',3,1,'Canales Digitales','Anzen'),(5,'qwerty3@wipro.com','Isaac','','Vargas','Gonzales','1234',2,1,'Canales Digitales','Wipro'),(6,'qwerty4@wipro.com','Ammulu','','Addhanki','Addhanki','1234',2,1,'Canales Digitales','Wipro'),(9,'ptovar@anzen.com.mx','Pablo','Pablo','Tovar','Castrejón','1700000012',3,1,'5','1');
+INSERT INTO `USUARIO` (`Id_Usuarios`, `Email`, `Primer_Nombre`, `Segundo_Nombre`, `Apellido_Paterno`, `ApellidoMaterno`, `Clave`, `Id_Perfil`, `Activo`, `Dominios`, `Proveedores`) VALUES (1,'kdk@ksk.cpom','Hector','','Lozoya','Perez','1234',1,1,null,null),(2,'qwerty@gmail.com','Deibid','','Ramirez','Morales','1234',1,1,null,1),(3,'qwerty1@anzen.com','Julio','','Contreras','Carrillo','1234',2,1,null,1),(4,'qwerty2@wipro.com','Sergio','','Santana','Martinez','1234',3,1,null,4),(5,'qwerty3@wipro.com','Isaac','','Vargas','Gonzales','1234',2,1,null,4),(6,'qwerty4@wipro.com','Ammulu','','Addhanki','Addhanki','1234',2,1,null,4),(9,'ptovar@anzen.com.mx','Pablo','Pablo','Tovar','Castrejón','1700000012',3,1,5,1);
 /*!40000 ALTER TABLE `USUARIO` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1434,42 +1459,46 @@ DECLARE rownum INT;
 SET LowerBound = ((StartIndex - 1) * Count) + 1;
 SET UpperBound = ((StartIndex - 1) * Count) + Count;
 
-SELECT  (SELECT count(*) FROM RECURSO_CITI) as total,
-		(SELECT ceiling(count(*)/Count) FROM RECURSO_CITI) as pages,
-        SOE_ID, 
-		Apellido_Paterno, 
-		Apellido_Materno, 
-		Primer_Nombre, 
-		Segundo_Nombre,
-		Id_Dominio, 
-		Id_Puesto, 
-		Id_Ciudad, 
-		Ext, 
-		Movil, 
-		Telefono, 
-		Email, 
-		Id_ReportaA, 
-		Comentarios 
-  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
-		FROM (SELECT 
-				SOE_ID, 
-                Apellido_Paterno, 
-                Apellido_Materno, 
-                Primer_Nombre, 
-                Segundo_Nombre,
-				Id_Dominio, 
-                Id_Puesto, 
-                Id_Ciudad, 
-				Ext, 
-                Movil, 
-                Telefono, 
-                Email, 
-                Id_ReportaA, 
-                Comentarios 
-				FROM 
-                RECURSO_CITI
-				) d, (SELECT @rownum  := 0) r ) m
-WHERE rank >= LowerBound AND rank <= UpperBound;
+IF Count = 0 THEN
+	SELECT concat(RC.Apellido_Paterno,' ',RC.Apellido_Materno,' ',RC.Primer_Nombre,' ',RC.Segundo_Nombre) AS nombre,Soe_Id FROM RECURSO_CITI RC;
+ELSE
+	SELECT  (SELECT count(*) FROM RECURSO_CITI) as total,
+			(SELECT ceiling(count(*)/Count) FROM RECURSO_CITI) as pages,
+			SOE_ID, 
+			Apellido_Paterno, 
+			Apellido_Materno, 
+			Primer_Nombre, 
+			Segundo_Nombre,
+			Id_Dominio, 
+			Id_Puesto, 
+			Id_Ciudad, 
+			Ext, 
+			Movil, 
+			Telefono, 
+			Email, 
+			Id_ReportaA, 
+			Comentarios 
+	  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
+			FROM (SELECT 
+					SOE_ID, 
+					Apellido_Paterno, 
+					Apellido_Materno, 
+					Primer_Nombre, 
+					Segundo_Nombre,
+					Id_Dominio, 
+					Id_Puesto, 
+					Id_Ciudad, 
+					Ext, 
+					Movil, 
+					Telefono, 
+					Email, 
+					Id_ReportaA, 
+					Comentarios 
+					FROM 
+					RECURSO_CITI
+					) d, (SELECT @rownum  := 0) r ) m
+	WHERE rank >= LowerBound AND rank <= UpperBound;
+END IF;
 
 END ;;
 DELIMITER ;
@@ -1882,7 +1911,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationCities`(IN StartIndex INT, IN Count INT, IN id INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `paginationCities`(IN StartIndex INT, IN Count INT, IN _id INT)
 BEGIN
 	DECLARE LowerBound INT;
 	DECLARE UpperBound INT;
@@ -1893,11 +1922,11 @@ BEGIN
 	SELECT 	(SELECT count(*) FROM 
                     CAT_CIUDAD C INNER JOIN 
                     CAT_PAIS P ON C.Id_Pais = P.Id 
-                    WHERE P.Id = id) as total,
+                    WHERE P.Id = _id) as total,
 			(SELECT ceiling(count(*)/Count) FROM 
                     CAT_CIUDAD C INNER JOIN 
                     CAT_PAIS P ON C.Id_Pais = P.Id 
-                    WHERE P.Id = id) as pages,
+                    WHERE P.Id = _id) as pages,
 				Id, 
 				Descripcion 
 	  FROM (SELECT *, @rownum := @rownum + 1 AS rank 
@@ -1907,7 +1936,7 @@ BEGIN
                     FROM 
                     CAT_CIUDAD C INNER JOIN 
                     CAT_PAIS P ON C.Id_Pais = P.Id 
-                    WHERE P.Id = id
+                    WHERE P.Id = _id
 					) d, (SELECT @rownum  := 0) r ) m
 	WHERE rank >= LowerBound AND rank <= UpperBound;
 END ;;
@@ -1950,6 +1979,7 @@ DELIMITER ;
         `a`.`Csi_Id` AS `idApp`,
         `d`.`Descripcion` AS `dominio`,
         'L1' AS `L`,
+		`a`.`Id_L1` AS `idProveedor`,
         CONCAT(`canalista`.`Primer_Nombre`,
                 ' ',
                 `canalista`.`Segundo_Nombre`,
@@ -2081,6 +2111,7 @@ DELIMITER ;
         `a`.`Csi_Id` AS `idApp`,
         `d`.`Descripcion` AS `dominio`,
         'L2' AS `L`,
+		`a`.`Id_L2` AS `idProveedor`,
         CONCAT(`canalista`.`Primer_Nombre`,
                 ' ',
                 `canalista`.`Segundo_Nombre`,
@@ -2212,6 +2243,7 @@ DELIMITER ;
         `a`.`Csi_Id` AS `idApp`,
         `d`.`Descripcion` AS `dominio`,
         'L3' AS `L`,
+		`a`.`Id_L3` AS `idProveedor`,
         CONCAT(`canalista`.`Primer_Nombre`,
                 ' ',
                 `canalista`.`Segundo_Nombre`,
