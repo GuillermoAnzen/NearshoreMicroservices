@@ -44,7 +44,7 @@ public class EmpleadosController {
 				+ "concat(RC.Primer_Nombre,' ', RC.Segundo_Nombre,' ',RC.Apellido_Paterno,' ',RC.Apellido_Materno) AS gerente "
 				+ "FROM RECURSO_CITI RC "
 				+ "INNER JOIN CAT_PUESTOCITI PC "
-				+ "ON RC.Id_Puesto = PC.Id WHERE PC.Descripcion like 'gerente' OR PC.Descripcion like 'manager'");
+				+ "ON RC.Id_Puesto = PC.Id WHERE PC.Descripcion like '%gerente%' OR PC.Descripcion like '%manager%'");
 		
 		Object resultBase = null;
 		try{
@@ -68,7 +68,7 @@ public class EmpleadosController {
 				+ "concat(RC.Primer_Nombre,' ', RC.Segundo_Nombre,' ',RC.Apellido_Paterno,' ',RC.Apellido_Materno) AS lider "
 				+ "FROM RECURSO_CITI RC "
 				+ "INNER JOIN CAT_PUESTOCITI PC "
-				+ "ON RC.Id_Puesto = PC.Id WHERE PC.Descripcion like 'lider'");
+				+ "ON RC.Id_Puesto = PC.Id WHERE PC.Descripcion like '%lider%' OR PC.Descripcion LIKE '%lead%'");
 		
 		Object resultBase = null;
 		try{
@@ -93,7 +93,7 @@ public class EmpleadosController {
 				+ "FROM RECURSO_CITI RC "
 				+ "INNER JOIN CAT_PUESTOCITI PC "
 				+ "ON RC.Id_Puesto = PC.Id "
-				+ "WHERE PC.Descripcion like 'analista'");
+				+ "WHERE PC.Descripcion LIKE '%analista%' OR PC.Descripcion LIKE '%analyst%' OR PC.Descripcion LIKE '%annalist%'");
 		
 		Object resultBase = null;
 		try{
@@ -270,34 +270,39 @@ public class EmpleadosController {
 		queryParams.add(queryParam01);
 		
 		requestParams.put("tipoQuery", 2);
-		requestParams.put("sql", "SELECT D.Descripcion AS Dominio," +
-				"D.Id AS idDominio," +
-				"RC.Soe_Id," +
-				"RC.Primer_Nombre," +
-				"RC.Segundo_Nombre," +
-				"RC.Apellido_Paterno," +
-				"RC.Apellido_Materno," +
-                "concat(RC.Primer_Nombre,' ',RC.Segundo_Nombre,' ',RC.Apellido_Paterno,' ',RC.Apellido_Materno) AS nombre," +
-				"RC.Movil," +
-				"RC.Telefono," +
-				"RC.Email," +
-				"RC.Ext," +
-				"C.Descripcion AS Ciudad," +
-                "C.Id AS idCiudad," +
-				"P.Descripcion as Pais," +
-                "P.Id AS idPais," +
-                "PC.Descripcion AS puesto," +
-                "PC.Id AS idPuesto " +
-				"FROM CAT_DOMINIO D INNER JOIN RECURSO_CITI RC " + 
-				"INNER JOIN CAT_PUESTOCITI PC " +
-				"INNER JOIN CAT_CIUDAD C " +
-				"INNER JOIN CAT_PAIS P " +
-				"WHERE " +
-				"RC.Id_Dominio=D.Id AND " + 
-				"PC.Id = RC.Id_Puesto AND " +
-				"RC.Id_Ciudad = C.Id AND " +
-				"P.Id = C.Id_Pais AND " +
-				"RC.Soe_Id = ?");
+		requestParams.put("sql", "SELECT "
+				+ "D.Descripcion AS Dominio,"
+				+ "D.Id AS idDominio,"
+				+ "RC.Soe_Id,"
+				+ "RC.Primer_Nombre,"
+				+ "RC.Segundo_Nombre,"
+				+ "RC.Apellido_Paterno,"
+				+ "RC.Apellido_Materno,"
+                + "concat(RC.Primer_Nombre,' ',RC.Segundo_Nombre,' ',RC.Apellido_Paterno,' ',RC.Apellido_Materno) AS nombre,"
+				+ "RC.Movil,"
+				+ "RC.Telefono,"
+				+ "RC.Email,"
+				+ "RC.Ext,"
+				+ "C.Descripcion AS Ciudad,"
+                + "C.Id AS idCiudad,"
+				+ "P.Descripcion as Pais,"
+                + "P.Id AS idPais,"
+                + "PC.Descripcion AS puesto,"
+                + "PC.Id AS idPuesto,"
+				+ "concat(RCR.Apellido_Materno,' ',RCR.Apellido_Paterno,' ',RCR.Primer_Nombre,' ',RCR.Segundo_Nombre) AS reportaA,"
+                + "RC.Id_ReportaA AS idReportaA,"
+                + "RC.Comentarios AS comentarios "
+				+ "FROM CAT_DOMINIO D INNER JOIN RECURSO_CITI RC "  
+				+ "INNER JOIN CAT_PUESTOCITI PC "
+				+ "INNER JOIN CAT_CIUDAD C "
+				+ "INNER JOIN CAT_PAIS P "
+                + "LEFT JOIN RECURSO_CITI RCR ON RCR.Soe_Id = RC.Id_ReportaA "
+				+ "WHERE "
+				+ "RC.Id_Dominio=D.Id AND "  
+				+ "PC.Id = RC.Id_Puesto AND "
+				+ "RC.Id_Ciudad = C.Id AND "
+				+ "P.Id = C.Id_Pais AND "
+				+ "RC.Soe_Id = ?");
 		requestParams.put("data", queryParams);
 		
 		Object resultBase = null; 
@@ -345,7 +350,7 @@ public class EmpleadosController {
 	 * El endpoint permite la edición de la información de un empleado por su soeid de CitiBanamex existente.
 	 */
 	@RequestMapping(value = "/citi/{soeid}", method = RequestMethod.PUT, produces = "application/json")
-	public Object editCitiEmployee(@PathVariable String soeid, @RequestBody @Valid RecursoCiti recursoCiti) {
+	public Object editCitiEmployee(@PathVariable String soeid, @RequestBody RecursoCiti recursoCiti) {
 		HashMap<String, Object> requestParams = new HashMap<String, Object>();
 		
 		List<Data> queryParams = new ArrayList<>();
